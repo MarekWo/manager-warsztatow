@@ -1,0 +1,35 @@
+# The edge in front of gunicorn on TEST and PROD (compose.prod.yaml).
+#
+#   PROD: Cloudflare/Internet ─► Nginx Proxy Manager (TLS) ─► edge ─► web
+#   TEST: Cloudflare tunnel (cloudflared on the LAN)       ─► edge ─► web
+#
+# Both proxies in front sit on private addresses, so the visitor's address is read from the
+# header they set and passed to Django as X-Real-IP (settings.CLIENT_IP_HEADER).
+{
+	admin localhost:2019
+	servers {
+		trusted_proxies static private_ranges
+		client_ip_headers Cf-Connecting-Ip X-Real-IP X-Forwarded-For
+	}
+}
+
+:80 {
+	encode zstd gzip
+
+	# Uploaded files (logo, workshop photos): served here, never by Django, in a sandbox.
+	handle_path /media/* {
+		root * /srv/media
+		file_server
+		header {
+			X-Content-Type-Options nosniff
+			Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; sandbox"
+			Cache-Control "public, max-age=86400"
+		}
+	}
+
+	handle {
+		reverse_proxy web:8000 {
+			header_up X-Real-IP {client_ip}
+		}
+	}
+}

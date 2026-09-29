@@ -1,0 +1,39 @@
+# Base stack shared by every environment: the web process and the task worker, one image.
+# DEV adds compose.override.yaml automatically; TEST/PROD use compose.prod.yaml.
+name: manager-warsztatow
+
+services:
+  web:
+    image: ghcr.io/marekwo/manager-warsztatow:${APP_TAG:-dev}
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      RUN_MIGRATIONS: "true"
+      DATA_DIR: /data
+    volumes:
+      - data:/data
+    restart: unless-stopped
+
+  worker:
+    image: ghcr.io/marekwo/manager-warsztatow:${APP_TAG:-dev}
+    command: ["python", "manage.py", "qcluster"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - data:/data
+    depends_on:
+      web:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    restart: unless-stopped
+
+volumes:
+  data:

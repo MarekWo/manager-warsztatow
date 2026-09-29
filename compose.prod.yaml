@@ -1,0 +1,57 @@
+# TEST and PROD overlay on compose.yaml (docs/deploy.md). The server's .env selects it:
+#
+#   COMPOSE_FILE=compose.yaml:compose.prod.yaml                    # TEST (edge on the LAN)
+#   COMPOSE_FILE=compose.yaml:compose.prod.yaml:compose.npm.yaml   # PROD (behind Nginx Proxy Manager)
+#
+# so plain `docker compose …` on a server never loads the DEV compose.override.yaml.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  web:
+    # Servers only pull; there is no source to build from. APP_TAG: dev on TEST, X.Y.Z on PROD.
+    build: !reset null
+    environment:
+      TRUST_PROXY_HEADERS: "true"
+    mem_limit: 384m
+    stop_grace_period: 30s
+    logging: *logging
+
+  worker:
+    build: !reset null
+    environment:
+      TRUST_PROXY_HEADERS: "true"
+    mem_limit: 256m
+    stop_grace_period: 60s
+    logging: *logging
+
+  edge:
+    image: caddy:2.11.4-alpine
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - data:/srv/data:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    # /media/ is served from the data volume's media directory.
+    command: ["sh", "-c", "ln -sfn /srv/data/media /srv/media && exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"]
+    ports:
+      - "${EDGE_BIND:-127.0.0.1}:${EDGE_PORT:-8080}:80"
+    mem_limit: 64m
+    depends_on:
+      web:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  caddy-data:
+  caddy-config:

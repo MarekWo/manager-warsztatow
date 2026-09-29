@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Aktualne warsztaty{% endblock %}
+
+{% block content %}
+  <h1 class="page-title mb-4">Aktualne warsztaty</h1>
+
+  {% if workshops %}
+    {# Workshop cards arrive in Stage 2. #}
+  {% else %}
+    <div class="empty-state text-center p-4 p-md-5">
+      <i class="bi bi-calendar-heart d-block mb-3" aria-hidden="true"></i>
+      <p class="fs-4 fw-semibold mb-2">Obecnie nie są planowane żadne warsztaty.</p>
+      <p class="mb-0">Zajrzyj tu ponownie wkrótce — nowe terminy ogłaszamy również na stronie
+        <a href="https://ecclesia.jezuici.pl/">ecclesia.jezuici.pl</a>.</p>
+    </div>
+  {% endif %}
+{% endblock %}

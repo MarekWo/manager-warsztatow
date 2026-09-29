@@ -1,0 +1,14 @@
+# PROD: the edge joins Nginx Proxy Manager's network; NPM forwards the public host name to
+# `manager-warsztatow-edge:80` and terminates TLS. Nothing is published on the host.
+services:
+  edge:
+    container_name: manager-warsztatow-edge
+    ports: !reset []
+    networks:
+      - default
+      - proxy
+
+networks:
+  proxy:
+    name: ${PROXY_NETWORK:-nginx_proxy_network}
+    external: true

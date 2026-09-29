@@ -1,0 +1,75 @@
+{% load static %}<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if site_noindex %}<meta name="robots" content="noindex, nofollow">{% endif %}
+  <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
+  <title>{% block title %}Warsztaty{% endblock %} — Stowarzyszenie Ecclesia</title>
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-5.3.8/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons-1.13.1/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <a class="skip-link" href="#content">Przejdź do treści</a>
+
+  <header class="site-header">
+    <nav class="navbar navbar-expand-md py-2" aria-label="Menu główne">
+      <div class="container">
+      <a class="navbar-brand" href="{% url 'public:home' %}">
+        Warsztaty
+        <small>Stowarzyszenie Ecclesia</small>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav"
+              aria-controls="main-nav" aria-expanded="false" aria-label="Pokaż menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="main-nav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'public:home' %}">Aktualne warsztaty</a></li>
+          {% if user.is_authenticated %}
+            {% if user.is_staff %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'panel:dashboard' %}"><i class="bi bi-speedometer2" aria-hidden="true"></i> Panel</a></li>
+            {% endif %}
+            <li class="nav-item">
+              <form method="post" action="{% url 'account_logout' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="nav-link btn btn-link">Wyloguj</button>
+              </form>
+            </li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'account_request_login_code' %}"><i class="bi bi-person-circle" aria-hidden="true"></i> Zaloguj się</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="content" class="container py-4 py-md-5 {% block main_class %}{% endblock main_class %}" tabindex="-1">
+    {% if messages %}
+      <div class="mb-4">
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %}" role="alert">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer py-4 mt-5">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
+      <div>Chrześcijańskie Stowarzyszenie Twórców Sztuki Sakralnej „Ecclesia”</div>
+      <div>
+        <a href="https://ecclesia.jezuici.pl/polityka-prywatnosci-cookies/">Polityka prywatności</a>
+        <span class="ms-3 small">v{{ app_version }}</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'vendor/bootstrap-5.3.8/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'vendor/htmx-2.0.11/htmx.min.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

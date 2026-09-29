@@ -1,0 +1,14 @@
+# Normalize all text files to LF in the repository and in working copies,
+# so shell scripts and Docker files work on Linux even when edited on Windows.
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.ps1 text eol=crlf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.mo binary

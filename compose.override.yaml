@@ -1,0 +1,27 @@
+# DEV overrides, applied automatically by `docker compose up`:
+# source bind mount, runserver with autoreload, dev settings, published ports and mailpit.
+services:
+  web:
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    environment: &dev-environment
+      DJANGO_SETTINGS_MODULE: workshop_manager.config.settings.dev
+      EMAIL_URL: smtp://mailpit:1025
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - .:/app
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+
+  worker:
+    environment: *dev-environment
+    volumes:
+      - .:/app
+
+  mailpit:
+    image: axllent/mailpit:v1.31
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+    ports:
+      - "${MAILPIT_PORT:-8025}:8025"
+    restart: unless-stopped

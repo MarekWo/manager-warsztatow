@@ -1,0 +1,112 @@
+[project]
+name = "manager-warsztatow"
+description = "Workshop registration and management for art workshops (Manager Warsztatów)"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Marek Wojtaszek" }]
+requires-python = ">=3.13,<3.14"
+# VERSION is the source of truth; this PEP 440 copy is kept equal by a test.
+version = "0.1.0.dev0"
+classifiers = [
+    "Framework :: Django",
+    "Framework :: Django :: 6.1",
+    "Programming Language :: Python :: 3.13",
+    "Private :: Do Not Upload",
+]
+dependencies = [
+    "croniter>=6.2.4",
+    "cryptography>=50.0.1",
+    "django>=6.1,<6.2",
+    "django-allauth>=65.19.5",
+    "django-environ>=0.14.0",
+    "django-htmx>=1.29.0",
+    "django-q2>=1.11.1",
+    "gunicorn>=26.2.0",
+    "nh3>=0.3.7",
+    "openpyxl>=3.1.5",
+    "pillow>=12.3.0",
+    "segno>=1.6.6",
+    "weasyprint>=70.0",
+    "whitenoise>=6.12.0",
+]
+
+[tool.uv]
+# Never fall back to a system interpreter: the project runs on the uv-managed Python only.
+python-preference = "only-managed"
+# The project is an application, not a library to install into site-packages.
+package = false
+# The uv cache and the project usually sit on different drives; hardlinks are not possible.
+link-mode = "copy"
+
+[dependency-groups]
+dev = [
+    "axe-playwright-python>=0.1.8",
+    "django-stubs>=6.1.1",
+    "factory-boy>=3.3.3",
+    "mypy>=2.3.1",
+    "pip-audit>=2.10.1",
+    "pre-commit>=4.6.2",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-django>=4.14.0",
+    "pytest-playwright>=0.9.0",
+    "ruff>=0.16.9",
+    "time-machine>=3.5.1",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["**/migrations/*.py", ".claude/**"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "DJ",       # flake8-django
+    "S",        # bandit (security)
+    "SIM",      # simplify
+    "C4",       # comprehensions
+    "PT",       # pytest style
+    "RUF",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S107"]
+# Django's Meta options (indexes, constraints, …) are class-level lists by design.
+"**/models.py" = ["RUF012"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["workshop_manager"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "workshop_manager.config.settings.test"
+addopts = "--reuse-db --strict-markers -ra -m 'not browser'"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+markers = [
+    "browser: needs a real browser (uv run pytest -m browser)",
+]
+
+[tool.coverage.run]
+source = ["workshop_manager"]
+omit = ["*/migrations/*", "workshop_manager/config/wsgi.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.mypy]
+python_version = "3.13"
+plugins = ["mypy_django_plugin.main"]
+ignore_missing_imports = true
+check_untyped_defs = false
+warn_unused_ignores = true
+exclude = ["migrations/", '\.venv/']
+
+[tool.django-stubs]
+django_settings_module = "workshop_manager.config.settings.test"

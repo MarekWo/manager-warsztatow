@@ -1,0 +1,18 @@
+{% extends "account/base_entrance.html" %}
+{% load allauth account %}
+{% block head_title %}Zaloguj się{% endblock head_title %}
+{% block content %}
+  {% element h1 %}Zaloguj się{% endelement %}
+  <p>Podaj swój adres e-mail. Wyślemy na niego <strong>6-cyfrowy kod</strong> — nie potrzebujesz hasła.</p>
+  {% element form form=form method="post" action=request_login_code_url tags="entrance,login" %}
+    {% slot body %}
+      {% csrf_token %}
+      {% element fields form=form %}{% endelement %}
+      {{ redirect_field }}
+    {% endslot %}
+    {% slot actions %}
+      {% element button type="submit" tags="prominent,login" %}Wyślij mi kod{% endelement %}
+    {% endslot %}
+  {% endelement %}
+  <p class="mt-4 small text-body-secondary">Konto zakłada się samo przy pierwszym zgłoszeniu na warsztaty — nie trzeba się osobno rejestrować.</p>
+{% endblock content %}

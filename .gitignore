@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# uv / virtual environments
+.venv/
+.uv-cache/
+
+# Tooling caches and reports
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+test-results/
+playwright-report/
+
+# Django / runtime data
+/staticfiles/
+/data/
+/media/
+*.log
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Docker
+compose.local.yaml
+/backups/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Synology Drive
+@eaDir/
+*.SynologyWorkingDirectory/
+
+# Private project documents and AI tooling (not needed by users of the system)
+materiały/
+PRD.md
+PLAN.md
+PROGRESS.md
+CLAUDE.md
+AGENTS.md
+.agents/
+.claude/
+docs/adr/
