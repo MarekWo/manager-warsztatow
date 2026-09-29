@@ -1,0 +1,67 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Formularz — {{ workshop.title }}{% endblock %}
+{% block panel_content %}
+{% include "panel/partials/workshop_nav.html" %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <section class="card shadow-sm mb-4" aria-labelledby="h-questions">
+      <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h2 id="h-questions" class="h5 mb-0">Pytania w formularzu</h2>
+          <a class="btn btn-primary btn-sm" href="{% url 'panel:question_add' workshop.pk %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Dodaj pytanie</a>
+        </div>
+        <p class="small text-body-secondary">Imię i nazwisko, e-mail oraz zgoda na przetwarzanie danych są w formularzu zawsze. Poniżej pytania dodatkowe — w tej kolejności zobaczy je zgłaszający.</p>
+        <ol class="list-unstyled mb-0">
+        {% for question in questions %}
+          <li id="q{{ question.pk }}" class="question-row border rounded p-3 mb-2 {% if not question.is_active %}bg-body-tertiary{% endif %}">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+              <div>
+                <div class="fw-semibold {% if not question.is_active %}text-body-secondary{% endif %}">{{ forloop.counter }}. {{ question.label }}</div>
+                <div class="small mt-1">
+                  <span class="badge text-bg-light border">{{ question.get_kind_display }}</span>
+                  {% if question.required %}<span class="badge text-bg-light border">wymagane</span>{% else %}<span class="badge text-bg-light border">opcjonalne</span>{% endif %}
+                  {% if question.level %}<span class="badge text-bg-info">tylko: {{ question.level }}</span>{% endif %}
+                  {% if not question.is_active %}<span class="badge text-bg-secondary">ukryte</span>{% endif %}
+                </div>
+                {% if question.has_choices %}<div class="small text-body-secondary mt-1">Odpowiedzi: {{ question.choice_list|join:" · " }}</div>{% endif %}
+              </div>
+              <div class="d-flex flex-wrap gap-1 align-self-md-start">
+                <form method="post" action="{% url 'panel:question_move' workshop.pk question.pk 'up' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" {% if forloop.first %}disabled{% endif %} aria-label="Przesuń wyżej: {{ question.label|truncatechars:40 }}"><i class="bi bi-arrow-up" aria-hidden="true"></i></button></form>
+                <form method="post" action="{% url 'panel:question_move' workshop.pk question.pk 'down' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" {% if forloop.last %}disabled{% endif %} aria-label="Przesuń niżej: {{ question.label|truncatechars:40 }}"><i class="bi bi-arrow-down" aria-hidden="true"></i></button></form>
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'panel:question_edit' workshop.pk question.pk %}">Edytuj</a>
+                <form method="post" action="{% url 'panel:question_toggle' workshop.pk question.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-primary">{% if question.is_active %}Ukryj{% else %}Pokaż{% endif %}</button></form>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'panel:question_delete' workshop.pk question.pk %}" aria-label="Usuń pytanie: {{ question.label|truncatechars:40 }}"><i class="bi bi-trash" aria-hidden="true"></i></a>
+              </div>
+            </div>
+          </li>
+        {% empty %}
+          <li class="text-body-secondary">Formularz nie ma jeszcze pytań dodatkowych.</li>
+        {% endfor %}
+        </ol>
+      </div>
+    </section>
+
+    <section class="card shadow-sm" aria-labelledby="h-template">
+      <div class="card-body">
+        <h2 id="h-template" class="h6">Dodaj pytania z szablonu</h2>
+        <form method="post" action="{% url 'panel:questions_from_template' workshop.pk %}" class="d-flex flex-wrap gap-2 align-items-end">
+          {% csrf_token %}
+          <div class="flex-grow-1">{{ template_form.template.as_field_group }}</div>
+          <button type="submit" class="btn btn-outline-primary mb-3">Dodaj</button>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <aside class="col-lg-4">
+    <form method="post" class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Pola standardowe</h2>
+        {% csrf_token %}
+        {{ fields_form }}
+        <button type="submit" class="btn btn-primary">Zapisz</button>
+      </div>
+    </form>
+  </aside>
+</div>
+{% endblock %}

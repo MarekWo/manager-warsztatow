@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load workshop_tags %}
 
 {% block title %}Aktualne warsztaty{% endblock %}
 
@@ -6,7 +7,25 @@
   <h1 class="page-title mb-4">Aktualne warsztaty</h1>
 
   {% if workshops %}
-    {# Workshop cards arrive in Stage 2. #}
+    <div class="row g-4">
+      {% for workshop in workshops %}
+        <div class="col-12 col-lg-6">
+          <article class="card workshop-card h-100 shadow-sm">
+            {% if workshop.cover_image and workshop.show_cover_image %}
+              <img src="{{ workshop.cover_image.url }}" class="card-img-top" alt="">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <div class="small text-uppercase fw-semibold text-accent mb-1">{{ workshop.type }}</div>
+              <h2 class="h4 card-title"><a class="stretched-link text-decoration-none" href="{{ workshop.get_absolute_url }}">{{ workshop.title }}</a></h2>
+              {% if workshop.subtitle %}<p class="mb-2">{{ workshop.subtitle }}</p>{% endif %}
+              <p class="mb-2"><i class="bi bi-calendar3" aria-hidden="true"></i> {{ workshop|date_range }}</p>
+              {% if workshop.location and workshop.show_location %}<p class="mb-2"><i class="bi bi-geo-alt" aria-hidden="true"></i> {{ workshop.location.address }}</p>{% endif %}
+              <div class="mt-auto pt-2">{% registration_badge workshop %}</div>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
   {% else %}
     <div class="empty-state text-center p-4 p-md-5">
       <i class="bi bi-calendar-heart d-block mb-3" aria-hidden="true"></i>

@@ -19,3 +19,17 @@ All notable changes to this project are documented here. The format follows
 - Docker image (multi-stage, non-root), Compose files for DEV (with Mailpit), TEST and PROD
   (Caddy edge, optional Nginx Proxy Manager network).
 - CI (lint, format, migrations, types, tests, dependency audit) and GHCR image publishing.
+- Workshops: types, reusable locations, sessions (dates and hours), levels with their own
+  capacity and price, optional sections (organisational notes, programme, what to bring,
+  accommodation, photo), cancellation.
+- Publication and registration window computed from dates at request time: a workshop scheduled
+  for 9:00 is public at 9:00 with no background job; manual "close registration now".
+- Application form configuration: default templates (the questions of the former Word form,
+  with board orders bound to the beginners' and advanced levels), per-workshop questions (text,
+  yes/no, single/multiple choice, material order), ordering, hiding, standard fields
+  (phone, adult confirmation, remarks) required/optional/hidden.
+- Administrator panel: dashboard, workshop list by state, create from a type, edit with
+  sessions and levels added in place (HTMX), duplicate with dates moved to a new first session,
+  delete drafts, archive, locations.
+- Public home page listing current workshops; workshop page with sessions in Polish, levels and
+  prices, location and sections; staff preview of drafts.

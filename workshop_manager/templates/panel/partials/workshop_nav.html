@@ -1,0 +1,14 @@
+{% load workshop_tags %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+  <div>
+    <div class="small text-body-secondary mb-1"><a href="{% url 'panel:workshop_list' %}">Warsztaty</a> › {{ workshop.type }}</div>
+    <h1 class="page-title mb-2">{{ workshop.title }}</h1>
+    {% state_badge workshop %} {% registration_badge workshop %}
+  </div>
+</div>
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'workshop_edit' %}active{% endif %}" href="{% url 'panel:workshop_edit' workshop.pk %}">Dane warsztatu</a></li>
+  <li class="nav-item"><a class="nav-link {% if 'question' in request.resolver_match.url_name or request.resolver_match.url_name == 'form_editor' %}active{% endif %}" href="{% url 'panel:form_editor' workshop.pk %}">Formularz zgłoszeniowy</a></li>
+  <li class="nav-item"><a class="nav-link" href="{{ workshop.get_absolute_url }}">Podgląd strony <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></a></li>
+  <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'workshop_duplicate' %}active{% endif %}" href="{% url 'panel:workshop_duplicate' workshop.pk %}">Duplikuj</a></li>
+</ul>

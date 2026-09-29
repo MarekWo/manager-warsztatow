@@ -75,10 +75,15 @@ select = [
     "RUF",
 ]
 
+# Polish typography: en dash in ranges ("10:00–16:00") and the multiplication sign ("26×26 cm").
+allowed-confusables = ["–", "×"]
+
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106", "S107"]
-# Django's Meta options (indexes, constraints, …) are class-level lists by design.
+# Django's Meta options, form Meta and admin inlines are class-level lists by design.
 "**/models.py" = ["RUF012"]
+"**/forms.py" = ["RUF012"]
+"**/admin.py" = ["RUF012"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["workshop_manager"]

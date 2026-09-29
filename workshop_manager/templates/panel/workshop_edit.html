@@ -1,0 +1,145 @@
+{% extends "panel/base_panel.html" %}
+{% load workshop_tags %}
+{% block title %}{{ workshop.title }} — edycja{% endblock %}
+{% block panel_content %}
+{% include "panel/partials/workshop_nav.html" %}
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <form method="post" enctype="multipart/form-data" id="workshop-form" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+
+      <section class="card shadow-sm mb-4" aria-labelledby="h-basic">
+        <div class="card-body">
+          <h2 id="h-basic" class="h5 mb-3">Podstawowe informacje</h2>
+          {{ form.type.as_field_group }}
+          {{ form.title.as_field_group }}
+          {{ form.subtitle.as_field_group }}
+          {{ form.description.as_field_group }}
+          <div class="row">
+            <div class="col-md-8">{{ form.leader.as_field_group }}</div>
+            <div class="col-md-4 d-flex align-items-end">{{ form.show_leader.as_field_group }}</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card shadow-sm mb-4" aria-labelledby="h-sessions">
+        <div class="card-body">
+          <h2 id="h-sessions" class="h5 mb-1">Terminy spotkań</h2>
+          <p class="small text-body-secondary">Daty i godziny wszystkich spotkań — zawsze widoczne dla uczestników.</p>
+          {{ sessions.management_form }}
+          {% for error in sessions.non_form_errors %}<div class="alert alert-danger py-2">{{ error }}</div>{% endfor %}
+          <div id="sessions-rows">
+            {% for form in sessions %}{% include "panel/partials/sessions_row.html" %}{% endfor %}
+          </div>
+          <button type="button" class="btn btn-outline-primary btn-sm"
+                  hx-get="{% url 'panel:formset_row' 'sessions' %}" hx-include="#id_sessions-TOTAL_FORMS"
+                  hx-target="#sessions-rows" hx-swap="beforeend">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Dodaj spotkanie
+          </button>
+        </div>
+      </section>
+
+      <section class="card shadow-sm mb-4" aria-labelledby="h-levels">
+        <div class="card-body">
+          <h2 id="h-levels" class="h5 mb-1">Poziomy (grupy)</h2>
+          <p class="small text-body-secondary">Każdy poziom ma własny limit miejsc i cenę. Limit jest tylko wskazówką — o przyjęciu decydujesz Ty.</p>
+          {{ levels.management_form }}
+          {% for error in levels.non_form_errors %}<div class="alert alert-danger py-2">{{ error }}</div>{% endfor %}
+          <div id="levels-rows">
+            {% for form in levels %}{% include "panel/partials/levels_row.html" %}{% endfor %}
+          </div>
+          <button type="button" class="btn btn-outline-primary btn-sm"
+                  hx-get="{% url 'panel:formset_row' 'levels' %}" hx-include="#id_levels-TOTAL_FORMS"
+                  hx-target="#levels-rows" hx-swap="beforeend">
+            <i class="bi bi-plus-lg" aria-hidden="true"></i> Dodaj poziom
+          </button>
+        </div>
+      </section>
+
+      <section class="card shadow-sm mb-4" aria-labelledby="h-place">
+        <div class="card-body">
+          <h2 id="h-place" class="h5 mb-3">Miejsce</h2>
+          <div class="row">
+            <div class="col-md-8">{{ form.location.as_field_group }}</div>
+            <div class="col-md-4 d-flex align-items-end">{{ form.show_location.as_field_group }}</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card shadow-sm mb-4" aria-labelledby="h-sections">
+        <div class="card-body">
+          <h2 id="h-sections" class="h5 mb-1">Dodatkowe sekcje</h2>
+          <p class="small text-body-secondary">Sekcja pojawi się na stronie warsztatu, gdy jest zaznaczona i ma treść.</p>
+          <div class="border-top pt-3">{{ form.notes.as_field_group }}{{ form.show_notes.as_field_group }}</div>
+          <div class="border-top pt-3">{{ form.program.as_field_group }}{{ form.show_program.as_field_group }}</div>
+          <div class="border-top pt-3">{{ form.what_to_bring.as_field_group }}{{ form.show_what_to_bring.as_field_group }}</div>
+          <div class="border-top pt-3">{{ form.accommodation.as_field_group }}{{ form.show_accommodation.as_field_group }}</div>
+          <div class="border-top pt-3">{{ form.cover_image.as_field_group }}{{ form.show_cover_image.as_field_group }}</div>
+        </div>
+      </section>
+
+      <section class="card shadow-sm mb-4" aria-labelledby="h-publication">
+        <div class="card-body">
+          <h2 id="h-publication" class="h5 mb-1">Publikacja i zapisy</h2>
+          <p class="small text-body-secondary">Warsztat pojawi się na stronie sam, o ustawionej godzinie. Bez daty publikacji jest szkicem.</p>
+          <div class="row">
+            <div class="col-md-4">{{ form.publish_at.as_field_group }}</div>
+            <div class="col-md-4">{{ form.registration_opens_at.as_field_group }}</div>
+            <div class="col-md-4">{{ form.registration_closes_at.as_field_group }}</div>
+          </div>
+          {{ form.registration_closed.as_field_group }}
+          <div class="border-top pt-3">
+            {{ form.is_cancelled.as_field_group }}
+            {{ form.cancellation_note.as_field_group }}
+          </div>
+        </div>
+      </section>
+
+      <div class="save-bar d-flex gap-2 py-3">
+        <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-check-lg" aria-hidden="true"></i> Zapisz zmiany</button>
+      </div>
+    </form>
+  </div>
+
+  <aside class="col-lg-4">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <h2 class="h6 text-uppercase text-body-secondary">Stan</h2>
+        <p class="mb-1">{% state_badge workshop %} {% registration_badge workshop %}</p>
+        <p class="small mb-3">{{ workshop|date_range }}</p>
+        {% if workshop.publish_at %}<p class="small mb-1">Publikacja: {{ workshop.publish_at|date:"j E Y, H:i" }}</p>{% endif %}
+        {% if workshop.registration_opens %}<p class="small mb-1">Zapisy od: {{ workshop.registration_opens|date:"j E Y, H:i" }}</p>{% endif %}
+        {% if workshop.registration_closes %}<p class="small mb-3">Zapisy do: {{ workshop.registration_closes|date:"j E Y, H:i" }}</p>{% endif %}
+
+        <div class="d-grid gap-2">
+          {% with state=workshop.state %}
+          {% if state == "draft" or state == "scheduled" %}
+            <form method="post" action="{% url 'panel:workshop_action' workshop.pk 'publish_now' %}">{% csrf_token %}<button class="btn btn-accent w-100">Opublikuj teraz</button></form>
+          {% endif %}
+          {% if state == "published" or state == "scheduled" %}
+            <form method="post" action="{% url 'panel:workshop_action' workshop.pk 'unpublish' %}">{% csrf_token %}<button class="btn btn-outline-primary w-100">Wycofaj publikację (szkic)</button></form>
+          {% endif %}
+          {% if state == "published" %}
+            {% if workshop.registration_closed %}
+              <form method="post" action="{% url 'panel:workshop_action' workshop.pk 'open_registration' %}">{% csrf_token %}<button class="btn btn-outline-primary w-100">Otwórz ponownie zapisy</button></form>
+            {% else %}
+              <form method="post" action="{% url 'panel:workshop_action' workshop.pk 'close_registration' %}">{% csrf_token %}<button class="btn btn-outline-primary w-100">Zamknij zapisy teraz</button></form>
+            {% endif %}
+          {% endif %}
+          {% if state == "archived" %}
+            <form method="post" action="{% url 'panel:workshop_action' workshop.pk 'unarchive' %}">{% csrf_token %}<button class="btn btn-outline-primary w-100">Przywróć z archiwum</button></form>
+          {% elif state != "draft" %}
+            <form method="post" action="{% url 'panel:workshop_action' workshop.pk 'archive' %}">{% csrf_token %}<button class="btn btn-outline-secondary w-100">Przenieś do archiwum</button></form>
+          {% endif %}
+          {% if state == "draft" %}
+            <a class="btn btn-outline-danger" href="{% url 'panel:workshop_delete' workshop.pk %}">Usuń szkic</a>
+          {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
+{% endblock %}

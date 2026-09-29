@@ -1,0 +1,13 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Usuń pytanie{% endblock %}
+{% block panel_content %}
+{% include "panel/partials/workshop_nav.html" %}
+<h2 class="h4 mb-3">Usunąć pytanie?</h2>
+<p class="fw-semibold">{{ question.label }}</p>
+<p>Jeśli chcesz tylko, żeby nie pojawiało się w formularzu, lepiej je <strong>ukryj</strong> — wtedy łatwo je przywrócić.</p>
+<form method="post" class="d-flex gap-2">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Tak, usuń</button>
+  <a class="btn btn-outline-primary" href="{% url 'panel:form_editor' workshop.pk %}">Nie, wróć</a>
+</form>
+{% endblock %}

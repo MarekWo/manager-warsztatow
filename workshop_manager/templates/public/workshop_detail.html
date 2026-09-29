@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load workshop_tags %}
+
+{% block title %}{{ workshop.title }}{% endblock %}
+
+{% block content %}
+  {% if is_preview %}
+    <div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2" role="status">
+      <span><strong>Podgląd.</strong> Ten warsztat nie jest widoczny publicznie ({{ workshop.state_label }}).</span>
+      <a class="btn btn-sm btn-outline-dark" href="{% url 'panel:workshop_edit' workshop.pk %}">Wróć do edycji</a>
+    </div>
+  {% elif user.is_staff %}
+    <p class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'panel:workshop_edit' workshop.pk %}"><i class="bi bi-pencil" aria-hidden="true"></i> Edytuj</a></p>
+  {% endif %}
+
+  {% if workshop.is_cancelled %}
+    <div class="alert alert-danger" role="alert"><strong>Warsztat został odwołany.</strong> {{ workshop.cancellation_note }}</div>
+  {% endif %}
+
+  <div class="small text-uppercase fw-semibold text-accent mb-1">{{ workshop.type }}</div>
+  <h1 class="page-title mb-2">{{ workshop.title }}</h1>
+  {% if workshop.subtitle %}<p class="lead mb-4">{{ workshop.subtitle }}</p>{% endif %}
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      {% if workshop.cover_image and workshop.show_cover_image %}
+        <img src="{{ workshop.cover_image.url }}" class="img-fluid rounded mb-4" alt="">
+      {% endif %}
+
+      {% if workshop.description %}
+        <div class="workshop-text mb-4">{{ workshop.description|urlize|linebreaks }}</div>
+      {% endif %}
+
+      <section class="mb-4" aria-labelledby="h-dates">
+        <h2 id="h-dates" class="h4">Terminy spotkań</h2>
+        <ul class="list-unstyled session-list">
+          {% for session in workshop.ordered_sessions %}
+            <li class="py-2 border-bottom"><strong>{{ session.date|long_date }}</strong>, {{ session.start_time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}{% if session.note %} <span class="text-body-secondary">({{ session.note }})</span>{% endif %}</li>
+          {% empty %}
+            <li>Terminy zostaną podane wkrótce.</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      {% for heading, text in workshop.visible_sections %}
+        <section class="mb-4">
+          <h2 class="h4">{{ heading }}</h2>
+          <div class="workshop-text">{{ text|urlize|linebreaks }}</div>
+        </section>
+      {% endfor %}
+    </div>
+
+    <aside class="col-lg-4">
+      <div class="card shadow-sm mb-4 registration-box">
+        <div class="card-body">
+          <div class="mb-3">{% registration_badge workshop %}</div>
+          {% with status=workshop.registration_status %}
+            {% if status == "open" %}
+              <p>Liczba miejsc jest ograniczona. O przyjęciu decyduje organizator — po zebraniu zgłoszeń otrzymasz wiadomość e-mail.</p>
+              <p class="small text-body-secondary mb-0">Formularz zgłoszeniowy jest w przygotowaniu.</p>
+            {% elif status == "not_yet" %}
+              <p class="mb-0">Zapisy ruszą {{ workshop.registration_opens|date:"j E Y" }} o {{ workshop.registration_opens|time:"H:i" }}.</p>
+            {% elif status == "over" or status == "closed" %}
+              <p class="mb-0">Zapisy na ten warsztat są zakończone.</p>
+            {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+
+      {% if workshop.levels.all %}
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h2 class="h5">Poziomy</h2>
+            <ul class="list-unstyled mb-0">
+              {% for level in workshop.levels.all %}
+                <li class="mb-2"><strong>{{ level.name }}</strong>{% if level.price_display %} — {{ level.price_display }}{% endif %}
+                  {% if level.price_note %}<div class="small text-body-secondary">{{ level.price_note }}</div>{% endif %}
+                  {% if level.description %}<div class="small">{{ level.description }}</div>{% endif %}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if workshop.location and workshop.show_location %}
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h2 class="h5">Miejsce</h2>
+            <p class="mb-2">{{ workshop.location.name }}<br>{{ workshop.location.address }}</p>
+            {% if workshop.location.map_url %}<p class="mb-2"><a href="{{ workshop.location.map_url }}" rel="noopener">Zobacz na mapie</a></p>{% endif %}
+            {% if workshop.location.directions %}<div class="small">{{ workshop.location.directions|linebreaks }}</div>{% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if workshop.leader and workshop.show_leader %}
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h2 class="h5">Prowadzący</h2>
+            <p class="mb-0">{{ workshop.leader }}</p>
+          </div>
+        </div>
+      {% endif %}
+    </aside>
+  </div>
+{% endblock %}

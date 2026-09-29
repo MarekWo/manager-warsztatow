@@ -37,6 +37,8 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 INSTALLED_APPS = [
     "workshop_manager.core",
     "workshop_manager.accounts",
+    "workshop_manager.workshops",
+    "workshop_manager.forms_builder",
     "workshop_manager.public",
     "workshop_manager.panel",
     "django.contrib.admin",
@@ -47,6 +49,8 @@ INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    # Django's own widget templates, found by the TemplatesSetting form renderer.
+    "django.forms",
     # Authentication: email + one-time code, no passwords for participants (ADR-0001).
     "allauth",
     "allauth.account",
@@ -104,6 +108,8 @@ TEMPLATES: list[dict[str, Any]] = [
         },
     },
 ]
+
+FORM_RENDERER = "workshop_manager.core.forms.BootstrapRenderer"
 
 # --- Data ---------------------------------------------------------------------------------------
 

@@ -1,0 +1,13 @@
+<div class="formset-row border rounded p-3 mb-3 bg-body">
+  {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+  {% if form.non_field_errors %}<div class="text-danger small mb-2">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+  <div class="row g-3">
+    <div class="col-12 col-md-4">{{ form.name.as_field_group }}</div>
+    <div class="col-12 col-md-8">{{ form.description.as_field_group }}</div>
+    <div class="col-6 col-md-3">{{ form.capacity.as_field_group }}</div>
+    <div class="col-6 col-md-3">{{ form.price.as_field_group }}</div>
+    <div class="col-12 col-md-4">{{ form.price_note.as_field_group }}</div>
+    <div class="col-12 col-md-2 d-flex align-items-end">{{ form.DELETE.as_field_group }}</div>
+  </div>
+</div>
+{% if oob %}<input type="hidden" name="{{ prefix }}-TOTAL_FORMS" value="{{ total }}" id="id_{{ prefix }}-TOTAL_FORMS" hx-swap-oob="true">{% endif %}

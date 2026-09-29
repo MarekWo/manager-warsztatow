@@ -1,0 +1,14 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Duplikuj — {{ source.title }}{% endblock %}
+{% block panel_content %}
+{% with workshop=source %}{% include "panel/partials/workshop_nav.html" %}{% endwith %}
+<div class="row"><div class="col-lg-8">
+  <p>Kopia przejmie opis, miejsce, sekcje, poziomy (z limitami i cenami), pytania formularza i terminy spotkań. Powstanie jako <strong>szkic</strong> — ustawisz jej datę publikacji. Zgłoszenia nie są kopiowane.</p>
+  <form method="post" class="card card-body shadow-sm">
+    {% csrf_token %}
+    {{ form }}
+    <div class="d-flex gap-2"><button type="submit" class="btn btn-primary">Utwórz kopię</button>
+      <a class="btn btn-outline-primary" href="{% url 'panel:workshop_edit' source.pk %}">Anuluj</a></div>
+  </form>
+</div></div>
+{% endblock %}

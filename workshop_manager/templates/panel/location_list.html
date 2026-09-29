@@ -1,0 +1,21 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Miejsca{% endblock %}
+{% block panel_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <h1 class="page-title mb-0">Miejsca warsztatów</h1>
+  <a class="btn btn-primary" href="{% url 'panel:location_add' %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Nowe miejsce</a>
+</div>
+{% for location in locations %}
+  <div class="card mb-3 shadow-sm {% if not location.is_active %}bg-body-tertiary{% endif %}">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between gap-2">
+      <div>
+        <h2 class="h5 mb-1">{{ location.name }}{% if not location.is_active %} <span class="badge text-bg-secondary">nieaktywne</span>{% endif %}</h2>
+        <div class="text-body-secondary">{{ location.address }}</div>
+      </div>
+      <a class="btn btn-sm btn-outline-primary align-self-md-center" href="{% url 'panel:location_edit' location.pk %}">Edytuj</a>
+    </div>
+  </div>
+{% empty %}
+  <p class="text-body-secondary">Nie ma jeszcze żadnych miejsc.</p>
+{% endfor %}
+{% endblock %}

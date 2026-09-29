@@ -1,8 +1,36 @@
-{% extends "base.html" %}
-
+{% extends "panel/base_panel.html" %}
+{% load workshop_tags %}
 {% block title %}Panel administratora{% endblock %}
+{% block panel_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <h1 class="page-title mb-0">Pulpit</h1>
+  <a class="btn btn-primary" href="{% url 'panel:workshop_create' %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Nowy warsztat</a>
+</div>
 
-{% block content %}
-  <h1 class="page-title mb-4">Panel administratora</h1>
-  <p>Witaj, {{ user.get_full_name|default:user.email }}. Panel zarządzania warsztatami jest w przygotowaniu.</p>
+<section class="mb-5" aria-labelledby="h-published">
+  <h2 id="h-published" class="h4 mb-3">Opublikowane warsztaty</h2>
+  {% for workshop in published %}
+    {% include "panel/partials/workshop_card.html" %}
+  {% empty %}
+    <p class="text-body-secondary">Żaden warsztat nie jest teraz opublikowany — na stronie widać komunikat „Obecnie nie są planowane żadne warsztaty”.</p>
+  {% endfor %}
+</section>
+
+<section class="mb-5" aria-labelledby="h-scheduled">
+  <h2 id="h-scheduled" class="h4 mb-3">Zaplanowane do publikacji</h2>
+  {% for workshop in scheduled %}
+    {% include "panel/partials/workshop_card.html" %}
+  {% empty %}
+    <p class="text-body-secondary">Brak warsztatów czekających na publikację.</p>
+  {% endfor %}
+</section>
+
+{% if drafts %}
+<section aria-labelledby="h-drafts">
+  <h2 id="h-drafts" class="h4 mb-3">Ostatnie szkice</h2>
+  {% for workshop in drafts %}
+    {% include "panel/partials/workshop_card.html" %}
+  {% endfor %}
+</section>
+{% endif %}
 {% endblock %}

@@ -253,3 +253,29 @@ main {
   margin-left: auto;
   margin-right: auto;
 }
+
+.text-accent {
+  color: var(--mw-accent-dark);
+}
+
+.workshop-card .card-title a {
+  color: var(--mw-primary);
+}
+
+/* --- Panel --- */
+
+.panel-nav .nav-link.active {
+  background-color: var(--mw-primary);
+}
+
+.panel-nav .nav-link:not(.active) {
+  color: var(--mw-primary);
+}
+
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  border-top: 1px solid #dee2e6;
+  z-index: 10;
+}

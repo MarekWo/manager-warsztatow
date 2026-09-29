@@ -1,0 +1,21 @@
+{% extends "panel/base_panel.html" %}
+{% load workshop_tags %}
+{% block title %}Warsztaty{% endblock %}
+{% block panel_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <h1 class="page-title mb-0">Warsztaty</h1>
+  <a class="btn btn-primary" href="{% url 'panel:workshop_create' %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Nowy warsztat</a>
+</div>
+
+<ul class="nav nav-tabs mb-4">
+  {% for key, label in tabs %}
+    <li class="nav-item"><a class="nav-link {% if key == tab %}active{% endif %}" {% if key == tab %}aria-current="page"{% endif %} href="?tab={{ key }}">{{ label }}</a></li>
+  {% endfor %}
+</ul>
+
+{% for workshop in workshops %}
+  {% include "panel/partials/workshop_card.html" %}
+{% empty %}
+  <p class="text-body-secondary">Brak warsztatów w tej zakładce.</p>
+{% endfor %}
+{% endblock %}

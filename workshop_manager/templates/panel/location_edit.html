@@ -1,0 +1,14 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{% if location %}{{ location.name }}{% else %}Nowe miejsce{% endif %}{% endblock %}
+{% block panel_content %}
+<div class="row"><div class="col-lg-8">
+  <h1 class="page-title mb-3">{% if location %}{{ location.name }}{% else %}Nowe miejsce{% endif %}</h1>
+  <p class="small text-body-secondary">Nieaktywnego miejsca nie da się wybrać w nowych warsztatach; warsztaty, które już je mają, zachowują je.</p>
+  <form method="post" class="card card-body shadow-sm">
+    {% csrf_token %}
+    {{ form }}
+    <div class="d-flex gap-2"><button type="submit" class="btn btn-primary">Zapisz</button>
+      <a class="btn btn-outline-primary" href="{% url 'panel:location_list' %}">Anuluj</a></div>
+  </form>
+</div></div>
+{% endblock %}
