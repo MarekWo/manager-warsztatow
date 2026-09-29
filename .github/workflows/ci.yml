@@ -59,6 +59,42 @@ jobs:
           path: coverage.xml
           if-no-files-found: ignore
 
+  # Beside the unit suite rather than after it, so a browser flake never holds back the results.
+  browser:
+    name: Browser tests (Playwright + axe)
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 20
+    env:
+      # Servers enforce the policy, so a violation has to fail here, not just be reported.
+      CSP_ENFORCE: "true"
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.1.0
+        with:
+          enable-cache: ${{ vars.CI_RUNNER == '' }}
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Install Chromium and its system libraries
+        run: uv run playwright install --with-deps chromium
+
+      - name: Browser tests
+        run: >-
+          uv run pytest -m browser
+          --tracing retain-on-failure --screenshot only-on-failure --output test-results
+
+      - name: Upload traces and screenshots
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-traces
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
   audit:
     name: Dependency audit (non-blocking)
     runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}

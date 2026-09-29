@@ -203,8 +203,11 @@ def workshop_duplicate(request: HttpRequest, pk: int) -> HttpResponse:
 def workshop_delete(request: HttpRequest, pk: int) -> HttpResponse:
     """Only drafts may be deleted; anything that was public goes to the archive instead."""
     workshop = get_object_or_404(Workshop, pk=pk)
-    if workshop.state() != "draft":
-        messages.error(request, "Usunąć można tylko szkic. Ten warsztat przenieś do archiwum.")
+    if workshop.state() != "draft" or workshop.applications.exists():
+        messages.error(
+            request,
+            "Usunąć można tylko szkic bez zgłoszeń. Ten warsztat przenieś do archiwum.",
+        )
         return redirect("panel:workshop_edit", pk=pk)
     if request.method == "POST":
         workshop.delete()
@@ -291,6 +294,12 @@ def question_toggle(request: HttpRequest, pk: int, question_pk: int) -> HttpResp
 def question_delete(request: HttpRequest, pk: int, question_pk: int) -> HttpResponse:
     workshop = get_object_or_404(Workshop, pk=pk)
     question = get_object_or_404(Question, pk=question_pk, workshop=workshop)
+    if question.answers.exists():
+        messages.error(
+            request,
+            "Na to pytanie ktoś już odpowiedział, więc nie można go usunąć — możesz je ukryć.",
+        )
+        return redirect("panel:form_editor", pk=pk)
     if request.method == "POST":
         question.delete()
         messages.success(request, "Usunięto pytanie.")

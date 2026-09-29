@@ -184,13 +184,16 @@ main {
   --bs-btn-active-border-color: var(--mw-primary-dark);
 }
 
+/* White on the lighter gold would fail WCAG AA contrast; the darker gold passes (≈5.5:1). */
 .btn-accent {
   --bs-btn-color: #fff;
-  --bs-btn-bg: var(--mw-accent);
-  --bs-btn-border-color: var(--mw-accent);
+  --bs-btn-bg: var(--mw-accent-dark);
+  --bs-btn-border-color: var(--mw-accent-dark);
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: var(--mw-accent-dark);
-  --bs-btn-hover-border-color: var(--mw-accent-dark);
+  --bs-btn-hover-bg: #6f5019;
+  --bs-btn-hover-border-color: #6f5019;
+  --bs-btn-active-bg: #6f5019;
+  --bs-btn-active-border-color: #6f5019;
 }
 
 .form-control,
@@ -278,4 +281,62 @@ main {
   background: #fff;
   border-top: 1px solid #dee2e6;
   z-index: 10;
+}
+
+/* --- Application form --- */
+
+.hp-field {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.choice-list > div > div {
+  margin-bottom: 0.5rem;
+}
+
+.choice-list label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background: #fff;
+}
+
+.choice-list label:hover {
+  border-color: var(--mw-primary);
+}
+
+.choice-list input[type="radio"],
+.choice-list input[type="checkbox"] {
+  width: 1.4em;
+  height: 1.4em;
+  margin-top: 0.1em;
+  flex-shrink: 0;
+  accent-color: var(--mw-primary);
+}
+
+.question + .question {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.summary dt {
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+
+.summary dd {
+  margin-left: 0;
+}
+
+.choice-list label:has(input:checked) {
+  border: 2px solid var(--mw-primary);
+  background: var(--mw-primary-light);
+  font-weight: 600;
 }

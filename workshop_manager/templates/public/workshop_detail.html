@@ -57,7 +57,7 @@
           {% with status=workshop.registration_status %}
             {% if status == "open" %}
               <p>Liczba miejsc jest ograniczona. O przyjęciu decyduje organizator — po zebraniu zgłoszeń otrzymasz wiadomość e-mail.</p>
-              <p class="small text-body-secondary mb-0">Formularz zgłoszeniowy jest w przygotowaniu.</p>
+              <div class="d-grid"><a class="btn btn-accent btn-lg" href="{% url 'public:apply' workshop.slug %}">Zapisz się</a></div>
             {% elif status == "not_yet" %}
               <p class="mb-0">Zapisy ruszą {{ workshop.registration_opens|date:"j E Y" }} o {{ workshop.registration_opens|time:"H:i" }}.</p>
             {% elif status == "over" or status == "closed" %}

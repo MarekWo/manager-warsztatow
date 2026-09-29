@@ -54,6 +54,8 @@ uv run ruff check . && uv run ruff format --check .
 uv run python manage.py makemigrations --check --dry-run
 uv run mypy workshop_manager
 uv run pytest
+uv run playwright install chromium    # once
+uv run pytest -m browser              # browser and accessibility tests
 ```
 
 Install the git hooks once with `uv run pre-commit install`.

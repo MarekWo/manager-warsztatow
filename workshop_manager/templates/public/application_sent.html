@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load workshop_tags %}
+
+{% block title %}Zgłoszenie wysłane{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="empty-state p-4 p-md-5 mb-4 text-center">
+      <i class="bi bi-check-circle d-block mb-3" aria-hidden="true"></i>
+      <h1 class="page-title h2">Dziękujemy, zgłoszenie zostało przyjęte do rozpatrzenia</h1>
+      <p class="mb-0">Organizator przejrzy zgłoszenia i o decyzji poinformuje Cię e-mailem na adres
+        <strong>{{ application.email }}</strong>.</p>
+    </div>
+
+    <h2 class="h4">Podsumowanie zgłoszenia</h2>
+    <dl class="summary">
+      <dt>Warsztat</dt><dd>{{ application.workshop.title }} ({{ application.workshop|date_range }})</dd>
+      <dt>Poziom</dt><dd>{{ application.level.name }}</dd>
+      <dt>Imię i nazwisko</dt><dd>{{ application.full_name }}</dd>
+      <dt>E-mail</dt><dd>{{ application.email }}</dd>
+      {% if application.phone %}<dt>Telefon</dt><dd>{{ application.phone }}</dd>{% endif %}
+      {% for answer in application.answers.all %}
+        <dt>{{ answer.label }}</dt><dd>{{ answer.value|default:"—"|linebreaksbr }}</dd>
+      {% endfor %}
+      {% if application.remarks %}<dt>Uwagi</dt><dd>{{ application.remarks|linebreaksbr }}</dd>{% endif %}
+    </dl>
+
+    <p class="mt-4"><a class="btn btn-outline-primary" href="{% url 'public:home' %}">Wróć do listy warsztatów</a></p>
+  </div>
+</div>
+{% endblock %}

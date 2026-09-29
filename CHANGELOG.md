@@ -33,3 +33,13 @@ All notable changes to this project are documented here. The format follows
   delete drafts, archive, locations.
 - Public home page listing current workshops; workshop page with sessions in Polish, levels and
   prices, location and sections; staff preview of drafts.
+- Public application form built from the workshop's configuration: level choice (with a notice
+  when a level already has more applications than places), contact details, the workshop's
+  questions (those bound to another level are hidden and ignored), remarks, adult confirmation,
+  privacy consent (stored with its version) and an optional consent to news about workshops.
+- Spam protection without a CAPTCHA: a honeypot field, a signed minimum fill-in time and a limit
+  of applications per hour from one address; one live application per person and workshop.
+- Thank-you page with a summary of what was sent; details pre-filled for signed-in users.
+- Levels, questions and draft workshops that already have applications cannot be deleted.
+- Browser tests (Playwright) with automated accessibility checks (axe) on public and panel
+  pages, run in CI with the Content Security Policy enforced.

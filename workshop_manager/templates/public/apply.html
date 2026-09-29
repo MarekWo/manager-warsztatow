@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static workshop_tags %}
+
+{% block title %}Zgłoszenie — {{ workshop.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <p class="mb-2"><a href="{{ workshop.get_absolute_url }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Wróć do opisu warsztatu</a></p>
+    <h1 class="page-title mb-1">Zgłoszenie na warsztaty</h1>
+    <p class="lead mb-1">{{ workshop.title }}</p>
+    <p class="text-body-secondary mb-4"><i class="bi bi-calendar3" aria-hidden="true"></i> {{ workshop|date_range }}</p>
+
+    {% if form.errors %}
+      <div class="alert alert-danger" role="alert" tabindex="-1" id="form-errors">
+        <p class="fw-semibold mb-2">Nie udało się wysłać zgłoszenia — popraw zaznaczone pola:</p>
+        <ul class="mb-0">
+          {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+          {% for field in form %}{% if field.errors and not field.is_hidden %}<li><a href="#{{ field.id_for_label }}">{{ field.label|truncatechars:60 }}</a></li>{% endif %}{% endfor %}
+          {% if form.started.errors %}<li>{{ form.started.errors.0 }}</li>{% endif %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <p class="small">Pola oznaczone <span class="text-danger">*</span> są wymagane.</p>
+
+    <form method="post" novalidate class="application-form">
+      {% csrf_token %}
+      {{ form.started }}
+      <div class="hp-field">{{ form.website.as_field_group }}</div>
+
+      {% if form.level.field.widget.input_type == "hidden" %}
+        {{ form.level }}
+      {% else %}
+        <section class="card shadow-sm mb-4">
+          <div class="card-body">{{ form.level.as_field_group }}</div>
+        </section>
+      {% endif %}
+
+      <section class="card shadow-sm mb-4" aria-labelledby="h-you">
+        <div class="card-body">
+          <h2 id="h-you" class="h4 mb-3">Twoje dane</h2>
+          <div class="row">
+            <div class="col-md-6">{{ form.first_name.as_field_group }}</div>
+            <div class="col-md-6">{{ form.last_name.as_field_group }}</div>
+          </div>
+          {{ form.email.as_field_group }}
+          {% if form.phone %}{{ form.phone.as_field_group }}{% endif %}
+        </div>
+      </section>
+
+      {% if form.questions %}
+        <section class="card shadow-sm mb-4" aria-labelledby="h-questions">
+          <div class="card-body">
+            <h2 id="h-questions" class="h4 mb-3">Kilka pytań od organizatora</h2>
+            {% for question, field in form.question_rows %}
+              <div class="question" {% if question.level_id %}data-level="{{ question.level_id }}"{% endif %}>
+                {% if question.level_id %}<div class="small text-accent fw-semibold">Dotyczy poziomu: {{ question.level.name }}</div>{% endif %}
+                {{ field.as_field_group }}
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      <section class="card shadow-sm mb-4" aria-labelledby="h-final">
+        <div class="card-body">
+          <h2 id="h-final" class="h4 mb-3">Na koniec</h2>
+          {% if form.remarks %}{{ form.remarks.as_field_group }}{% endif %}
+          {% if form.adult %}{{ form.adult.as_field_group }}{% endif %}
+          {{ form.privacy.as_field_group }}
+          {{ form.marketing.as_field_group }}
+        </div>
+      </section>
+
+      <div class="d-grid d-md-block mb-5">
+        <button type="submit" class="btn btn-primary btn-lg px-5">Wyślij zgłoszenie</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/application-form.js' %}"></script>
+{% endblock %}

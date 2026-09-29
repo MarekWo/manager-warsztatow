@@ -1,7 +1,7 @@
 from typing import Any
 
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms import BaseInlineFormSet, inlineformset_factory
 
 from workshop_manager.core.forms import BootstrapFormMixin, DateInput, DateTimeInput, TimeInput
 from workshop_manager.forms_builder.models import CHOICE_KINDS, FormTemplate, Question
@@ -68,6 +68,7 @@ class WorkshopForm(BootstrapFormMixin, forms.ModelForm):
             "registration_opens_at",
             "registration_closes_at",
             "registration_closed",
+            "show_capacity_notice",
             "is_cancelled",
             "cancellation_note",
         ]
@@ -130,10 +131,23 @@ SessionFormSet = inlineformset_factory(
     can_delete=True,
 )
 
+
+class BaseLevelFormSet(BaseInlineFormSet):
+    def clean(self) -> None:
+        super().clean()
+        for form in self.deleted_forms:
+            level = form.instance
+            if level.pk and level.applications.exists():
+                raise forms.ValidationError(
+                    f"Poziomu „{level.name}” nie można usunąć — są na niego zgłoszenia."
+                )
+
+
 LevelFormSet = inlineformset_factory(
     Workshop,
     Level,
     form=LevelForm,
+    formset=BaseLevelFormSet,
     extra=0,
     min_num=1,
     validate_min=True,

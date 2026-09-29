@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "workshop_manager.accounts",
     "workshop_manager.workshops",
     "workshop_manager.forms_builder",
+    "workshop_manager.applications",
     "workshop_manager.public",
     "workshop_manager.panel",
     "django.contrib.admin",

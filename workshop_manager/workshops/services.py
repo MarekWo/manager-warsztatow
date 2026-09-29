@@ -30,6 +30,7 @@ _COPIED_FIELDS = [
     "phone_mode",
     "adult_confirmation_mode",
     "remarks_mode",
+    "show_capacity_notice",
 ]
 
 

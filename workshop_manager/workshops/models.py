@@ -177,6 +177,12 @@ class Workshop(models.Model):
         default=False,
         help_text="Zamyka zapisy od razu, niezależnie od dat.",
     )
+    show_capacity_notice = models.BooleanField(
+        "informuj o przekroczonym limicie",
+        default=True,
+        help_text="Przy poziomie, na który jest już więcej zgłoszeń niż miejsc, formularz "
+        "uprzedzi, że zgłoszenie może trafić na listę rezerwową.",
+    )
     is_cancelled = models.BooleanField("odwołany", default=False)
     cancellation_note = models.CharField("informacja o odwołaniu", max_length=250, blank=True)
     is_archived = models.BooleanField("w archiwum", default=False)
@@ -378,6 +384,15 @@ class Level(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def active_application_count(self) -> int:
+        from workshop_manager.applications.models import ACTIVE_STATUSES
+
+        return self.applications.filter(status__in=ACTIVE_STATUSES).count()
+
+    def is_over_capacity(self) -> bool:
+        """At or above the (soft) limit: the next applicant should expect the waiting list."""
+        return self.capacity is not None and self.active_application_count() >= self.capacity
 
     @property
     def price_display(self) -> str:
