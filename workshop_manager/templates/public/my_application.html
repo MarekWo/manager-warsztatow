@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load workshop_tags %}
+{% block title %}{{ application.workshop.title }} — moje zgłoszenie{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <p class="mb-2"><a href="{% url 'public:my_workshops' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Moje warsztaty</a></p>
+    <h1 class="page-title mb-1">{{ application.workshop.title }}</h1>
+    <p class="mb-3">{% include "public/partials/my_status.html" %}</p>
+
+    <dl class="summary">
+      <dt>Terminy</dt>
+      <dd>{% for session in application.workshop.ordered_sessions %}{{ session.date|long_date }}, {{ session.start_time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}<br>{% empty %}podamy później{% endfor %}</dd>
+      {% if application.workshop.location %}<dt>Miejsce</dt><dd>{{ application.workshop.location.name }}, {{ application.workshop.location.address }}</dd>{% endif %}
+      <dt>Poziom</dt><dd>{{ application.level.name }}{% if application.level.price_display %} — {{ application.level.price_display }}{% endif %}</dd>
+      <dt>Wysłano</dt><dd>{{ application.submitted_at|date:"j E Y, H:i" }}</dd>
+      {% for answer in application.answers.all %}
+        <dt>{{ answer.label }}</dt><dd>{{ answer.value|default:"—"|linebreaksbr }}</dd>
+      {% endfor %}
+      {% if application.remarks %}<dt>Uwagi</dt><dd>{{ application.remarks|linebreaksbr }}</dd>{% endif %}
+    </dl>
+    <p><a href="{{ application.workshop.get_absolute_url }}">Strona warsztatu</a></p>
+
+    {% if can_withdraw %}
+    <section class="card card-body border-danger-subtle mt-4" aria-labelledby="h-withdraw">
+      <h2 id="h-withdraw" class="h5">Nie możesz wziąć udziału?</h2>
+      <p>Po rezygnacji Twoje miejsce może otrzymać osoba z listy rezerwowej. Tego nie można cofnąć samodzielnie — w razie pomyłki napisz do organizatora.</p>
+      <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit" class="btn btn-outline-danger btn-lg">Rezygnuję z udziału</button>
+      </form>
+    </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

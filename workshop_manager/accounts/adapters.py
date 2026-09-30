@@ -5,6 +5,8 @@ from allauth.core import context as allauth_context
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpRequest
 
+from workshop_manager.core.models import SiteSettings, absolute_url
+
 
 class AccountAdapter(DefaultAccountAdapter):
     """Project-specific allauth behaviour (ADR-0001).
@@ -31,14 +33,26 @@ class AccountAdapter(DefaultAccountAdapter):
             "email": email,
             "current_site": get_current_site(request),
         } | context
+        if template_prefix == "account/email/login_code":
+            context["login_url"] = self._login_url(email)
+        context["site_settings"] = SiteSettings.load()
         message = self.render_mail(template_prefix, email, context)
         transport = mailer.transport()
         message.from_email = transport.from_email
         message.reply_to = [transport.reply_to] if transport.reply_to else []
         mailer.send_now(message, transport.connection)
 
+    @staticmethod
+    def _login_url(email: str) -> str:
+        """The one-click link sent next to the code (accounts.services)."""
+        from workshop_manager.accounts.models import User
+        from workshop_manager.accounts.services import login_link_path
+
+        user = User.objects.filter(email__iexact=email).first()
+        return absolute_url(login_link_path(user)) if user else ""
+
     def format_email_subject(self, subject: str) -> str:
-        return f"Manager Warsztatów — {subject}"
+        return f"{subject} — {SiteSettings.load().org_short_name}"
 
     def get_login_redirect_url(self, request: HttpRequest) -> str:
         user: Any = request.user

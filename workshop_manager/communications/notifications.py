@@ -41,6 +41,27 @@ def application_submitted(
         )
 
 
+def participant_withdrew(application: Any, *, reason: str, freed: Any = None) -> None:
+    """Tell the organiser at once — whatever the notification setting, a freed place matters."""
+    site = SiteSettings.load()
+    recipient = site.admin_recipient()
+    if not recipient:
+        return
+    hint = ""
+    if freed is not None:
+        hint = (
+            f"Zwolniło się miejsce. Pierwsza osoba z listy rezerwowej: {freed.full_name} "
+            f"({absolute_url(freed.get_panel_url())})."
+        )
+    queue_from_template(
+        TemplateKey.ADMIN_WITHDRAWAL,
+        to_email=recipient,
+        context=application_context(application)
+        | {"powod": reason or "nie podano", "pierwszy_z_rezerwy": hint},
+        application=application,
+    )
+
+
 def send_admin_digest() -> int:
     """Evening summary of the day's applications (periodic job); returns how many it listed."""
     from workshop_manager.applications.models import Application, Source

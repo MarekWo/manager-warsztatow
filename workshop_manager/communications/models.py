@@ -20,6 +20,7 @@ class TemplateKey(models.TextChoices):
     DECISION_REJECTED = "decision_rejected", "Decyzja: odrzucenie"
     DECISION_CANCELLED = "decision_cancelled", "Anulowanie udziału"
     WITHDRAWAL_CONFIRMED = "withdrawal_confirmed", "Potwierdzenie rezygnacji"
+    ADMIN_WITHDRAWAL = "admin_withdrawal", "Powiadomienie o rezygnacji uczestnika"
 
 
 class EmailTemplate(models.Model):

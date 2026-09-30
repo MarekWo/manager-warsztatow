@@ -22,6 +22,8 @@ APPLICATION_PLACEHOLDERS: dict[str, str] = {
     "uwagi": "uwagi wpisane w zgłoszeniu",
     "data_zgloszenia": "data i godzina wysłania zgłoszenia",
     "link_do_warsztatu": "adres strony warsztatu",
+    "link_rezygnacji": "link, którym uczestnik może zrezygnować (także bez konta)",
+    "link_do_konta": "adres strony „Moje warsztaty”",
 }
 
 #: Placeholders about the organiser, available in every template.
@@ -52,6 +54,14 @@ PLACEHOLDERS: dict[str, dict[str, str]] = {
     TemplateKey.ADMIN_NEW_APPLICATION: APPLICATION_PLACEHOLDERS
     | {"link_do_zgloszenia": "adres zgłoszenia w panelu"}
     | SITE_PLACEHOLDERS,
+    TemplateKey.ADMIN_WITHDRAWAL: APPLICATION_PLACEHOLDERS
+    | {
+        "link_do_zgloszenia": "adres zgłoszenia w panelu",
+        "powod": "powód podany przez uczestnika",
+        "pierwszy_z_rezerwy": "pierwsza osoba z listy rezerwowej tego poziomu (jeśli zwolniło się "
+        "miejsce)",
+    }
+    | SITE_PLACEHOLDERS,
     TemplateKey.ADMIN_DAILY_DIGEST: {
         "liczba": "liczba nowych zgłoszeń",
         "lista_zgloszen": "lista nowych zgłoszeń (osoba, warsztat, poziom)",
@@ -70,7 +80,9 @@ RECIPIENTS: dict[str, str] = {
     TemplateKey.DECISION_WAITLISTED: "uczestnik, po wpisaniu na listę rezerwową",
     TemplateKey.DECISION_REJECTED: "uczestnik, po odrzuceniu zgłoszenia",
     TemplateKey.DECISION_CANCELLED: "uczestnik, gdy organizator anuluje jego udział",
-    TemplateKey.WITHDRAWAL_CONFIRMED: "uczestnik, gdy organizator zapisze jego rezygnację",
+    TemplateKey.WITHDRAWAL_CONFIRMED: "uczestnik, po rezygnacji (własnej lub zapisanej przez "
+    "organizatora)",
+    TemplateKey.ADMIN_WITHDRAWAL: "organizator, gdy uczestnik sam zrezygnuje",
 }
 
 DEFAULTS: dict[str, tuple[str, str]] = {
@@ -91,7 +103,10 @@ Kopia Twojego zgłoszenia:
 
 Strona warsztatów: {link_do_warsztatu}
 
-Jeśli chcesz coś zmienić w zgłoszeniu, po prostu odpowiedz na tę wiadomość.
+Jeśli chcesz coś zmienić w zgłoszeniu, po prostu odpowiedz na tę wiadomość. Swoje zgłoszenia \
+zobaczysz też po zalogowaniu: {link_do_konta}
+
+Jeśli jednak nie możesz wziąć udziału, zrezygnuj tutaj: {link_rezygnacji}
 
 Z serdecznymi pozdrowieniami
 {organizacja}""",
@@ -136,7 +151,8 @@ Dane do przelewu:
 Szczegóły warsztatów: {link_do_warsztatu}
 
 Jeśli nie możesz wziąć udziału, prosimy o jak najszybszą informację — odpowiedz na tę \
-wiadomość, a Twoje miejsce otrzyma osoba z listy rezerwowej.
+wiadomość albo zrezygnuj tutaj: {link_rezygnacji} — Twoje miejsce otrzyma osoba z listy \
+rezerwowej.
 
 Do zobaczenia!
 {organizacja}""",
@@ -148,7 +164,8 @@ Do zobaczenia!
 dziękujemy za zgłoszenie na warsztaty „{warsztat}” (poziom: {poziom}). Wszystkie miejsca są \
 już zajęte, dlatego wpisaliśmy Cię na listę rezerwową (miejsce na liście: {miejsce_na_liscie}).
 
-Jeśli ktoś zrezygnuje, odezwiemy się do Ciebie — nie musisz nic robić.
+Jeśli ktoś zrezygnuje, odezwiemy się do Ciebie — nie musisz nic robić. Jeśli wolisz \
+już nie czekać, zrezygnuj tutaj: {link_rezygnacji}
 
 Terminy spotkań:
 {terminy}
@@ -192,6 +209,17 @@ Z serdecznymi pozdrowieniami
     }
 )
 
+DEFAULTS[TemplateKey.ADMIN_WITHDRAWAL] = (
+    "Rezygnacja: {imie_nazwisko} — {warsztat}",
+    """{imie_nazwisko} rezygnuje z udziału w warsztatach „{warsztat}” (poziom: {poziom}).
+
+Powód: {powod}
+
+{pierwszy_z_rezerwy}
+
+Zgłoszenie w panelu: {link_do_zgloszenia}""",
+)
+
 #: Example values for the preview in the panel (no real personal data).
 SAMPLE_CONTEXT: dict[str, str] = {
     "imie": "Anna",
@@ -216,4 +244,9 @@ SAMPLE_CONTEXT: dict[str, str] = {
     "• Jan Przykładowy — Rekolekcje z ikoną (Zaawansowani)",
     "link_do_panelu": "https://warsztaty.example.com/panel/",
     "miejsce_na_liscie": "2",
+    "link_rezygnacji": "https://warsztaty.example.com/rezygnacja/przyklad/",
+    "link_do_konta": "https://warsztaty.example.com/moje-warsztaty/",
+    "powod": "Choroba w rodzinie.",
+    "pierwszy_z_rezerwy": "Zwolniło się miejsce. Pierwsza osoba z listy rezerwowej: Jan "
+    "Przykładowy (https://warsztaty.example.com/panel/zgloszenia/2/).",
 }

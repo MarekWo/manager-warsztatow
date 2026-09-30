@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import RedirectView
 
-from workshop_manager.accounts.views import request_login_code
+from workshop_manager.accounts.views import login_link, request_login_code
 from workshop_manager.core.views import healthz
 
 admin.site.site_header = "Manager Warsztatów — administracja techniczna"
@@ -19,6 +19,7 @@ urlpatterns = [
         RedirectView.as_view(pattern_name="account_request_login_code", query_string=True),
     ),
     path("konto/login/code/", request_login_code, name="account_request_login_code"),
+    path("konto/link/<str:token>/", login_link, name="account_login_link"),
     path("konto/", include("allauth.urls")),
     path("panel/", include("workshop_manager.panel.urls")),
     path("", include("workshop_manager.public.urls")),

@@ -189,6 +189,8 @@ ACCOUNT_RATE_LIMITS = {
     "login_failed": "5/5m/key,10/m/ip",
     "signup": "5/m/ip",
     "confirm_email": "1/m/key",
+    # Codes to one address: one a minute, five an hour (PRD §6.4).
+    "request_login_code": "20/m/ip,1/m/key,5/h/key",
 }
 # Six digits: easy to read out of an email and type on a phone keypad (PRD §6.4).
 ALLAUTH_USER_CODE_FORMAT = {"numeric": True, "length": 6, "dashed": False}

@@ -1,0 +1,8 @@
+{% extends "account/email/base_message.txt" %}
+{% block content %}Dzień dobry,
+
+na adres {{ email }} poproszono o kod logowania do zapisów na warsztaty, ale z tego adresu nie wysłano jeszcze żadnego zgłoszenia.
+
+Konto zakłada się samo przy pierwszym zgłoszeniu na warsztaty — wybierz warsztat i wypełnij formularz. Jeśli zgłoszenie było wysłane z innego adresu e-mail, zaloguj się tamtym adresem.
+
+Jeśli nie próbujesz się zalogować, zignoruj tę wiadomość.{% endblock content %}

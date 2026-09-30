@@ -1,0 +1,8 @@
+{% load workshop_tags %}
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <h3 class="h5 mb-1"><a href="{% url 'public:my_application' application.pk %}">{{ application.workshop.title }}</a></h3>
+    <p class="mb-2 text-body-secondary"><i class="bi bi-calendar3" aria-hidden="true"></i> {{ application.workshop|date_range }} · poziom: {{ application.level.name }}</p>
+    {% include "public/partials/my_status.html" %}
+  </div>
+</div>

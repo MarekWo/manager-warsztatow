@@ -13,6 +13,20 @@
         <strong>{{ application.email }}</strong>.</p>
     </div>
 
+    {% if not user.is_authenticated %}
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-remember">
+      <h2 id="h-remember" class="h5">Zapamiętać Twoje dane?</h2>
+      <p>Przy kolejnym zgłoszeniu nie trzeba będzie ich wpisywać, a wszystkie swoje zgłoszenia zobaczysz w jednym miejscu. Wyślemy kod na <strong>{{ application.email }}</strong> — wystarczy go wpisać.</p>
+      <form method="post" action="{% url 'account_request_login_code' %}">
+        {% csrf_token %}
+        <input type="hidden" name="email" value="{{ application.email }}">
+        <input type="hidden" name="remember" value="on">
+        <input type="hidden" name="next" value="{% url 'public:my_workshops' %}">
+        <button type="submit" class="btn btn-primary">Zapamiętaj moje dane — wyślij kod</button>
+      </form>
+    </section>
+    {% endif %}
+
     <h2 class="h4">Podsumowanie zgłoszenia</h2>
     <dl class="summary">
       <dt>Warsztat</dt><dd>{{ application.workshop.title }} ({{ application.workshop|date_range }})</dd>

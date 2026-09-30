@@ -1,6 +1,9 @@
 from allauth.account.views import RequestLoginCodeView as BaseRequestLoginCodeView
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
 
+from workshop_manager.accounts.services import login_with_link, user_from_login_token
 from workshop_manager.accounts.sessions import REMEMBER_SESSION_KEY
 
 
@@ -17,3 +20,16 @@ class RequestLoginCodeView(BaseRequestLoginCodeView):
 
 
 request_login_code = RequestLoginCodeView.as_view()
+
+
+def login_link(request: HttpRequest, token: str) -> HttpResponse:
+    """The one-click link from the code e-mail (accounts.services).
+
+    Opening it only shows a button: signing in happens on POST, so a mail program that checks
+    links in advance cannot use the link up before the person does.
+    """
+    user = user_from_login_token(token)
+    if request.method == "POST" and user is not None:
+        login_with_link(request, user, remember=request.POST.get("remember") == "on")
+        return redirect("/panel/" if user.is_staff else reverse("public:my_workshops"))
+    return render(request, "account/login_link.html", {"valid": user is not None})

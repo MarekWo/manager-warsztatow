@@ -80,3 +80,16 @@ All notable changes to this project are documented here. The format follows
   checksums, retention, optional rsync/rclone copy and monitor ping), `restore.sh` (a drill
   that changes nothing, or a full restore) and `update.sh` (backup, pull, healthy start, the
   way back on failure); daily systemd timer documented in `docs/deploy.md`.
+- Participant accounts: anyone who has applied signs in with a code (the account is created at
+  the code request, and every application from that address becomes theirs); an unknown address
+  gets no account and the page does not reveal which is which. Codes are limited to one a
+  minute and five an hour per address.
+- One-click sign-in link next to the code, valid 15 minutes and only once, signing in on a
+  button press so mail programs that check links cannot use it up.
+- Sign-in e-mails in Polish with the code in the subject, signed with the organisation's name.
+- "Moje warsztaty": current and past applications with statuses as participants read them,
+  details, and withdrawing with an optional reason; "Moje dane" with the consent to news about
+  workshops. The thank-you page offers to remember the details (sends a code).
+- Withdrawal link in e-mails, for guests too (`{link_rezygnacji}`, also `{link_do_konta}`);
+  a withdrawal confirms to the participant, notifies the organiser at once with the first person
+  waiting on that level, and marks the application unseen.

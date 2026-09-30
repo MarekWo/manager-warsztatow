@@ -1,0 +1,22 @@
+{% extends "allauth/layouts/base.html" %}
+{% block head_title %}Logowanie{% endblock head_title %}
+{% block content %}
+  <h1 class="page-title">Logowanie</h1>
+  {% if valid %}
+    <p>Kliknij przycisk, aby się zalogować.</p>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="remember" id="remember" checked>
+        <label class="form-check-label" for="remember">Zapamiętaj mnie na tym urządzeniu</label>
+        <div class="form-text">Nie zaznaczaj na cudzym lub wspólnym komputerze.</div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">Zaloguj się</button>
+    </form>
+  {% else %}
+    <div class="alert alert-warning" role="alert">
+      Ten link już nie działa — został użyty albo minęło 15 minut od jego wysłania.
+    </div>
+    <a class="btn btn-primary btn-lg" href="{% url 'account_request_login_code' %}">Poproś o nowy kod</a>
+  {% endif %}
+{% endblock content %}

@@ -37,10 +37,14 @@ def test_participant_signs_in_with_a_six_digit_code(client):
 
 
 @pytest.mark.django_db
-def test_email_subject_names_the_system(client):
+def test_email_carries_the_code_in_the_subject_and_no_host_greeting(client):
     user = UserFactory()
     _request_code(client, user.email)
-    assert mail.outbox[-1].subject.startswith("Manager Warsztatów — ")
+    message = mail.outbox[-1]
+    code = _code_from_outbox()
+    assert message.subject == f"Kod logowania: {code} — Stowarzyszenie Ecclesia"
+    assert "Witamy z" not in message.body
+    assert "/konto/link/" in message.body
 
 
 @pytest.mark.django_db

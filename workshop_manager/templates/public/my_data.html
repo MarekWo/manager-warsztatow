@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Moje dane{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <p class="mb-2"><a href="{% url 'public:my_workshops' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Moje warsztaty</a></p>
+    <h1 class="page-title mb-1">Moje dane</h1>
+    <p>Adres e-mail: <strong>{{ user.email }}</strong>. Te dane wpiszą się same w formularz przy kolejnym zgłoszeniu.</p>
+    <form method="post" class="card card-body shadow-sm">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-6">{{ form.first_name.as_field_group }}</div>
+        <div class="col-md-6">{{ form.last_name.as_field_group }}</div>
+      </div>
+      {{ form.phone.as_field_group }}
+      {% if has_participant %}{{ form.marketing.as_field_group }}{% endif %}
+      <div><button type="submit" class="btn btn-primary btn-lg">Zapisz</button></div>
+    </form>
+    <p class="small text-body-secondary mt-3">Zmiany nie dotyczą zgłoszeń już wysłanych — w nich zostają dane podane wtedy. Jeśli coś trzeba w nich poprawić, napisz do organizatora.</p>
+  </div>
+</div>
+{% endblock %}

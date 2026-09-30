@@ -1,0 +1,13 @@
+{% extends "account/email/base_message.txt" %}
+{% block content %}Dzień dobry,
+
+Twój kod logowania to:
+
+{{ code }}
+
+Wpisz go w oknie przeglądarki, w którym czeka formularz logowania. Kod jest ważny przez 15 minut.
+{% if login_url %}
+Możesz też po prostu kliknąć ten link (działa jeden raz, również na innym urządzeniu):
+{{ login_url }}
+{% endif %}
+Jeśli nie próbujesz się teraz zalogować, zignoruj tę wiadomość — bez kodu nikt się nie zaloguje.{% endblock content %}

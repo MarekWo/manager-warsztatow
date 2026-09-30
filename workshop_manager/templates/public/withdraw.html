@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load workshop_tags %}
+{% block title %}Rezygnacja z udziału{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <h1 class="page-title mb-1">Rezygnacja z udziału</h1>
+    <p class="lead">{{ application.workshop.title }} ({{ application.workshop|date_range }})</p>
+    <p>Zgłoszenie: <strong>{{ application.full_name }}</strong>, poziom {{ application.level.name }} — {% include "public/partials/my_status.html" %}</p>
+
+    {% if done %}
+      <div class="alert alert-success" role="status">Zapisaliśmy Twoją rezygnację. Potwierdzenie wysłaliśmy e-mailem. Dziękujemy za informację.</div>
+    {% elif can_withdraw %}
+      <p>Po rezygnacji Twoje miejsce może otrzymać osoba z listy rezerwowej. Tego nie można cofnąć samodzielnie — w razie pomyłki napisz do organizatora.</p>
+      <form method="post" class="card card-body shadow-sm">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit" class="btn btn-outline-danger btn-lg">Rezygnuję z udziału</button>
+      </form>
+    {% else %}
+      <div class="alert alert-info" role="status">Z tego zgłoszenia nie można już zrezygnować przez stronę. W razie pytań napisz do organizatora{% if site_settings.contact_email %}: <a href="mailto:{{ site_settings.contact_email }}">{{ site_settings.contact_email }}</a>{% endif %}.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

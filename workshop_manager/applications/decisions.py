@@ -251,6 +251,42 @@ def freed_place_hint(application: Application, old_status: str) -> Application |
     return first_waitlisted(application.level)
 
 
+# --- The participant's own withdrawal (PRD §6.5) ----------------------------------------------
+
+
+def can_withdraw(application: Application) -> bool:
+    """Still holding or waiting for a place, and the workshop is not over."""
+    if application.status not in ACTIVE_STATUSES or application.workshop.is_archived:
+        return False
+    return application.workshop.state() != "finished"
+
+
+def withdraw_by_participant(
+    application: Application, *, reason: str = "", user: Any = None
+) -> StatusChange:
+    """ "Rezygnuję": withdrawn, the participant's confirmation and the organiser's notice.
+
+    `user` is the signed-in participant; None when the link from an e-mail was used.
+    """
+    from workshop_manager.communications.notifications import participant_withdrew
+
+    if not can_withdraw(application):
+        raise TransitionError("Z tego zgłoszenia nie można już zrezygnować.")
+    old_status = application.status
+    how = "w swoim koncie" if user is not None else "przez link z e-maila"
+    comment = f"Rezygnacja uczestnika ({how})" + (f": {reason}" if reason else ".")
+    with transaction.atomic():
+        change = change_status(
+            application, Status.WITHDRAWN, user=user, notify=True, comment=comment
+        )
+        # The organiser has not seen this yet — it shows as new on the lists.
+        Application.objects.filter(pk=application.pk).update(is_seen=False)
+        participant_withdrew(
+            application, reason=reason, freed=freed_place_hint(application, old_status)
+        )
+    return change
+
+
 # --- Corrections -------------------------------------------------------------------------------
 
 

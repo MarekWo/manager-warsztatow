@@ -1,0 +1,7 @@
+{# The status as the participant reads it (PRD §6.5). #}
+{% if application.status == "new" %}<span class="badge text-bg-primary">oczekuje na decyzję</span>
+{% elif application.status == "accepted" %}<span class="badge text-bg-success">przyjęte</span>
+{% elif application.status == "waitlisted" %}<span class="badge text-bg-warning">lista rezerwowa{% if application.waitlist_position %} (miejsce {{ application.waitlist_position }}){% endif %}</span>
+{% elif application.status == "rejected" %}<span class="badge text-bg-secondary">nieprzyjęte</span>
+{% elif application.status == "withdrawn" %}<span class="badge text-bg-light border">zrezygnowano</span>
+{% else %}<span class="badge text-bg-dark">udział anulowany</span>{% endif %}

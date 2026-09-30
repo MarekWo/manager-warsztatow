@@ -30,6 +30,7 @@
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="{% url 'public:home' %}">Aktualne warsztaty</a></li>
           {% if user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'public:my_workshops' %}"><i class="bi bi-person-check" aria-hidden="true"></i> Moje warsztaty</a></li>
             {% if user.is_staff %}
               <li class="nav-item"><a class="nav-link" href="{% url 'panel:dashboard' %}"><i class="bi bi-speedometer2" aria-hidden="true"></i> Panel</a></li>
             {% endif %}

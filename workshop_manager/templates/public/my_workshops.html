@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load workshop_tags %}
+{% block title %}Moje warsztaty{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+      <h1 class="page-title mb-0">Moje warsztaty</h1>
+      <a class="btn btn-outline-primary" href="{% url 'public:my_data' %}"><i class="bi bi-person" aria-hidden="true"></i> Moje dane</a>
+    </div>
+
+    <section class="mb-5" aria-labelledby="h-current">
+      <h2 id="h-current" class="h4 mb-3">Aktualne zgłoszenia</h2>
+      {% for application in current %}
+        {% include "public/partials/my_application_card.html" %}
+      {% empty %}
+        <p>Nie masz teraz zgłoszeń na nadchodzące warsztaty.</p>
+        <a class="btn btn-primary" href="{% url 'public:home' %}">Zobacz aktualne warsztaty</a>
+      {% endfor %}
+    </section>
+
+    {% if past %}
+    <section aria-labelledby="h-past">
+      <h2 id="h-past" class="h4 mb-3">Wcześniejsze warsztaty</h2>
+      {% for application in past %}
+        {% include "public/partials/my_application_card.html" %}
+      {% endfor %}
+    </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
