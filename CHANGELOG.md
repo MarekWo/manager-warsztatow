@@ -7,6 +7,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Question lists in the form editor and in form templates show their buttons in a row under the
+  question and its badges, all as icons (move up/down, edit, hide/show, delete) with tooltips and
+  screen-reader labels. The reserve list's buttons also moved under the person's name.
+
 ## [1.0.0-rc1] - 2026-09-30
 
 Release candidate for acceptance tests on TEST.

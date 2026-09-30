@@ -15,24 +15,20 @@
         <ol class="list-unstyled mb-0">
         {% for question in questions %}
           <li id="q{{ question.pk }}" class="question-row border rounded p-3 mb-2 {% if not question.is_active %}bg-body-tertiary{% endif %}">
-            <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
-              <div>
-                <div class="fw-semibold {% if not question.is_active %}text-body-secondary{% endif %}">{{ forloop.counter }}. {{ question.label }}</div>
-                <div class="small mt-1">
-                  <span class="badge text-bg-light border">{{ question.get_kind_display }}</span>
-                  {% if question.required %}<span class="badge text-bg-light border">wymagane</span>{% else %}<span class="badge text-bg-light border">opcjonalne</span>{% endif %}
-                  {% if question.level %}<span class="badge text-bg-info">tylko: {{ question.level }}</span>{% endif %}
-                  {% if not question.is_active %}<span class="badge text-bg-secondary">ukryte</span>{% endif %}
-                </div>
-                {% if question.has_choices %}<div class="small text-body-secondary mt-1">Odpowiedzi: {{ question.choice_list|join:" · " }}</div>{% endif %}
-              </div>
-              <div class="d-flex flex-wrap gap-1 align-self-md-start">
-                <form method="post" action="{% url 'panel:question_move' workshop.pk question.pk 'up' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" {% if forloop.first %}disabled{% endif %} aria-label="Przesuń wyżej: {{ question.label|truncatechars:40 }}"><i class="bi bi-arrow-up" aria-hidden="true"></i></button></form>
-                <form method="post" action="{% url 'panel:question_move' workshop.pk question.pk 'down' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" {% if forloop.last %}disabled{% endif %} aria-label="Przesuń niżej: {{ question.label|truncatechars:40 }}"><i class="bi bi-arrow-down" aria-hidden="true"></i></button></form>
-                <a class="btn btn-sm btn-outline-primary" href="{% url 'panel:question_edit' workshop.pk question.pk %}">Edytuj</a>
-                <form method="post" action="{% url 'panel:question_toggle' workshop.pk question.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-primary">{% if question.is_active %}Ukryj{% else %}Pokaż{% endif %}</button></form>
-                <a class="btn btn-sm btn-outline-danger" href="{% url 'panel:question_delete' workshop.pk question.pk %}" aria-label="Usuń pytanie: {{ question.label|truncatechars:40 }}"><i class="bi bi-trash" aria-hidden="true"></i></a>
-              </div>
+            <div class="fw-semibold {% if not question.is_active %}text-body-secondary{% endif %}">{{ forloop.counter }}. {{ question.label }}</div>
+            <div class="small mt-1">
+              <span class="badge text-bg-light border">{{ question.get_kind_display }}</span>
+              {% if question.required %}<span class="badge text-bg-light border">wymagane</span>{% else %}<span class="badge text-bg-light border">opcjonalne</span>{% endif %}
+              {% if question.level %}<span class="badge text-bg-info">tylko: {{ question.level }}</span>{% endif %}
+              {% if not question.is_active %}<span class="badge text-bg-secondary">ukryte</span>{% endif %}
+            </div>
+            {% if question.has_choices %}<div class="small text-body-secondary mt-1">Odpowiedzi: {{ question.choice_list|join:" · " }}</div>{% endif %}
+            <div class="d-flex flex-wrap gap-2 mt-2">
+              <form method="post" action="{% url 'panel:question_move' workshop.pk question.pk 'up' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" {% if forloop.first %}disabled{% endif %} title="Przesuń wyżej" aria-label="Przesuń wyżej: {{ question.label|truncatechars:40 }}"><i class="bi bi-arrow-up" aria-hidden="true"></i></button></form>
+              <form method="post" action="{% url 'panel:question_move' workshop.pk question.pk 'down' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" {% if forloop.last %}disabled{% endif %} title="Przesuń niżej" aria-label="Przesuń niżej: {{ question.label|truncatechars:40 }}"><i class="bi bi-arrow-down" aria-hidden="true"></i></button></form>
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'panel:question_edit' workshop.pk question.pk %}" title="Edytuj" aria-label="Edytuj pytanie: {{ question.label|truncatechars:40 }}"><i class="bi bi-pencil" aria-hidden="true"></i></a>
+              <form method="post" action="{% url 'panel:question_toggle' workshop.pk question.pk %}">{% csrf_token %}{% if question.is_active %}<button class="btn btn-sm btn-outline-primary" title="Ukryj w formularzu" aria-label="Ukryj pytanie: {{ question.label|truncatechars:40 }}"><i class="bi bi-eye-slash" aria-hidden="true"></i></button>{% else %}<button class="btn btn-sm btn-outline-primary" title="Pokaż w formularzu" aria-label="Pokaż pytanie: {{ question.label|truncatechars:40 }}"><i class="bi bi-eye" aria-hidden="true"></i></button>{% endif %}</form>
+              <a class="btn btn-sm btn-outline-danger" href="{% url 'panel:question_delete' workshop.pk question.pk %}" title="Usuń" aria-label="Usuń pytanie: {{ question.label|truncatechars:40 }}"><i class="bi bi-trash" aria-hidden="true"></i></a>
             </div>
           </li>
         {% empty %}
