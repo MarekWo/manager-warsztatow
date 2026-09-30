@@ -605,7 +605,7 @@ wheels = [
 
 [[package]]
 name = "manager-warsztatow"
-version = "0.1.0.dev0"
+version = "1.0.0rc1"
 source = { virtual = "." }
 dependencies = [
     { name = "croniter" },

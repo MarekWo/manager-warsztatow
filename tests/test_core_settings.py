@@ -11,8 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _pep440(version: str) -> str:
-    """`1.2.0-dev` in VERSION is `1.2.0.dev0` in pyproject.toml."""
-    return version.replace("-dev", ".dev0")
+    """`1.2.0-dev` in VERSION is `1.2.0.dev0` in pyproject.toml, `1.0.0-rc1` is `1.0.0rc1`."""
+    return version.replace("-dev", ".dev0").replace("-rc", "rc")
 
 
 def test_pyproject_version_matches_version_file():

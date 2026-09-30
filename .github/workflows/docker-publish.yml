@@ -1,5 +1,6 @@
 # Builds the application image and pushes it to GHCR.
 #   dev branch  → ghcr.io/marekwo/manager-warsztatow:dev     (TEST)
+#                 and :<VERSION> too when VERSION is a release candidate (no -dev), e.g. 1.0.0-rc1
 #   main branch → ghcr.io/marekwo/manager-warsztatow:latest and :<VERSION>   (PROD)
 name: Docker publish
 
@@ -43,6 +44,10 @@ jobs:
             TAGS="${IMAGE}:latest,${IMAGE}:${VERSION}"
           else
             TAGS="${IMAGE}:${BRANCH}"
+            case "$VERSION" in
+              *-dev*) ;;
+              *) TAGS="${TAGS},${IMAGE}:${VERSION}" ;;
+            esac
           fi
 
           echo "Tags: $TAGS"

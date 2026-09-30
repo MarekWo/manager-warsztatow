@@ -7,6 +7,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.0-rc1] - 2026-09-30
+
+Release candidate for acceptance tests on TEST.
+
 ### Added
 
 - Project foundation: Django 6.1 on Python 3.13 managed by uv, SQLite in WAL mode, settings
@@ -127,6 +131,9 @@ All notable changes to this project are documented here. The format follows
   long-answer field was wider than the screen.
 - Heading order on the workshop list, keyboard access to the scrolling e-mail and event log
   tables, long addresses widening the printouts on a phone.
+
+- A mail server that refuses connections no longer turns "Wyślij mi kod" into a server error:
+  the sign-in page says to try again later (and shows form-wide errors at all).
 
 ### Tests
 
