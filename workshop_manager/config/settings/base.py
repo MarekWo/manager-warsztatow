@@ -230,6 +230,12 @@ MEDIA_ROOT = Path(env.str("MEDIA_ROOT", default=str(DATA_DIR / "media")))
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    # Files that must never be public (attachments of messages to participants): outside
+    # MEDIA_ROOT, which the edge serves to anyone.
+    "private": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {"location": str(DATA_DIR / "private")},
+    },
 }
 
 # --- Email ---------------------------------------------------------------------------------------

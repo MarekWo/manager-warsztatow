@@ -1,0 +1,56 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Zestawienia — {{ workshop.title }}{% endblock %}
+{% block panel_content %}
+{% include "panel/partials/workshop_nav.html" %}
+<div class="row g-4">
+  <div class="col-md-6">
+    <section class="card card-body shadow-sm h-100" aria-labelledby="h-xlsx">
+      <h2 id="h-xlsx" class="h5"><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i> Zgłoszenia do Excela</h2>
+      <p>Wszystkie dane i odpowiedzi — po jednej kolumnie na pytanie.</p>
+      <form method="get" action="{% url 'panel:export_xlsx' workshop.pk %}" class="d-flex flex-wrap gap-2 align-items-end">
+        <div>
+          <label class="form-label small mb-1" for="zakres">Kogo</label>
+          <select class="form-select" id="zakres" name="zakres">
+            {% for value, label, _s in scopes %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Pobierz plik .xlsx</button>
+      </form>
+    </section>
+  </div>
+  <div class="col-md-6">
+    <section class="card card-body shadow-sm h-100" aria-labelledby="h-attendance">
+      <h2 id="h-attendance" class="h5"><i class="bi bi-clipboard-check" aria-hidden="true"></i> Lista obecności</h2>
+      <p>Przyjęci według poziomów, kolumna na każde spotkanie do podpisu. A4 poziomo.</p>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-primary" href="{% url 'panel:attendance' workshop.pk %}">Do druku</a>
+        {% if pdf_available %}<a class="btn btn-outline-primary" href="{% url 'panel:attendance' workshop.pk %}?format=pdf">PDF</a>{% endif %}
+      </div>
+    </section>
+  </div>
+  <div class="col-md-6">
+    <section class="card card-body shadow-sm h-100" aria-labelledby="h-contacts">
+      <h2 id="h-contacts" class="h5"><i class="bi bi-telephone" aria-hidden="true"></i> Lista kontaktowa</h2>
+      <p>Przyjęci: imię i nazwisko, telefon, e-mail.</p>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-primary" href="{% url 'panel:contacts' workshop.pk %}">Do druku</a>
+        {% if pdf_available %}<a class="btn btn-outline-primary" href="{% url 'panel:contacts' workshop.pk %}?format=pdf">PDF</a>{% endif %}
+      </div>
+    </section>
+  </div>
+  <div class="col-md-6">
+    <section class="card card-body shadow-sm h-100" aria-labelledby="h-materials">
+      <h2 id="h-materials" class="h5"><i class="bi bi-box-seam" aria-hidden="true"></i> Zestawienie materiałów</h2>
+      {% if has_materials %}
+        <p>Ile czego zamówić — przyjęci osobno, oczekujący osobno.</p>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-outline-primary" href="{% url 'panel:materials' workshop.pk %}">Pokaż</a>
+          {% if pdf_available %}<a class="btn btn-outline-primary" href="{% url 'panel:materials' workshop.pk %}?format=pdf">PDF</a>{% endif %}
+        </div>
+      {% else %}
+        <p class="text-body-secondary mb-0">W formularzu tego warsztatu nie ma pytań typu „zamówienie materiału”.</p>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

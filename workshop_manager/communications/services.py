@@ -8,6 +8,7 @@ marked failed and waits for "Wyślij ponownie" in the panel.
 """
 
 import logging
+import mimetypes
 from datetime import timedelta
 from typing import Any
 
@@ -51,6 +52,7 @@ def queue_email(
     template_key: str = "",
     application: Any = None,
     created_by: Any = None,
+    broadcast: Any = None,
 ) -> EmailMessage:
     message = EmailMessage.objects.create(
         to_email=to_email,
@@ -62,6 +64,7 @@ def queue_email(
         template_key=template_key,
         application=application,
         created_by=created_by,
+        broadcast=broadcast,
     )
     enqueue_on_commit(SEND_TASK, message.pk)
     return message
@@ -126,6 +129,7 @@ def send_email_message(message_id: int) -> str:
             reply_to=message.reply_to or transport.reply_to,
             from_email=transport.from_email,
         )
+        _attach(email, message)
         mailer.send_now(email, transport.connection)
     except Exception as error:  # any SMTP, network or configuration error
         _record_failure(message, error)
@@ -136,6 +140,17 @@ def send_email_message(message_id: int) -> str:
     message.last_error = ""
     message.save(update_fields=["status", "attempts", "sent_at", "last_error"])
     return "sent"
+
+
+def _attach(email: Any, message: EmailMessage) -> None:
+    """A message to participants carries its attachment, read from private storage."""
+    broadcast = message.broadcast
+    if broadcast is None or not broadcast.attachment:
+        return
+    with broadcast.attachment.open("rb") as file:
+        content = file.read()
+    mimetype = mimetypes.guess_type(broadcast.attachment_name)[0] or "application/octet-stream"
+    email.attach(broadcast.attachment_name, content, mimetype)
 
 
 def _record_failure(message: EmailMessage, error: Exception) -> None:
@@ -180,6 +195,7 @@ def retry_now(message: EmailMessage) -> EmailMessage:
             reply_to=message.reply_to,
             template_key=message.template_key,
             application=message.application,
+            broadcast=message.broadcast,
         )
         return message
     if message.status == MessageStatus.FAILED:

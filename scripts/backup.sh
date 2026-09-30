@@ -56,7 +56,8 @@ docker compose exec -T web sh -c 'cat /tmp/backup.sqlite3 && rm -f /tmp/backup.s
 success "Database: $(du -h "$WORK/db.sqlite3" | cut -f1)"
 
 # Through the web container, so it works whatever the volume driver is.
-docker compose exec -T web sh -c 'mkdir -p /data/media && tar -C /data/media -czf - .' >"$WORK/media.tar.gz"
+# Uploads (media/, public) and message attachments (private/): everything but the database.
+docker compose exec -T web sh -c 'mkdir -p /data/media /data/private && tar -C /data -czf - media private' >"$WORK/media.tar.gz"
 MEDIA_FILES="$(tar -tzf "$WORK/media.tar.gz" | grep -vc '/$' || true)"
 success "Media: $MEDIA_FILES files, $(du -h "$WORK/media.tar.gz" | cut -f1)"
 

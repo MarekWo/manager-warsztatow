@@ -1,6 +1,12 @@
 from django.urls import path
 
-from workshop_manager.panel import application_views, dictionary_views, settings_views, views
+from workshop_manager.panel import (
+    application_views,
+    dictionary_views,
+    report_views,
+    settings_views,
+    views,
+)
 
 app_name = "panel"
 
@@ -137,4 +143,35 @@ urlpatterns += [
         name="application_add",
     ),
     path("dziennik/", application_views.audit_log, name="audit_log"),
+]
+
+urlpatterns += [
+    # Messages to participants (PRD §7.5), printouts and exports (PRD §7.6)
+    path("warsztaty/<int:pk>/wiadomosci/", report_views.broadcast_list, name="broadcast_list"),
+    path("warsztaty/<int:pk>/wiadomosci/nowa/", report_views.broadcast_edit, name="broadcast_add"),
+    path(
+        "warsztaty/<int:pk>/wiadomosci/<int:broadcast_pk>/",
+        report_views.broadcast_preview,
+        name="broadcast_preview",
+    ),
+    path(
+        "warsztaty/<int:pk>/wiadomosci/<int:broadcast_pk>/edytuj/",
+        report_views.broadcast_edit,
+        name="broadcast_edit",
+    ),
+    path(
+        "warsztaty/<int:pk>/wiadomosci/<int:broadcast_pk>/wyslij/",
+        report_views.broadcast_send,
+        name="broadcast_send",
+    ),
+    path(
+        "warsztaty/<int:pk>/wiadomosci/<int:broadcast_pk>/usun/",
+        report_views.broadcast_delete,
+        name="broadcast_delete",
+    ),
+    path("warsztaty/<int:pk>/zestawienia/", report_views.report_index, name="report_index"),
+    path("warsztaty/<int:pk>/zgloszenia.xlsx", report_views.export_xlsx, name="export_xlsx"),
+    path("warsztaty/<int:pk>/lista-obecnosci/", report_views.attendance, name="attendance"),
+    path("warsztaty/<int:pk>/lista-kontaktowa/", report_views.contacts, name="contacts"),
+    path("warsztaty/<int:pk>/materialy/", report_views.materials, name="materials"),
 ]

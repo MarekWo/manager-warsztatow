@@ -1,0 +1,22 @@
+{% extends "print/base.html" %}
+{% load workshop_tags %}
+{% block title %}Zestawienie materiałów{% endblock %}
+{% block pdf_link %}<a href="?format=pdf">PDF</a>{% endblock %}
+{% block content %}
+<h1>Zestawienie materiałów — {{ workshop.title }}</h1>
+<p class="meta">{{ workshop|date_range }}. „Przyjęci” — do zamówienia teraz; „oczekujący” — nowe zgłoszenia i lista rezerwowa, gdyby zostali przyjęci.</p>
+{% for summary in summaries %}
+  <h2>{{ summary.question.label }}{% if summary.question.level %} <span class="small">(poziom: {{ summary.question.level.name }})</span>{% endif %}</h2>
+  <table class="grid">
+    <thead><tr><th scope="col">Odpowiedź</th><th scope="col" class="count">Przyjęci</th><th scope="col" class="count">Oczekujący</th><th scope="col">Kto (przyjęci)</th></tr></thead>
+    <tbody>
+      {% for line in summary.lines %}
+        <tr><td>{{ line.choice }}</td><td class="count"><strong>{{ line.accepted }}</strong></td><td class="count">{{ line.waiting }}</td><td class="small">{{ line.names|join:", " }}</td></tr>
+      {% endfor %}
+      {% if summary.no_answer %}<tr><td>bez odpowiedzi</td><td class="count">{{ summary.no_answer }}</td><td></td><td></td></tr>{% endif %}
+    </tbody>
+  </table>
+{% empty %}
+  <p>W formularzu tego warsztatu nie ma pytań typu „zamówienie materiału”.</p>
+{% endfor %}
+{% endblock %}

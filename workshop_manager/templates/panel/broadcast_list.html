@@ -1,0 +1,30 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Wiadomości — {{ workshop.title }}{% endblock %}
+{% block panel_content %}
+{% include "panel/partials/workshop_nav.html" %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+  <p class="mb-0">Wiadomość do uczestników tego warsztatu — każda osoba dostaje osobny e-mail.</p>
+  <a class="btn btn-primary" href="{% url 'panel:broadcast_add' workshop.pk %}"><i class="bi bi-envelope-plus" aria-hidden="true"></i> Nowa wiadomość</a>
+</div>
+{% if broadcasts %}
+<div class="table-responsive" tabindex="0" role="region" aria-label="Wiadomości do uczestników">
+<table class="table align-middle">
+  <thead><tr><th scope="col">Temat</th><th scope="col">Do kogo</th><th scope="col">Stan</th></tr></thead>
+  <tbody>
+  {% for b in broadcasts %}
+    <tr>
+      <td><a href="{% url 'panel:broadcast_preview' workshop.pk b.pk %}">{{ b.subject|default:"(bez tematu)" }}</a>{% if b.attachment %} <i class="bi bi-paperclip" aria-hidden="true"></i><span class="visually-hidden">(z załącznikiem)</span>{% endif %}</td>
+      <td>{{ b.get_group_display }}{% if b.level %}: {{ b.level.name }}{% endif %}</td>
+      <td class="small">
+        {% if b.sent_at %}wysłano {{ b.sent_at|date:"d.m.Y H:i" }} — {{ b.sent }} z {{ b.recipient_count }}{% if b.failed %}, <span class="text-danger">błędy: {{ b.failed }}</span>{% endif %}
+        {% else %}<span class="badge text-bg-secondary">szkic</span>{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+  <p class="text-body-secondary">Nie wysłano jeszcze żadnej wiadomości.</p>
+{% endif %}
+{% endblock %}

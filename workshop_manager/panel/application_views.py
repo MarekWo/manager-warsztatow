@@ -26,6 +26,7 @@ from workshop_manager.applications.services import DuplicateApplication, submit_
 from workshop_manager.applications.summary import level_summaries
 from workshop_manager.core import audit
 from workshop_manager.core.models import AuditEvent
+from workshop_manager.exports.reports import material_choices
 from workshop_manager.panel.forms import (
     ApplicationEditForm,
     DecisionForm,
@@ -43,6 +44,7 @@ BULK_ACTIONS = [
     (Status.WAITLISTED, "Wpisz zaznaczone na listę rezerwową"),
     (Status.REJECTED, "Odrzuć zaznaczone"),
     ("seen", "Oznacz zaznaczone jako przejrzane"),
+    ("message", "Napisz wiadomość do zaznaczonych"),
 ]
 
 
@@ -87,6 +89,13 @@ def _filtered(request: HttpRequest, workshop: Workshop | None) -> tuple[Any, dic
         qs = qs.filter(level_id=int(level))
     else:
         level = ""
+    material = request.GET.get("material", "")
+    if workshop is not None and "|" in material:
+        question_id, _sep, choice = material.partition("|")
+        if question_id.isdigit():
+            qs = qs.filter(answers__question_id=int(question_id), answers__value=choice)
+    else:
+        material = ""
     query = request.GET.get("q", "").strip()
     if query:
         for word in query.split():
@@ -106,6 +115,7 @@ def _filtered(request: HttpRequest, workshop: Workshop | None) -> tuple[Any, dic
         "q": query,
         "unseen": unseen,
         "order": request.GET.get("order", ""),
+        "material": material,
     }
     return qs, filters
 
@@ -140,6 +150,7 @@ def workshop_applications(request: HttpRequest, pk: int) -> HttpResponse:
     )
     context = _list_context(request, workshop)
     context["summaries"] = level_summaries([workshop])[workshop.pk]
+    context["material_choices"] = material_choices(workshop)
     context["waitlists"] = [
         (
             level,
@@ -167,6 +178,10 @@ def application_bulk(request: HttpRequest) -> HttpResponse:
     if not applications:
         messages.error(request, "Zaznacz co najmniej jedno zgłoszenie.")
         return redirect(back)
+    if action == "message":
+        from workshop_manager.panel.report_views import broadcast_to_selected
+
+        return broadcast_to_selected(request, applications)
     if action == "seen":
         count = Application.objects.filter(pk__in=ids).update(is_seen=True)
         messages.success(request, f"Oznaczono jako przejrzane: {count}.")

@@ -62,6 +62,10 @@ def test_accept_with_an_edited_email(live_server, panel_page, application):
         "/panel/zgloszenia/{pk}/decyzja/accepted/",
         "/panel/zgloszenia/{pk}/dane/",
         "/panel/dziennik/",
+        "/panel/warsztaty/{workshop}/wiadomosci/",
+        "/panel/warsztaty/{workshop}/wiadomosci/nowa/",
+        "/panel/warsztaty/{workshop}/zestawienia/",
+        "/panel/warsztaty/{workshop}/lista-obecnosci/",
     ],
 )
 def test_review_pages_accessibility(live_server, panel_page, application, path):

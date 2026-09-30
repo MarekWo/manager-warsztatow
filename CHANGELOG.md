@@ -93,3 +93,17 @@ All notable changes to this project are documented here. The format follows
 - Withdrawal link in e-mails, for guests too (`{link_rezygnacji}`, also `{link_do_konta}`);
   a withdrawal confirms to the participant, notifies the organiser at once with the first person
   waiting on that level, and marks the application unseen.
+- Messages to a workshop's participants: accepted, waiting list, everyone active, the accepted
+  on one level, or people ticked on the application list; placeholders per person, an optional
+  attachment (up to 5 MB, kept in private storage, never public), a preview with the recipient
+  list before anything is sent, one e-mail per person in the e-mail log.
+- Excel export of a workshop's applications (accepted, active or all), one column per question;
+  cells that could run as formulas are kept as text.
+- Printouts as a page to print and as PDF (WeasyPrint): attendance list (accepted per level,
+  a signature column per session, A4 landscape), contact list, materials summary (accepted and
+  waiting counted apart, with names); filter by material order on the application list.
+
+### Upgrading
+
+- Backups now archive `/data/media` and `/data/private` (message attachments) together;
+  `restore.sh` expects that layout — take a fresh backup after updating.

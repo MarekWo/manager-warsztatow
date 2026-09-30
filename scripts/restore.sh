@@ -83,7 +83,7 @@ docker compose run --rm --no-deps -T --entrypoint sh web -c "
 
 info "Restoring uploaded files"
 docker compose run --rm --no-deps -T --entrypoint sh web \
-    -c 'mkdir -p /data/media && find /data/media -mindepth 1 -delete && tar -xzf - -C /data/media' \
+    -c 'mkdir -p /data/media /data/private && find /data/media /data/private -mindepth 1 -delete && tar -xzf - -C /data' \
     <"$SOURCE/media.tar.gz"
 
 info "Starting the stack"

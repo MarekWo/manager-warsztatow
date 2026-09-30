@@ -20,6 +20,15 @@
     </select>
   </div>
   {% endif %}
+  {% if material_choices %}
+  <div class="col-md-4">
+    <label class="form-label small mb-1" for="f-material">Zamówienie materiałów</label>
+    <select class="form-select" id="f-material" name="material">
+      <option value="">wszystkie</option>
+      {% for value, label in material_choices %}<option value="{{ value }}" {% if filters.material == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  {% endif %}
   <div class="col-md-{% if workshop %}3{% else %}5{% endif %} d-flex flex-wrap gap-3 align-items-center">
     <div class="form-check">
       <input class="form-check-input" type="checkbox" name="unseen" value="1" id="f-unseen" {% if filters.unseen %}checked{% endif %}>

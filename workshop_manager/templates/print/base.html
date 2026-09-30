@@ -1,0 +1,24 @@
+{% load static %}<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}{% endblock %} — {{ workshop.title }}</title>
+  {% if for_pdf %}<style>{{ print_css|safe }}</style>{% else %}<link rel="stylesheet" href="{% static 'css/print.css' %}">{% endif %}
+</head>
+<body class="{% block page_class %}portrait{% endblock %}">
+  {% if not for_pdf %}
+  <nav class="screen-only toolbar" aria-label="Wydruk">
+    <a href="{% url 'panel:report_index' workshop.pk %}">← Zestawienia</a>
+    <button type="button" class="print-button" data-print>Drukuj</button>
+    {% block pdf_link %}{% endblock %}
+  </nav>
+  {% endif %}
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="printed">{{ site_settings.org_short_name }} · wydrukowano {{ printed_at|date:"j E Y, H:i" }}</footer>
+  {% if not for_pdf %}<script src="{% static 'js/print.js' %}"></script>{% endif %}
+</body>
+</html>

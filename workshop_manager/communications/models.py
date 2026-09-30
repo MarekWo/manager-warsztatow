@@ -6,7 +6,10 @@ change that caused it, the worker sends it after the commit, and a failure only 
 another attempt — sending never blocks an application or a decision.
 """
 
+from typing import Any
+
 from django.conf import settings
+from django.core.files.storage import storages
 from django.db import models
 from django.utils import timezone
 
@@ -40,6 +43,83 @@ class EmailTemplate(models.Model):
 
     def __str__(self) -> str:
         return self.get_key_display()
+
+
+def private_storage() -> Any:
+    return storages["private"]
+
+
+class Group(models.TextChoices):
+    """Who a message to a workshop's participants goes to (PRD §7.5)."""
+
+    ACCEPTED = "accepted", "przyjęci"
+    WAITLISTED = "waitlisted", "lista rezerwowa"
+    ACTIVE = "active", "wszyscy zgłoszeni (nowi, przyjęci i z listy rezerwowej)"
+    LEVEL = "level", "przyjęci na wybranym poziomie"
+    SELECTED = "selected", "zaznaczone osoby"
+
+
+class Broadcast(models.Model):
+    """A message to a workshop's participants: one e-mail per person, each in the e-mail log.
+
+    Written as a draft first, so the administrator sees the recipients and a preview (with an
+    attachment already uploaded) before anything is sent.
+    """
+
+    workshop = models.ForeignKey(
+        "workshops.Workshop",
+        verbose_name="warsztat",
+        on_delete=models.CASCADE,
+        related_name="broadcasts",
+    )
+    group = models.CharField("do kogo", max_length=10, choices=Group.choices)
+    level = models.ForeignKey(
+        "workshops.Level",
+        verbose_name="poziom",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    selected = models.ManyToManyField(
+        "applications.Application", verbose_name="zaznaczone zgłoszenia", blank=True
+    )
+    subject = models.CharField("temat", max_length=200)
+    body = models.TextField(
+        "treść",
+        help_text="Zwykły tekst. Pola w nawiasach klamrowych, np. {imie}, zostaną zastąpione "
+        "danymi każdej osoby.",
+    )
+    attachment = models.FileField(
+        "załącznik",
+        upload_to="attachments/%Y/",
+        storage=private_storage,
+        blank=True,
+        help_text="Np. PDF z listą materiałów. Do 5 MB.",
+    )
+    created_at = models.DateTimeField("utworzono", auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="autor",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    sent_at = models.DateTimeField("wysłano", null=True, blank=True)
+    recipient_count = models.PositiveIntegerField("liczba odbiorców", default=0)
+
+    class Meta:
+        verbose_name = "wiadomość do uczestników"
+        verbose_name_plural = "wiadomości do uczestników"
+        ordering = ["-created_at", "-pk"]
+
+    def __str__(self) -> str:
+        return self.subject
+
+    @property
+    def attachment_name(self) -> str:
+        return (self.attachment.name or "").rsplit("/", 1)[-1]
 
 
 class MessageStatus(models.TextChoices):
@@ -80,6 +160,14 @@ class EmailMessage(models.Model):
     next_attempt_at = models.DateTimeField("następna próba", default=timezone.now, db_index=True)
     created_at = models.DateTimeField("utworzono", auto_now_add=True)
     sent_at = models.DateTimeField("wysłano", null=True, blank=True)
+    broadcast = models.ForeignKey(
+        Broadcast,
+        verbose_name="wiadomość do uczestników",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="emails",
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         verbose_name="nadawca w panelu",

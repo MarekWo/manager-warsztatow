@@ -9,6 +9,8 @@
 <ul class="nav nav-tabs mb-4">
   <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'workshop_edit' %}active{% endif %}" href="{% url 'panel:workshop_edit' workshop.pk %}">Dane warsztatu</a></li>
   <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'workshop_applications' or request.resolver_match.url_name == 'application_add' %}active{% endif %}" href="{% url 'panel:workshop_applications' workshop.pk %}">Zgłoszenia</a></li>
+  <li class="nav-item"><a class="nav-link {% if 'broadcast' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel:broadcast_list' workshop.pk %}">Wiadomości</a></li>
+  <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'report_index' %}active{% endif %}" href="{% url 'panel:report_index' workshop.pk %}">Zestawienia</a></li>
   <li class="nav-item"><a class="nav-link {% if 'question' in request.resolver_match.url_name or request.resolver_match.url_name == 'form_editor' %}active{% endif %}" href="{% url 'panel:form_editor' workshop.pk %}">Formularz zgłoszeniowy</a></li>
   <li class="nav-item"><a class="nav-link" href="{{ workshop.get_absolute_url }}">Podgląd strony <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></a></li>
   <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'workshop_duplicate' %}active{% endif %}" href="{% url 'panel:workshop_duplicate' workshop.pk %}">Duplikuj</a></li>

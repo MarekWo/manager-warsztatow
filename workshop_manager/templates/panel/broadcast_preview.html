@@ -1,0 +1,56 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{{ broadcast.subject|default:"Wiadomość" }} — {{ workshop.title }}{% endblock %}
+{% block panel_content %}
+{% include "panel/partials/workshop_nav.html" %}
+<p class="mb-2 small"><a href="{% url 'panel:broadcast_list' workshop.pk %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Wiadomości</a></p>
+<h2 class="h4 mb-1">{{ broadcast.subject|default:"(bez tematu)" }}</h2>
+<p>Do kogo: {{ broadcast.get_group_display }}{% if broadcast.level %}: {{ broadcast.level.name }}{% endif %}{% if broadcast.attachment %} · załącznik: <strong>{{ broadcast.attachment_name }}</strong>{% endif %}</p>
+
+{% if broadcast.sent_at %}
+  <div class="alert alert-success">Wysłano {{ broadcast.sent_at|date:"d.m.Y H:i" }} do {{ broadcast.recipient_count }} os.</div>
+  <div class="table-responsive" tabindex="0" role="region" aria-label="E-maile tej wiadomości">
+  <table class="table align-middle">
+    <thead><tr><th scope="col">Odbiorca</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+    {% for email in emails %}
+      <tr><td><a href="{% url 'panel:email_detail' email.pk %}">{{ email.to_name|default:email.to_email }}</a> <span class="small text-body-secondary">{{ email.to_email }}</span></td><td>{% include "panel/partials/email_status.html" %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+{% else %}
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <h3 class="h5">Podgląd{% if people %} (dla: {{ people.0.full_name }}){% endif %}</h3>
+      {% if sample %}
+        <div class="card card-body"><p class="fw-semibold mb-2">{{ sample.subject }}</p><pre class="email-text mb-0">{{ sample.text }}</pre></div>
+      {% else %}
+        <p class="text-body-secondary">Brak odbiorców — nie ma podglądu.</p>
+      {% endif %}
+    </div>
+    <div class="col-lg-5">
+      <h3 class="h5">Odbiorcy ({{ people|length }})</h3>
+      {% if people %}
+        <ul class="small recipients-list">
+          {% for a in people %}<li>{{ a.full_name }} <span class="text-body-secondary">— {{ a.level.name }}</span></li>{% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-body-secondary">W tej grupie nie ma teraz nikogo.</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="d-flex flex-wrap gap-2 mt-3">
+    {% if people %}
+    <form method="post" action="{% url 'panel:broadcast_send' workshop.pk broadcast.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-send" aria-hidden="true"></i> Wyślij do {{ people|length }} os.</button>
+    </form>
+    {% endif %}
+    <a class="btn btn-outline-primary btn-lg" href="{% url 'panel:broadcast_edit' workshop.pk broadcast.pk %}">Popraw</a>
+    <form method="post" action="{% url 'panel:broadcast_delete' workshop.pk broadcast.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-link btn-lg text-danger">Usuń szkic</button>
+    </form>
+  </div>
+{% endif %}
+{% endblock %}

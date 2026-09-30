@@ -1,0 +1,31 @@
+{% extends "print/base.html" %}
+{% load workshop_tags %}
+{% block title %}Lista obecności{% endblock %}
+{% block page_class %}landscape{% endblock %}
+{% block pdf_link %}<a href="?format=pdf">PDF</a>{% endblock %}
+{% block content %}
+{% for level, people in groups %}
+  <section class="sheet">
+    <h1>Lista obecności — {{ workshop.title }}</h1>
+    <p class="meta">Poziom: <strong>{{ level.name }}</strong> · {{ workshop|date_range }}{% if workshop.location %} · {{ workshop.location.name }}{% endif %}{% if workshop.leader %} · prowadzący: {{ workshop.leader }}{% endif %}</p>
+    <table class="grid">
+      <thead>
+        <tr>
+          <th scope="col" class="num">Lp.</th>
+          <th scope="col" class="name">Nazwisko i imię</th>
+          {% for session in sessions %}<th scope="col" class="sign">{{ session.date|date:"D j.m" }}<br><span class="small">{{ session.start_time|time:"H:i" }}–{{ session.end_time|time:"H:i" }}</span></th>{% empty %}<th scope="col" class="sign">Podpis</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in people %}
+          <tr><td class="num">{{ forloop.counter }}</td><td class="name">{{ a.last_name }} {{ a.first_name }}</td>{% for session in sessions %}<td class="sign"></td>{% empty %}<td class="sign"></td>{% endfor %}</tr>
+        {% endfor %}
+        {% for _ in "12" %}<tr><td class="num"></td><td class="name"></td>{% for session in sessions %}<td class="sign"></td>{% empty %}<td class="sign"></td>{% endfor %}</tr>{% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% empty %}
+  <h1>Lista obecności — {{ workshop.title }}</h1>
+  <p>Nikt nie został jeszcze przyjęty.</p>
+{% endfor %}
+{% endblock %}

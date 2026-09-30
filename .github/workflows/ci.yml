@@ -48,6 +48,11 @@ jobs:
       - name: Type check
         run: uv run mypy workshop_manager
 
+      # WeasyPrint (PDF printouts) needs Pango; without it the PDF tests are skipped, not failed.
+      - name: PDF libraries
+        continue-on-error: true
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libpango-1.0-0 libpangoft2-1.0-0 fonts-dejavu-core
+
       - name: Tests
         run: uv run pytest --cov --cov-report=term --cov-report=xml
 

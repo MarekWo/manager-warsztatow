@@ -23,6 +23,7 @@ WHITENOISE_AUTOREFRESH = True  # no collectstatic in tests; avoids the missing S
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.InMemoryStorage"},
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    "private": {"BACKEND": "django.core.files.storage.InMemoryStorage"},
 }
 MAILERS = {"default": {"BACKEND": "django.core.mail.backends.locmem.EmailBackend"}}
 

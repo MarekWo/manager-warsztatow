@@ -100,7 +100,8 @@ panel's e-mail log (**E-maile**) and go out when it is back.
 ## Backups
 
 `scripts/backup.sh` writes `backups/<UTC timestamp>/` with `db.sqlite3` (SQLite's online backup,
-checked with `PRAGMA integrity_check` — consistent while the site runs), `media.tar.gz`,
+checked with `PRAGMA integrity_check` — consistent while the site runs), `media.tar.gz`
+(`/data/media`, public uploads, and `/data/private`, message attachments the edge never serves),
 `MANIFEST` (counts of workshops, applications and files) and `SHA256SUMS`. Backups older than
 `BACKUP_KEEP_DAYS` (30) are removed; `BACKUP_RSYNC_TARGET`, `BACKUP_RCLONE_REMOTE` and
 `BACKUP_PING_URL` in `.env` copy them elsewhere and report to a monitor.

@@ -1,0 +1,41 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Wiadomość do uczestników — {{ workshop.title }}{% endblock %}
+{% block panel_content %}
+{% include "panel/partials/workshop_nav.html" %}
+<h2 class="h4 mb-3">{% if broadcast %}Popraw wiadomość{% else %}Nowa wiadomość do uczestników{% endif %}</h2>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <form method="post" enctype="multipart/form-data" class="card card-body shadow-sm" novalidate>
+      {% csrf_token %}
+      {% if broadcast.group == "selected" %}
+        <p class="mb-3">Do kogo: <strong>zaznaczone osoby ({{ broadcast.selected.count }})</strong></p>
+        <input type="hidden" name="group" value="selected">
+      {% else %}
+        {{ form.group.as_field_group }}
+        {{ form.level.as_field_group }}
+      {% endif %}
+      {{ form.subject.as_field_group }}
+      {{ form.body.as_field_group }}
+      {% if broadcast.attachment %}<p class="mb-1">Obecny załącznik: <strong>{{ broadcast.attachment_name }}</strong></p>{% endif %}
+      {{ form.attachment.as_field_group }}
+      {% if form.remove_attachment %}{{ form.remove_attachment.as_field_group }}{% endif %}
+      <div class="d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-primary">Dalej: podgląd i odbiorcy</button>
+        <a class="btn btn-outline-secondary" href="{% url 'panel:broadcast_list' workshop.pk %}">Anuluj</a>
+      </div>
+      <p class="small text-body-secondary mt-2 mb-0">Nic nie zostanie wysłane, zanim nie zobaczysz podglądu i listy odbiorców.</p>
+    </form>
+  </div>
+  <div class="col-lg-5">
+    <div class="card card-body shadow-sm">
+      <h3 class="h5">Pola do wstawienia</h3>
+      <p class="small text-body-secondary">Wpisz nazwę w nawiasach klamrowych, np. <code>{imie}</code> — każda osoba zobaczy swoje dane.</p>
+      <dl class="placeholder-list small mb-0">
+        {% for name, description in placeholders.items %}
+          <dt><code>{{ "{" }}{{ name }}{{ "}" }}</code></dt><dd>{{ description }}</dd>
+        {% endfor %}
+      </dl>
+    </div>
+  </div>
+</div>
+{% endblock %}
