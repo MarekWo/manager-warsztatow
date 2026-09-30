@@ -24,6 +24,7 @@ TEST: Cloudflare tunnel (cloudflared)        ─► edge ─► web      worker 
 ├── compose.prod.yaml
 ├── compose.npm.yaml          # PROD only
 ├── docker/Caddyfile
+├── scripts/                  # _common.sh, backup.sh, restore.sh, update.sh
 └── .env                      # secrets and COMPOSE_FILE; never committed
 ```
 
@@ -63,6 +64,14 @@ edge passes on.
 ## Start and update
 
 ```bash
+scripts/update.sh dev          # TEST; PROD: scripts/update.sh X.Y.Z
+```
+
+`update.sh` takes a backup, pulls the images, starts the stack and waits for it to be healthy
+(the `web` entrypoint runs migrations), records the tag in `.env` and prints `/healthz`. If the
+stack does not come up it prints the previous tag to go back to. By hand:
+
+```bash
 docker compose pull
 docker compose up -d --wait
 curl -s http://127.0.0.1:${EDGE_PORT:-8080}/healthz   # TEST; on PROD: docker compose exec web …
@@ -87,3 +96,53 @@ re-enter it in Settings afterwards.
 
 E-mails are queued and sent by the `worker` container; with the worker stopped they wait in the
 panel's e-mail log (**E-maile**) and go out when it is back.
+
+## Backups
+
+`scripts/backup.sh` writes `backups/<UTC timestamp>/` with `db.sqlite3` (SQLite's online backup,
+checked with `PRAGMA integrity_check` — consistent while the site runs), `media.tar.gz`,
+`MANIFEST` (counts of workshops, applications and files) and `SHA256SUMS`. Backups older than
+`BACKUP_KEEP_DAYS` (30) are removed; `BACKUP_RSYNC_TARGET`, `BACKUP_RCLONE_REMOTE` and
+`BACKUP_PING_URL` in `.env` copy them elsewhere and report to a monitor.
+
+Run it daily with a systemd timer (as the user that owns `/opt/manager-warsztatow`):
+
+```ini
+# /etc/systemd/system/manager-warsztatow-backup.service
+[Unit]
+Description=Manager Warsztatow backup (database and uploads)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=marek
+WorkingDirectory=/opt/manager-warsztatow
+ExecStart=/opt/manager-warsztatow/scripts/backup.sh
+
+# /etc/systemd/system/manager-warsztatow-backup.timer
+[Unit]
+Description=Daily Manager Warsztatow backup
+
+[Timer]
+OnCalendar=*-*-* 02:30
+RandomizedDelaySec=10m
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+```bash
+sudo systemctl daemon-reload && sudo systemctl enable --now manager-warsztatow-backup.timer
+```
+
+Restoring:
+
+```bash
+scripts/restore.sh backups/20261013T023000Z --check   # drill: integrity and counts, changes nothing
+scripts/restore.sh backups/20261013T023000Z           # replaces the live data (asks first)
+```
+
+Run the drill after setting up a server and now and then afterwards — a backup that was never
+restored is only a hope.

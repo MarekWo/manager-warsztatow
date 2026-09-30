@@ -76,3 +76,7 @@ All notable changes to this project are documented here. The format follows
   cancellation and withdrawal confirmation. The organiser's notification now links to the
   application in the panel.
 - `seed_demo` command with demonstration workshops and applications for DEV and TEST.
+- Server scripts: `backup.sh` (consistent SQLite online backup, uploads, manifest and
+  checksums, retention, optional rsync/rclone copy and monitor ping), `restore.sh` (a drill
+  that changes nothing, or a full restore) and `update.sh` (backup, pull, healthy start, the
+  way back on failure); daily systemd timer documented in `docs/deploy.md`.
