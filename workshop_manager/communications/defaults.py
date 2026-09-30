@@ -31,7 +31,23 @@ SITE_PLACEHOLDERS: dict[str, str] = {
     "konto_bankowe": "odbiorca i numer konta",
 }
 
+#: Decisions: the application's data, and the place on the waiting list.
+DECISION_PLACEHOLDERS: dict[str, str] = (
+    APPLICATION_PLACEHOLDERS
+    | {"miejsce_na_liscie": "numer na liście rezerwowej (w e-mailu o liście rezerwowej)"}
+    | SITE_PLACEHOLDERS
+)
+
+DECISION_KEYS = [
+    TemplateKey.DECISION_ACCEPTED,
+    TemplateKey.DECISION_WAITLISTED,
+    TemplateKey.DECISION_REJECTED,
+    TemplateKey.DECISION_CANCELLED,
+    TemplateKey.WITHDRAWAL_CONFIRMED,
+]
+
 PLACEHOLDERS: dict[str, dict[str, str]] = {
+    **dict.fromkeys(DECISION_KEYS, DECISION_PLACEHOLDERS),
     TemplateKey.APPLICATION_RECEIVED: APPLICATION_PLACEHOLDERS | SITE_PLACEHOLDERS,
     TemplateKey.ADMIN_NEW_APPLICATION: APPLICATION_PLACEHOLDERS
     | {"link_do_zgloszenia": "adres zgłoszenia w panelu"}
@@ -50,6 +66,11 @@ RECIPIENTS: dict[str, str] = {
     TemplateKey.ADMIN_NEW_APPLICATION: "organizator, gdy powiadomienia są ustawione na „od razu”",
     TemplateKey.ADMIN_DAILY_DIGEST: "organizator, wieczorem, gdy powiadomienia są ustawione na "
     "„raz dziennie”",
+    TemplateKey.DECISION_ACCEPTED: "uczestnik, po przyjęciu zgłoszenia",
+    TemplateKey.DECISION_WAITLISTED: "uczestnik, po wpisaniu na listę rezerwową",
+    TemplateKey.DECISION_REJECTED: "uczestnik, po odrzuceniu zgłoszenia",
+    TemplateKey.DECISION_CANCELLED: "uczestnik, gdy organizator anuluje jego udział",
+    TemplateKey.WITHDRAWAL_CONFIRMED: "uczestnik, gdy organizator zapisze jego rezygnację",
 }
 
 DEFAULTS: dict[str, tuple[str, str]] = {
@@ -94,6 +115,83 @@ Panel administratora: {link_do_panelu}""",
     ),
 }
 
+DEFAULTS.update(
+    {
+        TemplateKey.DECISION_ACCEPTED: (
+            "Zgłoszenie przyjęte: {warsztat}",
+            """Dzień dobry {imie},
+
+z radością informujemy, że Twoje zgłoszenie na warsztaty „{warsztat}” (poziom: {poziom}) \
+zostało przyjęte.
+
+Terminy spotkań:
+{terminy}
+
+Miejsce: {miejsce}
+
+Cena: {cena}
+Dane do przelewu:
+{konto_bankowe}
+
+Szczegóły warsztatów: {link_do_warsztatu}
+
+Jeśli nie możesz wziąć udziału, prosimy o jak najszybszą informację — odpowiedz na tę \
+wiadomość, a Twoje miejsce otrzyma osoba z listy rezerwowej.
+
+Do zobaczenia!
+{organizacja}""",
+        ),
+        TemplateKey.DECISION_WAITLISTED: (
+            "Lista rezerwowa: {warsztat}",
+            """Dzień dobry {imie},
+
+dziękujemy za zgłoszenie na warsztaty „{warsztat}” (poziom: {poziom}). Wszystkie miejsca są \
+już zajęte, dlatego wpisaliśmy Cię na listę rezerwową (miejsce na liście: {miejsce_na_liscie}).
+
+Jeśli ktoś zrezygnuje, odezwiemy się do Ciebie — nie musisz nic robić.
+
+Terminy spotkań:
+{terminy}
+
+Z serdecznymi pozdrowieniami
+{organizacja}""",
+        ),
+        TemplateKey.DECISION_REJECTED: (
+            "Zgłoszenie na warsztaty: {warsztat}",
+            """Dzień dobry {imie},
+
+dziękujemy za zgłoszenie na warsztaty „{warsztat}”. Niestety tym razem nie możemy go przyjąć.
+
+Zapraszamy na kolejne warsztaty — aktualną listę znajdziesz na naszej stronie.
+
+Z serdecznymi pozdrowieniami
+{organizacja}""",
+        ),
+        TemplateKey.DECISION_CANCELLED: (
+            "Anulowanie udziału w warsztatach: {warsztat}",
+            """Dzień dobry {imie},
+
+informujemy, że Twój udział w warsztatach „{warsztat}” (poziom: {poziom}) został anulowany.
+
+W razie pytań odpowiedz na tę wiadomość.
+
+Z serdecznymi pozdrowieniami
+{organizacja}""",
+        ),
+        TemplateKey.WITHDRAWAL_CONFIRMED: (
+            "Potwierdzenie rezygnacji: {warsztat}",
+            """Dzień dobry {imie},
+
+potwierdzamy Twoją rezygnację z udziału w warsztatach „{warsztat}”. Dziękujemy za informację.
+
+Zapraszamy na kolejne warsztaty.
+
+Z serdecznymi pozdrowieniami
+{organizacja}""",
+        ),
+    }
+)
+
 #: Example values for the preview in the panel (no real personal data).
 SAMPLE_CONTEXT: dict[str, str] = {
     "imie": "Anna",
@@ -117,4 +215,5 @@ SAMPLE_CONTEXT: dict[str, str] = {
     "lista_zgloszen": "• Anna Przykładowa — Rekolekcje z ikoną (Początkujący)\n"
     "• Jan Przykładowy — Rekolekcje z ikoną (Zaawansowani)",
     "link_do_panelu": "https://warsztaty.example.com/panel/",
+    "miejsce_na_liscie": "2",
 }

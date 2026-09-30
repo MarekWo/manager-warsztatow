@@ -215,3 +215,38 @@ class ApplicationForm(BootstrapFormMixin, forms.Form):
                 value = "; ".join(value)
             result.append((question, (value or "").strip()))
         return result
+
+
+class PanelApplicationForm(ApplicationForm):
+    """The same form, filled in by the administrator (an application made by phone, say).
+
+    No anti-spam checks, and nothing but the contact details is required — the administrator
+    may not know every answer. The consent is confirmed on the person's behalf.
+    """
+
+    send_confirmation = forms.BooleanField(
+        label="Wyślij uczestnikowi potwierdzenie otrzymania zgłoszenia",
+        required=False,
+        initial=True,
+    )
+
+    def __init__(self, *args: Any, workshop: Workshop, **kwargs: Any) -> None:
+        super().__init__(*args, workshop=workshop, **kwargs)
+        del self.fields["website"]
+        del self.fields["started"]
+        self.fields["privacy"].label = (
+            "Osoba zgodziła się na przetwarzanie danych osobowych w celu organizacji warsztatów "
+            "(np. podczas rozmowy telefonicznej)."
+        )
+        self.fields["privacy"].help_text = ""
+        self.fields["marketing"].label = "Osoba chce otrzymywać informacje o kolejnych warsztatach."
+        if "adult" in self.fields:
+            self.fields["adult"].required = False
+            self.fields["adult"].label = "Osoba potwierdziła, że jest pełnoletnia."
+        for name in ("phone", "remarks"):
+            if name in self.fields:
+                self.fields[name].required = False
+        for question in self.questions:
+            # These are this form's own copies: `clean()` then skips level-bound checks too.
+            question.required = False
+            self.fields[question_field_name(question)].required = False

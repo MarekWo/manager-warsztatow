@@ -1,0 +1,15 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Popraw dane — {{ application.full_name }}{% endblock %}
+{% block panel_content %}
+<p class="mb-2 small"><a href="{{ application.get_panel_url }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Wróć do zgłoszenia</a></p>
+<h1 class="page-title mb-1">Popraw dane zgłoszenia</h1>
+<p class="text-body-secondary">{{ workshop.title }}. Adresu e-mail nie można zmienić — po nim system rozpoznaje osobę. Każda poprawka trafia do historii zgłoszenia.</p>
+<form method="post" class="card card-body shadow-sm">
+  {% csrf_token %}
+  {{ form }}
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+    <a class="btn btn-outline-secondary" href="{{ application.get_panel_url }}">Anuluj</a>
+  </div>
+</form>
+{% endblock %}

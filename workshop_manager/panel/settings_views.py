@@ -34,6 +34,7 @@ from workshop_manager.communications.services import (
     retry_now,
     send_test_email,
 )
+from workshop_manager.core import audit
 from workshop_manager.core.models import SiteSettings
 from workshop_manager.panel.forms import EmailTemplateForm, SiteSettingsForm, TestEmailForm
 from workshop_manager.panel.views import staff_required
@@ -75,7 +76,13 @@ def settings_edit(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         if form.is_valid():
             smtp_changed = bool(SMTP_FIELDS.intersection(form.changed_data))
+            changed = ", ".join(
+                str(form.fields[name].label)
+                for name in form.changed_data
+                if name in form.fields and name != "smtp_password"
+            )
             form.save()
+            audit.record(request.user, "Zmieniono ustawienia", "Ustawienia", details=changed)
             messages.success(request, "Zapisano ustawienia.")
             if smtp_changed and (waiting := retry_all_waiting()):
                 messages.info(
@@ -139,6 +146,7 @@ def email_template_edit(request: HttpRequest, key: str) -> HttpResponse:
     form = EmailTemplateForm(request.POST or None, instance=template, placeholders=placeholders)
     if request.method == "POST" and form.is_valid():
         form.save()
+        audit.record(request.user, "Zmieniono szablon e-maila", template.get_key_display())
         messages.success(request, "Zapisano szablon e-maila.")
         return redirect("panel:email_template_edit", key=key)
     context = {
@@ -156,6 +164,7 @@ def email_template_reset(request: HttpRequest, key: str) -> HttpResponse:
     template = _template_or_404(key)
     template.subject, template.body = DEFAULTS[key]
     template.save()
+    audit.record(request.user, "Przywrócono domyślny szablon e-maila", template.get_key_display())
     messages.success(request, "Przywrócono domyślną treść szablonu.")
     return redirect("panel:email_template_edit", key=key)
 

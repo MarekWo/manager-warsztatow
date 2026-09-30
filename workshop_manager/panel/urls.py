@@ -1,6 +1,6 @@
 from django.urls import path
 
-from workshop_manager.panel import dictionary_views, settings_views, views
+from workshop_manager.panel import application_views, dictionary_views, settings_views, views
 
 app_name = "panel"
 
@@ -105,4 +105,36 @@ urlpatterns = [
         dictionary_views.template_question_delete,
         name="dictionary_question_delete",
     ),
+]
+
+urlpatterns += [
+    # Applications (PRD §7.3) and the event log (PRD §7.9)
+    path("zgloszenia/", application_views.application_list, name="application_list"),
+    path("zgloszenia/grupowo/", application_views.application_bulk, name="application_bulk"),
+    path("zgloszenia/<int:pk>/", application_views.application_detail, name="application_detail"),
+    path(
+        "zgloszenia/<int:pk>/decyzja/<slug:status>/",
+        application_views.application_decide,
+        name="application_decide",
+    ),
+    path(
+        "zgloszenia/<int:pk>/poziom/", application_views.application_level, name="application_level"
+    ),
+    path("zgloszenia/<int:pk>/dane/", application_views.application_edit, name="application_edit"),
+    path(
+        "zgloszenia/<int:pk>/rezerwa/<slug:direction>/",
+        application_views.application_waitlist_move,
+        name="application_waitlist_move",
+    ),
+    path(
+        "warsztaty/<int:pk>/zgloszenia/",
+        application_views.workshop_applications,
+        name="workshop_applications",
+    ),
+    path(
+        "warsztaty/<int:pk>/zgloszenia/nowe/",
+        application_views.application_add,
+        name="application_add",
+    ),
+    path("dziennik/", application_views.audit_log, name="audit_log"),
 ]

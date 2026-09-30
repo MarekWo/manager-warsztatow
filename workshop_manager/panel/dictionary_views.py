@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from workshop_manager.core import audit
 from workshop_manager.forms_builder.models import FormTemplate, TemplateQuestion
 from workshop_manager.panel import ordering
 from workshop_manager.panel.forms import FormTemplateForm, TemplateQuestionForm, WorkshopTypeForm
@@ -36,7 +37,8 @@ def type_edit(request: HttpRequest, pk: int | None = None) -> HttpResponse:
     workshop_type = get_object_or_404(WorkshopType, pk=pk) if pk is not None else None
     form = WorkshopTypeForm(request.POST or None, instance=workshop_type)
     if request.method == "POST" and form.is_valid():
-        form.save()
+        saved = form.save()
+        audit.record(request.user, "Zapisano rodzaj warsztatów", saved)
         messages.success(request, "Zapisano rodzaj warsztatów.")
         return redirect("panel:dictionary_type_list")
     return render(
@@ -66,6 +68,7 @@ def template_edit(request: HttpRequest, pk: int | None = None) -> HttpResponse:
     form = FormTemplateForm(request.POST or None, instance=template)
     if request.method == "POST" and form.is_valid():
         saved = form.save()
+        audit.record(request.user, "Zapisano szablon formularza", saved)
         messages.success(request, "Zapisano szablon.")
         return redirect("panel:dictionary_template_edit", pk=saved.pk)
     context = {
@@ -82,6 +85,7 @@ def template_delete(request: HttpRequest, pk: int) -> HttpResponse:
     template = get_object_or_404(FormTemplate, pk=pk)
     if request.method == "POST":
         template.delete()
+        audit.record(request.user, "Usunięto szablon formularza", template.name)
         messages.success(request, f"Usunięto szablon „{template.name}”.")
         return redirect("panel:dictionary_template_list")
     context = {"template": template, "used_by": _types_using(template)}

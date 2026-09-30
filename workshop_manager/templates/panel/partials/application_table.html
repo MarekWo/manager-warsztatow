@@ -1,0 +1,68 @@
+{# The list with checkboxes and bulk actions. Needs `page`, `bulk_actions`, optional `workshop`. #}
+{% if page.object_list %}
+<form method="post" action="{% url 'panel:application_bulk' %}" id="bulk-form">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  <div class="table-responsive" tabindex="0" role="region" aria-label="Lista zgłoszeń">
+  <table class="table align-middle application-table">
+    <thead>
+      <tr>
+        <th scope="col"><span class="visually-hidden">Zaznacz</span></th>
+        <th scope="col">Osoba</th>
+        {% if not workshop %}<th scope="col">Warsztat</th>{% endif %}
+        <th scope="col">Poziom</th>
+        <th scope="col">Status</th>
+        <th scope="col">Wysłano</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for a in page %}
+      <tr>
+        <td><input class="form-check-input" type="checkbox" name="ids" value="{{ a.pk }}" id="sel-{{ a.pk }}" aria-label="Zaznacz: {{ a.full_name }}"></td>
+        <td>
+          <a href="{{ a.get_panel_url }}" class="{% if not a.is_seen %}fw-bold{% endif %}">{{ a.last_name }} {{ a.first_name }}</a>
+          {% if not a.is_seen %}<span class="badge rounded-pill text-bg-info ms-1">nieprzejrzane</span>{% endif %}
+          <div class="small text-body-secondary">{{ a.email }}</div>
+        </td>
+        {% if not workshop %}<td><a href="{% url 'panel:workshop_applications' a.workshop_id %}">{{ a.workshop.title }}</a></td>{% endif %}
+        <td>{{ a.level.name }}</td>
+        <td>{% include "panel/partials/status_badge.html" with status=a.status position=a.waitlist_position %}</td>
+        <td class="text-nowrap small">{{ a.submitted_at|date:"d.m.Y H:i" }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  <fieldset class="card card-body bg-body-tertiary mb-3">
+    <legend class="h6">Z zaznaczonymi</legend>
+    <div class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <label class="visually-hidden" for="bulk-action">Akcja</label>
+        <select class="form-select" name="action" id="bulk-action">
+          {% for value, label in bulk_actions %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="notify" value="1" id="bulk-notify" checked>
+          <label class="form-check-label" for="bulk-notify">Wyślij powiadomienie e-mailem (według szablonu)</label>
+        </div>
+      </div>
+      <div class="col-md-3"><button type="submit" class="btn btn-primary w-100">Wykonaj</button></div>
+    </div>
+  </fieldset>
+</form>
+
+{% if page.has_other_pages %}
+<nav aria-label="Strony listy zgłoszeń">
+  <ul class="pagination">
+    {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?{{ query_string }}&amp;page={{ page.previous_page_number }}">Poprzednia</a></li>{% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ page.number }} / {{ page.paginator.num_pages }}</span></li>
+    {% if page.has_next %}<li class="page-item"><a class="page-link" href="?{{ query_string }}&amp;page={{ page.next_page_number }}">Następna</a></li>{% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% else %}
+  <p class="text-body-secondary">Brak zgłoszeń{% if filters.status or filters.q or filters.unseen or filters.level %} spełniających warunki{% endif %}.</p>
+{% endif %}

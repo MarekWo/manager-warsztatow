@@ -3,6 +3,7 @@ from typing import Any
 from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory
 
+from workshop_manager.applications.models import Application
 from workshop_manager.communications.models import EmailTemplate
 from workshop_manager.communications.rendering import unknown_placeholders
 from workshop_manager.core.forms import BootstrapFormMixin, DateInput, DateTimeInput, TimeInput
@@ -408,3 +409,65 @@ class TemplateQuestionForm(ChoicesCleanMixin, BootstrapFormMixin, forms.ModelFor
         model = TemplateQuestion
         fields = ["label", "help_text", "kind", "choices", "required", "level_name"]
         widgets = {"choices": forms.Textarea(attrs={"rows": 4})}
+
+
+# --- Applications (PRD §7.3) ---------------------------------------------------------------------
+
+
+class DecisionForm(BootstrapFormMixin, forms.Form):
+    """The decision window: the e-mail as it will be sent, editable, and whether to send it."""
+
+    notify = forms.BooleanField(label="Wyślij powiadomienie e-mailem", required=False, initial=True)
+    subject = forms.CharField(label="Temat", max_length=200, required=False)
+    body = forms.CharField(
+        label="Treść",
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 16}),
+        help_text="Możesz dopisać osobiste zdanie albo zmienić treść — zmiany dotyczą tylko "
+        "tego jednego e-maila.",
+    )
+    comment = forms.CharField(
+        label="Komentarz do historii (widzi go tylko organizator)",
+        required=False,
+        max_length=500,
+    )
+
+    def __init__(self, *args: Any, with_email: bool = True, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        if not with_email:
+            for name in ("notify", "subject", "body"):
+                del self.fields[name]
+
+    def clean(self) -> dict[str, Any]:
+        data = super().clean() or {}
+        if data.get("notify"):
+            for name in ("subject", "body"):
+                if not (data.get(name) or "").strip():
+                    self.add_error(name, "Wpisz treść e-maila albo odznacz wysyłkę powiadomienia.")
+        return data
+
+
+class LevelChangeForm(BootstrapFormMixin, forms.Form):
+    level = forms.ModelChoiceField(label="Poziom", queryset=Level.objects.none(), empty_label=None)
+
+    def __init__(self, *args: Any, workshop: Workshop, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        field: forms.ModelChoiceField = self.fields["level"]  # type: ignore[assignment]
+        field.queryset = workshop.levels.all()
+
+
+class ApplicationEditForm(BootstrapFormMixin, forms.ModelForm):
+    """Correcting the contact details of one application (the address identifies the person)."""
+
+    class Meta:
+        model = Application
+        fields = ["first_name", "last_name", "phone", "remarks"]
+        widgets = {"remarks": forms.Textarea(attrs={"rows": 3})}
+
+
+class NotesForm(BootstrapFormMixin, forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ["admin_notes"]
+        widgets = {"admin_notes": forms.Textarea(attrs={"rows": 4})}
+        help_texts = {"admin_notes": "Widoczne tylko dla organizatorów."}

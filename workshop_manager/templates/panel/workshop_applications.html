@@ -1,0 +1,44 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Zgłoszenia — {{ workshop.title }}{% endblock %}
+{% block panel_content %}
+{% include "panel/partials/workshop_nav.html" %}
+
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+  <h2 class="h4 mb-0">Podsumowanie</h2>
+  <a class="btn btn-outline-primary" href="{% url 'panel:application_add' workshop.pk %}"><i class="bi bi-person-plus" aria-hidden="true"></i> Dodaj zgłoszenie</a>
+</div>
+<div class="card card-body shadow-sm mb-4">
+  {% include "panel/partials/level_summary.html" %}
+</div>
+
+<h2 class="h4 mb-3">Lista zgłoszeń ({{ total }})</h2>
+{% include "panel/partials/application_filters.html" %}
+{% include "panel/partials/application_table.html" %}
+
+<section id="rezerwa" class="mt-5" aria-labelledby="h-waitlist">
+  <h2 id="h-waitlist" class="h4 mb-2">Listy rezerwowe</h2>
+  <p class="small text-body-secondary">Kolejność decyduje, kogo system podpowie, gdy zwolni się miejsce. Zmieniasz ją strzałkami.</p>
+  {% for level, waiting in waitlists %}
+    {% if waiting %}
+      <h3 class="h5 mt-3">{{ level.name }}</h3>
+      <ol class="list-group list-group-numbered mb-3">
+        {% for a in waiting %}
+          <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <span class="me-auto ms-2"><a href="{{ a.get_panel_url }}">{{ a.full_name }}</a> <span class="small text-body-secondary">zgłoszenie z {{ a.submitted_at|date:"d.m.Y H:i" }}</span></span>
+            <span class="d-flex gap-1">
+              <form method="post" action="{% url 'panel:application_waitlist_move' a.pk 'up' %}">{% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-secondary" {% if forloop.first %}disabled{% endif %} aria-label="Wyżej: {{ a.full_name }}"><i class="bi bi-arrow-up" aria-hidden="true"></i></button>
+              </form>
+              <form method="post" action="{% url 'panel:application_waitlist_move' a.pk 'down' %}">{% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-secondary" {% if forloop.last %}disabled{% endif %} aria-label="Niżej: {{ a.full_name }}"><i class="bi bi-arrow-down" aria-hidden="true"></i></button>
+              </form>
+              <a class="btn btn-sm btn-outline-success" href="{% url 'panel:application_decide' a.pk 'accepted' %}?next={{ request.get_full_path|urlencode }}">Przyjmij</a>
+            </span>
+          </li>
+        {% endfor %}
+      </ol>
+    {% endif %}
+  {% endfor %}
+  {% if not has_waitlist %}<p class="text-body-secondary">Nikt nie czeka na liście rezerwowej.</p>{% endif %}
+</section>
+{% endblock %}

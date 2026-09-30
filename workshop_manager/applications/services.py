@@ -11,8 +11,10 @@ from workshop_manager.applications.models import (
     Answer,
     Application,
     Participant,
+    Source,
 )
 from workshop_manager.communications import notifications
+from workshop_manager.core import audit
 
 
 class DuplicateApplication(Exception):
@@ -25,11 +27,19 @@ def has_active_application(workshop: Any, email: str) -> bool:
     ).exists()
 
 
-def submit_application(form: ApplicationForm, *, user: Any = None) -> Application:
+def submit_application(
+    form: ApplicationForm,
+    *,
+    user: Any = None,
+    added_by: Any = None,
+    send_confirmation: bool = True,
+) -> Application:
     """Store a valid form as a new application; raise `DuplicateApplication` for a repeat.
 
     The confirmation e-mail and the organiser's notification are queued in the same
-    transaction and sent by the worker after the commit.
+    transaction and sent by the worker after the commit. `added_by` is the administrator
+    entering an application in the panel (say, one made by phone): the organiser is not
+    notified about it and the confirmation is sent only if they chose so.
 
     The participant is found by email. Their stored name and phone follow the latest
     application unless they have an account — then only they may change their details
@@ -58,7 +68,12 @@ def submit_application(form: ApplicationForm, *, user: Any = None) -> Applicatio
             if data.get("marketing") and not participant.marketing_consent:
                 participant.marketing_consent = True
                 participant.marketing_consent_at = now
-            if user is not None and user.is_authenticated and user.email == email:
+            if (
+                added_by is None
+                and user is not None
+                and user.is_authenticated
+                and user.email == email
+            ):
                 participant.user = user
             participant.save()
 
@@ -75,6 +90,9 @@ def submit_application(form: ApplicationForm, *, user: Any = None) -> Applicatio
                 privacy_consent_at=now,
                 privacy_consent_version=form.privacy_version,
                 marketing_consent=bool(data.get("marketing")),
+                source=Source.PANEL if added_by else Source.FORM,
+                created_by=added_by,
+                is_seen=added_by is not None,
             )
             Answer.objects.bulk_create(
                 Answer(
@@ -86,7 +104,11 @@ def submit_application(form: ApplicationForm, *, user: Any = None) -> Applicatio
                 )
                 for order, (question, value) in enumerate(form.answers())
             )
-            notifications.application_submitted(application)
+            notifications.application_submitted(
+                application, confirm=send_confirmation, notify_organiser=added_by is None
+            )
+            if added_by is not None:
+                audit.record(added_by, "Dodano zgłoszenie w panelu", application)
     except IntegrityError as error:  # two submissions racing past the check above
         raise DuplicateApplication from error
     return application

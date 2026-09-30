@@ -2,6 +2,7 @@ from datetime import date, time
 
 import factory
 from allauth.account.models import EmailAddress
+from django.utils import timezone
 
 from workshop_manager.accounts.models import User
 
@@ -79,3 +80,28 @@ class QuestionFactory(factory.django.DjangoModelFactory):
     workshop = factory.SubFactory(WorkshopFactory)
     label = factory.Sequence(lambda n: f"Pytanie {n}")
     order = factory.Sequence(lambda n: n)
+
+
+class ParticipantFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "applications.Participant"
+
+    email = factory.Sequence(lambda n: f"uczestnik{n}@example.com")
+    first_name = "Jan"
+    last_name = factory.Sequence(lambda n: f"Nowak{n}")
+
+
+class ApplicationFactory(factory.django.DjangoModelFactory):
+    """An application as the public form stores it; pass `level` (its workshop is used)."""
+
+    class Meta:
+        model = "applications.Application"
+
+    level = factory.SubFactory(LevelFactory)
+    workshop = factory.LazyAttribute(lambda o: o.level.workshop)
+    participant = factory.SubFactory(ParticipantFactory)
+    first_name = factory.LazyAttribute(lambda o: o.participant.first_name)
+    last_name = factory.LazyAttribute(lambda o: o.participant.last_name)
+    email = factory.LazyAttribute(lambda o: o.participant.email)
+    privacy_consent_at = factory.LazyFunction(timezone.now)
+    privacy_consent_version = "1"

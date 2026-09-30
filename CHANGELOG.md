@@ -58,3 +58,21 @@ All notable changes to this project are documented here. The format follows
   the organiser — immediately or as a daily summary at 19:00.
 - Dictionaries in Settings: workshop types (default levels and questions, switching off) and
   form templates with their questions.
+- Reviewing applications: a list for all workshops and one per workshop (filters by status and
+  level, search by name or e-mail, "not yet seen"), application details with the answers,
+  consents, the person's other workshops, the history of changes and private notes.
+- Decisions — accept, waiting list, reject, cancel, record a withdrawal — checked against the
+  allowed transitions, each with a window showing the participant's e-mail, editable before
+  sending, and the option not to send it; bulk decisions with the template e-mail.
+- Waiting list per level, numbered and reorderable; when an accepted person leaves, the first
+  person waiting on that level is suggested (never promoted automatically).
+- Applications added by the administrator (made by phone), with or without a confirmation
+  e-mail; correcting contact details and changing the level, both recorded in the history.
+- Dashboard counters per level against the limit (with a warning above it), unseen
+  applications, failed e-mails, missing mail configuration and workshops about to be published.
+- Event log in the panel: who changed what and when (decisions, workshops, settings,
+  templates, dictionaries).
+- New e-mail templates: acceptance, waiting list (with the place on the list), rejection,
+  cancellation and withdrawal confirmation. The organiser's notification now links to the
+  application in the panel.
+- `seed_demo` command with demonstration workshops and applications for DEV and TEST.

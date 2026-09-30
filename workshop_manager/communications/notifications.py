@@ -12,23 +12,27 @@ from workshop_manager.communications.services import queue_from_template
 from workshop_manager.core.models import AdminNotifications, SiteSettings, absolute_url
 
 
-def application_submitted(application: Any) -> None:
+def application_submitted(
+    application: Any, *, confirm: bool = True, notify_organiser: bool = True
+) -> None:
     """Queue the confirmation (with a copy of the answers) and, if wanted, the notification.
 
     Called inside the transaction that stores the application: the messages are written with
     it and sent after the commit, so an SMTP failure can never lose an application.
     """
     context = application_context(application)
-    queue_from_template(
-        TemplateKey.APPLICATION_RECEIVED,
-        to_email=application.email,
-        to_name=application.full_name,
-        context=context,
-        application=application,
-    )
+    if confirm:
+        queue_from_template(
+            TemplateKey.APPLICATION_RECEIVED,
+            to_email=application.email,
+            to_name=application.full_name,
+            context=context,
+            application=application,
+        )
     site = SiteSettings.load()
     recipient = site.admin_recipient()
-    if site.admin_notifications == AdminNotifications.IMMEDIATE and recipient:
+    wanted = notify_organiser and site.admin_notifications == AdminNotifications.IMMEDIATE
+    if wanted and recipient:
         queue_from_template(
             TemplateKey.ADMIN_NEW_APPLICATION,
             to_email=recipient,
@@ -39,7 +43,7 @@ def application_submitted(application: Any) -> None:
 
 def send_admin_digest() -> int:
     """Evening summary of the day's applications (periodic job); returns how many it listed."""
-    from workshop_manager.applications.models import Application
+    from workshop_manager.applications.models import Application, Source
 
     site = SiteSettings.load()
     now = timezone.now()
@@ -48,7 +52,9 @@ def send_admin_digest() -> int:
     count = 0
     if site.admin_notifications == AdminNotifications.DAILY and recipient:
         applications = list(
-            Application.objects.filter(submitted_at__gt=since, submitted_at__lte=now)
+            Application.objects.filter(
+                submitted_at__gt=since, submitted_at__lte=now, source=Source.FORM
+            )
             .select_related("workshop", "level")
             .order_by("submitted_at")
         )

@@ -1,0 +1,57 @@
+{% extends "panel/base_panel.html" %}
+{% load static %}
+{% block title %}Dodaj zgłoszenie — {{ workshop.title }}{% endblock %}
+{% block panel_content %}
+{% include "panel/partials/workshop_nav.html" %}
+<h2 class="h4 mb-1">Dodaj zgłoszenie</h2>
+<p class="text-body-secondary">Np. zgłoszenie przyjęte telefonicznie. Wymagane są tylko dane kontaktowe i zgoda na przetwarzanie danych — odpowiedzi na pytania możesz pominąć.</p>
+
+{% if form.errors %}
+  <div class="alert alert-danger" role="alert">
+    Popraw zaznaczone pola.
+    {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+  </div>
+{% endif %}
+
+<form method="post" novalidate class="application-form">
+  {% csrf_token %}
+  <section class="card card-body shadow-sm mb-4">
+    {% if form.level.field.widget.input_type == "hidden" %}{{ form.level }}{% else %}{{ form.level.as_field_group }}{% endif %}
+    <div class="row">
+      <div class="col-md-6">{{ form.first_name.as_field_group }}</div>
+      <div class="col-md-6">{{ form.last_name.as_field_group }}</div>
+    </div>
+    {{ form.email.as_field_group }}
+    {% if form.phone %}{{ form.phone.as_field_group }}{% endif %}
+  </section>
+
+  {% if form.questions %}
+  <section class="card card-body shadow-sm mb-4" aria-labelledby="h-questions">
+    <h3 id="h-questions" class="h5 mb-3">Pytania z formularza</h3>
+    {% for question, field in form.question_rows %}
+      <div class="question" {% if question.level_id %}data-level="{{ question.level_id }}"{% endif %}>
+        {% if question.level_id %}<div class="small text-accent fw-semibold">Dotyczy poziomu: {{ question.level.name }}</div>{% endif %}
+        {{ field.as_field_group }}
+      </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <section class="card card-body shadow-sm mb-4">
+    {% if form.remarks %}{{ form.remarks.as_field_group }}{% endif %}
+    {% if form.adult %}{{ form.adult.as_field_group }}{% endif %}
+    {{ form.privacy.as_field_group }}
+    {{ form.marketing.as_field_group }}
+    {{ form.send_confirmation.as_field_group }}
+  </section>
+
+  <div class="d-flex gap-2 mb-5">
+    <button type="submit" class="btn btn-primary btn-lg">Dodaj zgłoszenie</button>
+    <a class="btn btn-outline-secondary btn-lg" href="{% url 'panel:workshop_applications' workshop.pk %}">Anuluj</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/application-form.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{{ action_label }} — {{ application.full_name }}{% endblock %}
+{% block panel_content %}
+<p class="mb-2 small"><a href="{{ application.get_panel_url }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Wróć do zgłoszenia</a></p>
+<h1 class="page-title mb-1">{{ action_label }}: {{ application.full_name }}</h1>
+<p class="mb-4">{{ workshop.title }} · poziom {{ application.level.name }} ·
+  {% include "panel/partials/status_badge.html" with status=application.status position=application.waitlist_position %}
+  → {% include "panel/partials/status_badge.html" with status=target_status %}</p>
+
+<form method="post" class="card card-body shadow-sm decision-form" novalidate>
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}">
+  {% if form.notify %}
+    {{ form.notify.as_field_group }}
+    <fieldset class="email-edit">
+      <legend class="h5">E-mail do {{ application.email }}</legend>
+      {{ form.subject.as_field_group }}
+      {{ form.body.as_field_group }}
+    </fieldset>
+  {% else %}
+    <p>Przy tej zmianie system nie wysyła e-maila.</p>
+  {% endif %}
+  {{ form.comment.as_field_group }}
+  <div class="d-flex flex-wrap gap-2">
+    <button type="submit" class="btn btn-primary btn-lg">{{ action_label }}</button>
+    <a class="btn btn-outline-secondary btn-lg" href="{{ application.get_panel_url }}">Anuluj</a>
+  </div>
+</form>
+{% endblock %}

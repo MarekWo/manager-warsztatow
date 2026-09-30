@@ -1,8 +1,10 @@
 """The administrator's panel (PRD §7). Every view requires a staff account."""
 
 from collections.abc import Callable
+from datetime import timedelta
 from typing import Any
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import transaction
@@ -13,6 +15,11 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from workshop_manager.applications.models import Application
+from workshop_manager.applications.summary import level_summaries
+from workshop_manager.communications.services import failed_or_retrying
+from workshop_manager.core import audit
+from workshop_manager.core.models import SiteSettings
 from workshop_manager.forms_builder.models import Question, copy_template
 from workshop_manager.panel import ordering
 from workshop_manager.panel.forms import (
@@ -51,12 +58,22 @@ def _workshops() -> Any:
 
 @staff_required
 def dashboard(request: HttpRequest) -> HttpResponse:
-    """Start page (PRD §7.1): what is public now and what is coming."""
+    """Start page (PRD §7.1): applications per level, what needs attention, what is coming."""
     now = timezone.now()
+    published = list(_workshops().in_tab("published", now))
+    scheduled = list(_workshops().in_tab("scheduled", now))
+    summaries = level_summaries(published + scheduled)
+    site = SiteSettings.load()
+    default_backend = settings.MAILERS.get("default", {}).get("BACKEND", "")
     context = {
-        "published": _workshops().in_tab("published", now),
-        "scheduled": _workshops().in_tab("scheduled", now),
+        "published": [(w, summaries[w.pk]) for w in published],
+        "scheduled": [(w, summaries[w.pk]) for w in scheduled],
         "drafts": _workshops().in_tab("draft", now)[:5],
+        "unseen": Application.objects.filter(is_seen=False).count(),
+        "failed_emails": failed_or_retrying().count(),
+        "publishing_soon": [w for w in scheduled if w.publish_at <= now + timedelta(days=7)],
+        "no_smtp": not site.uses_own_smtp()
+        and any(name in default_backend for name in ("console", "dummy")),
     }
     return render(request, "panel/dashboard.html", context)
 
@@ -86,6 +103,7 @@ def workshop_create(request: HttpRequest) -> HttpResponse:
             location=form.cleaned_data["location"],
             user=request.user,
         )
+        audit.record(request.user, "Utworzono warsztat", workshop)
         messages.success(
             request,
             "Utworzono szkic warsztatu. Uzupełnij terminy spotkań, poziomy i datę publikacji.",
@@ -112,6 +130,18 @@ def workshop_edit(request: HttpRequest, pk: int) -> HttpResponse:
                     if level.order != order:
                         level.order = order
                         level.save(update_fields=["order"])
+                changed = [
+                    str(f.fields[name].label)
+                    for f in [form, *sessions.forms, *levels.forms]
+                    for name in f.changed_data
+                    if name in f.fields and name not in ("id", "workshop")
+                ]
+                audit.record(
+                    request.user,
+                    "Zmieniono warsztat",
+                    workshop,
+                    details=", ".join(dict.fromkeys(changed)),
+                )
             messages.success(request, "Zapisano zmiany.")
             return redirect("panel:workshop_edit", pk=workshop.pk)
         messages.error(request, "Popraw zaznaczone pola i zapisz ponownie.")
@@ -178,6 +208,7 @@ def workshop_action(request: HttpRequest, pk: int, action: str) -> HttpResponse:
     else:
         raise Http404
     workshop.save()
+    audit.record(request.user, message.rstrip("."), workshop)
     messages.success(request, message)
     return redirect(request.POST.get("next") or reverse("panel:workshop_edit", args=[pk]))
 
@@ -193,6 +224,7 @@ def workshop_duplicate(request: HttpRequest, pk: int) -> HttpResponse:
             first_date=form.cleaned_data["first_date"],
             user=request.user,
         )
+        audit.record(request.user, "Zduplikowano warsztat", copy, details=f"z „{source.title}”")
         messages.success(
             request, "Utworzono kopię jako szkic. Sprawdź terminy i ustaw datę publikacji."
         )
@@ -212,6 +244,7 @@ def workshop_delete(request: HttpRequest, pk: int) -> HttpResponse:
         return redirect("panel:workshop_edit", pk=pk)
     if request.method == "POST":
         workshop.delete()
+        audit.record(request.user, "Usunięto szkic warsztatu", workshop.title)
         messages.success(request, f"Usunięto szkic „{workshop.title}”.")
         return redirect(reverse("panel:workshop_list") + "?tab=draft")
     return render(request, "panel/workshop_delete.html", {"workshop": workshop})
@@ -253,6 +286,7 @@ def question_edit(request: HttpRequest, pk: int, question_pk: int | None = None)
             last = workshop.questions.aggregate(Max("order"))["order__max"]
             saved.order = (last or 0) + 1
         saved.save()
+        audit.record(request.user, "Zapisano pytanie formularza", workshop, details=saved.label)
         messages.success(request, "Zapisano pytanie.")
         return redirect("panel:form_editor", pk=pk)
     return render(
@@ -293,6 +327,7 @@ def question_delete(request: HttpRequest, pk: int, question_pk: int) -> HttpResp
         return redirect("panel:form_editor", pk=pk)
     if request.method == "POST":
         question.delete()
+        audit.record(request.user, "Usunięto pytanie formularza", workshop, details=question.label)
         messages.success(request, "Usunięto pytanie.")
         return redirect("panel:form_editor", pk=pk)
     return render(
@@ -325,7 +360,8 @@ def location_edit(request: HttpRequest, pk: int | None = None) -> HttpResponse:
     location = get_object_or_404(Location, pk=pk) if pk is not None else None
     form = LocationForm(request.POST or None, instance=location)
     if request.method == "POST" and form.is_valid():
-        form.save()
+        saved = form.save()
+        audit.record(request.user, "Zapisano miejsce", saved)
         messages.success(request, "Zapisano miejsce.")
         return redirect("panel:location_list")
     return render(request, "panel/location_edit.html", {"form": form, "location": location})

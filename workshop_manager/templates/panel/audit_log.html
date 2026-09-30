@@ -1,0 +1,43 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Dziennik zdarzeń{% endblock %}
+{% block panel_content %}
+<h1 class="page-title mb-1">Dziennik zdarzeń</h1>
+<p class="text-body-secondary">Kto, co i kiedy zmienił w panelu: decyzje o zgłoszeniach, zmiany warsztatów i ustawień.</p>
+
+<form method="get" class="row g-2 mb-3" role="search">
+  <div class="col-md-8">
+    <label class="visually-hidden" for="q">Szukaj</label>
+    <input type="search" class="form-control" id="q" name="q" value="{{ query }}" placeholder="Nazwisko, warsztat, adres osoby…">
+  </div>
+  <div class="col-md-4"><button type="submit" class="btn btn-outline-primary w-100">Szukaj</button></div>
+</form>
+
+{% if page.object_list %}
+<div class="table-responsive">
+<table class="table align-middle">
+  <thead><tr><th scope="col">Kiedy</th><th scope="col">Kto</th><th scope="col">Co</th><th scope="col">Czego dotyczy</th></tr></thead>
+  <tbody>
+  {% for event in page %}
+    <tr>
+      <td class="text-nowrap small">{{ event.created_at|date:"d.m.Y H:i" }}</td>
+      <td class="small">{{ event.actor_email|default:"system" }}</td>
+      <td>{{ event.action }}{% if event.details %}<div class="small text-body-secondary">{{ event.details|truncatechars:200 }}</div>{% endif %}</td>
+      <td>{% if event.url %}<a href="{{ event.url }}">{{ event.target }}</a>{% else %}{{ event.target }}{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if page.has_other_pages %}
+<nav aria-label="Strony dziennika">
+  <ul class="pagination">
+    {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?q={{ query|urlencode }}&amp;page={{ page.previous_page_number }}">Nowsze</a></li>{% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ page.number }} / {{ page.paginator.num_pages }}</span></li>
+    {% if page.has_next %}<li class="page-item"><a class="page-link" href="?q={{ query|urlencode }}&amp;page={{ page.next_page_number }}">Starsze</a></li>{% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% else %}
+  <p class="text-body-secondary">Brak zdarzeń{% if query %} spełniających warunki{% endif %}.</p>
+{% endif %}
+{% endblock %}

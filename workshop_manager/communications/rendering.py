@@ -11,7 +11,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from django.template.loader import render_to_string
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import urlize
 from django.utils.safestring import mark_safe
@@ -114,7 +113,6 @@ def application_context(application: Any) -> dict[str, str]:
         "uwagi": application.remarks,
         "data_zgloszenia": f"{timezone.localtime(application.submitted_at):%d.%m.%Y, %H:%M}",
         "link_do_warsztatu": absolute_url(workshop.get_absolute_url()),
-        "link_do_zgloszenia": absolute_url(
-            reverse("admin:applications_application_change", args=[application.pk])
-        ),
+        "link_do_zgloszenia": absolute_url(application.get_panel_url()),
+        "miejsce_na_liscie": str(application.waitlist_position or ""),
     }

@@ -67,6 +67,9 @@ class Location(models.Model):
     def __str__(self) -> str:
         return f"{self.name}, {self.address}"
 
+    def get_panel_url(self) -> str:
+        return reverse("panel:location_edit", args=[self.pk])
+
 
 class FieldMode(models.TextChoices):
     REQUIRED = "required", "wymagane"
@@ -232,6 +235,9 @@ class Workshop(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse("public:workshop", kwargs={"slug": self.slug})
+
+    def get_panel_url(self) -> str:
+        return reverse("panel:workshop_edit", args=[self.pk])
 
     # --- Dates ---------------------------------------------------------------------------------
 

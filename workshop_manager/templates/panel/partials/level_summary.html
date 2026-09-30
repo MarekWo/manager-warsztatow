@@ -1,0 +1,36 @@
+{# Counters per level against the limit (PRD §7.1). Needs `summaries` and `workshop`. #}
+<div class="table-responsive" tabindex="0" role="region" aria-label="Zgłoszenia według poziomów — {{ workshop.title }}">
+<table class="table table-sm align-middle level-summary mb-0">
+  <caption class="visually-hidden">Zgłoszenia według poziomów — {{ workshop.title }}</caption>
+  <thead>
+    <tr>
+      <th scope="col">Poziom</th>
+      <th scope="col" class="text-end">Przyjęte / limit</th>
+      <th scope="col" class="text-end">Nowe</th>
+      <th scope="col" class="text-end">Rezerwa</th>
+      <th scope="col" class="text-end">Odrzucone</th>
+      <th scope="col" class="text-end">Wycofane</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for s in summaries %}
+    <tr>
+      <th scope="row" class="fw-normal">{{ s.level.name }}</th>
+      <td class="text-end text-nowrap {% if s.over_capacity %}text-danger fw-semibold{% endif %}">
+        {{ s.accepted }}{% if s.capacity is not None %} / {{ s.capacity }}{% endif %}
+        {% if s.over_capacity %}<i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i><span class="visually-hidden"> — ponad limit</span>{% endif %}
+      </td>
+      <td class="text-end">{% if s.new %}<a href="{% url 'panel:workshop_applications' workshop.pk %}?status=new&amp;level={{ s.level.pk }}" class="fw-semibold">{{ s.new }}</a>{% else %}0{% endif %}</td>
+      <td class="text-end">{{ s.waitlisted }}</td>
+      <td class="text-end">{{ s.rejected }}</td>
+      <td class="text-end">{{ s.left }}</td>
+    </tr>
+    {% if s.place_for_waitlisted %}
+    <tr class="table-info"><td colspan="6" class="small">
+      <i class="bi bi-info-circle" aria-hidden="true"></i> Na poziomie „{{ s.level.name }}” są wolne miejsca ({{ s.free }}), a na liście rezerwowej czeka {{ s.waitlisted }} os.
+    </td></tr>
+    {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
+</div>

@@ -171,3 +171,34 @@ def absolute_url(path: str) -> str:
     if path.startswith(("http://", "https://")):
         return path
     return f"{settings.SITE_URL}/{path.lstrip('/')}"
+
+
+class AuditEvent(models.Model):
+    """One entry of the event log (PRD §7.9): who changed what, and when.
+
+    Written by `core.audit.record()` from the panel's views and services. The actor's address is
+    copied, so the entry still says who it was after an account is removed.
+    """
+
+    created_at = models.DateTimeField("kiedy", default=timezone.now, db_index=True)
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="kto",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    actor_email = models.CharField("adres osoby", max_length=254, blank=True)
+    action = models.CharField("co", max_length=120)
+    target = models.CharField("czego dotyczy", max_length=250, blank=True)
+    url = models.CharField("adres w panelu", max_length=250, blank=True)
+    details = models.TextField("szczegóły", blank=True)
+
+    class Meta:
+        verbose_name = "zdarzenie"
+        verbose_name_plural = "dziennik zdarzeń"
+        ordering = ["-created_at", "-pk"]
+
+    def __str__(self) -> str:
+        return f"{self.action}: {self.target}"

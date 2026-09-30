@@ -7,10 +7,38 @@
   <a class="btn btn-primary" href="{% url 'panel:workshop_create' %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Nowy warsztat</a>
 </div>
 
+{% if unseen or failed_emails or publishing_soon or no_smtp %}
+<section class="mb-4" aria-label="Wymaga uwagi">
+  {% if unseen %}
+    <div class="alert alert-info d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <span><i class="bi bi-inbox" aria-hidden="true"></i> Nowe, nieprzejrzane zgłoszenia: <strong>{{ unseen }}</strong></span>
+      <a class="btn btn-sm btn-primary" href="{% url 'panel:application_list' %}?unseen=1">Pokaż</a>
+    </div>
+  {% endif %}
+  {% if failed_emails %}
+    <div class="alert alert-danger d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <span><i class="bi bi-envelope-exclamation" aria-hidden="true"></i> E-maile z błędem wysyłki: <strong>{{ failed_emails }}</strong></span>
+      <a class="btn btn-sm btn-outline-danger" href="{% url 'panel:email_log' %}?status=problems">Dziennik e-maili</a>
+    </div>
+  {% endif %}
+  {% if no_smtp %}
+    <div class="alert alert-warning">
+      <i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Wysyłka e-maili nie jest skonfigurowana — wiadomości nie wychodzą do uczestników.
+      <a href="{% url 'panel:settings' %}">Ustaw serwer poczty</a>.
+    </div>
+  {% endif %}
+  {% for workshop in publishing_soon %}
+    <div class="alert alert-light border">
+      <i class="bi bi-calendar-event" aria-hidden="true"></i> „<a href="{% url 'panel:workshop_edit' workshop.pk %}">{{ workshop.title }}</a>” pojawi się na stronie {{ workshop.publish_at|date:"j E, H:i" }} — sprawdź, czy wszystko jest gotowe.
+    </div>
+  {% endfor %}
+</section>
+{% endif %}
+
 <section class="mb-5" aria-labelledby="h-published">
   <h2 id="h-published" class="h4 mb-3">Opublikowane warsztaty</h2>
-  {% for workshop in published %}
-    {% include "panel/partials/workshop_card.html" %}
+  {% for workshop, summaries in published %}
+    {% include "panel/partials/dashboard_workshop.html" %}
   {% empty %}
     <p class="text-body-secondary">Żaden warsztat nie jest teraz opublikowany — na stronie widać komunikat „Obecnie nie są planowane żadne warsztaty”.</p>
   {% endfor %}
@@ -18,8 +46,8 @@
 
 <section class="mb-5" aria-labelledby="h-scheduled">
   <h2 id="h-scheduled" class="h4 mb-3">Zaplanowane do publikacji</h2>
-  {% for workshop in scheduled %}
-    {% include "panel/partials/workshop_card.html" %}
+  {% for workshop, summaries in scheduled %}
+    {% include "panel/partials/dashboard_workshop.html" %}
   {% empty %}
     <p class="text-body-secondary">Brak warsztatów czekających na publikację.</p>
   {% endfor %}

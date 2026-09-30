@@ -15,6 +15,11 @@ class TemplateKey(models.TextChoices):
     APPLICATION_RECEIVED = "application_received", "Potwierdzenie otrzymania zgłoszenia"
     ADMIN_NEW_APPLICATION = "admin_new_application", "Powiadomienie o nowym zgłoszeniu"
     ADMIN_DAILY_DIGEST = "admin_daily_digest", "Dzienne podsumowanie zgłoszeń"
+    DECISION_ACCEPTED = "decision_accepted", "Decyzja: przyjęcie"
+    DECISION_WAITLISTED = "decision_waitlisted", "Decyzja: lista rezerwowa"
+    DECISION_REJECTED = "decision_rejected", "Decyzja: odrzucenie"
+    DECISION_CANCELLED = "decision_cancelled", "Anulowanie udziału"
+    WITHDRAWAL_CONFIRMED = "withdrawal_confirmed", "Potwierdzenie rezygnacji"
 
 
 class EmailTemplate(models.Model):

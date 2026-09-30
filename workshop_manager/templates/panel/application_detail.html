@@ -1,0 +1,116 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{{ application.full_name }} — zgłoszenie{% endblock %}
+{% block panel_content %}
+<p class="mb-2 small"><a href="{% url 'panel:workshop_applications' workshop.pk %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Zgłoszenia: {{ workshop.title }}</a></p>
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+  <div>
+    <h1 class="page-title mb-1">{{ application.full_name }}</h1>
+    <div>{% include "panel/partials/status_badge.html" with status=application.status position=application.waitlist_position %}
+      <span class="ms-2">poziom: <strong>{{ application.level.name }}</strong></span>
+      {% if application.source == "panel" %}<span class="badge text-bg-light border ms-2">dodane w panelu</span>{% endif %}
+    </div>
+  </div>
+</div>
+
+<section class="card card-body shadow-sm mb-4" aria-labelledby="h-decision">
+  <h2 id="h-decision" class="h5">Decyzja</h2>
+  {% if transitions %}
+    <div class="d-flex flex-wrap gap-2">
+      {% for status, label in transitions %}
+        <a class="btn {% if status == 'accepted' %}btn-success{% elif status == 'waitlisted' %}btn-warning{% elif status == 'rejected' %}btn-outline-danger{% else %}btn-outline-secondary{% endif %}"
+           href="{% url 'panel:application_decide' application.pk status %}">{{ label }}</a>
+      {% endfor %}
+    </div>
+    <p class="small text-body-secondary mt-2 mb-0">Przed zmianą zobaczysz e-mail do uczestnika — można go poprawić albo nie wysyłać.</p>
+  {% endif %}
+</section>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-data">
+      <div class="d-flex justify-content-between align-items-start">
+        <h2 id="h-data" class="h5">Dane i odpowiedzi</h2>
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'panel:application_edit' application.pk %}">Popraw dane</a>
+      </div>
+      <dl class="summary mb-0">
+        <dt>E-mail</dt><dd><a href="mailto:{{ application.email }}">{{ application.email }}</a></dd>
+        {% if application.phone %}<dt>Telefon</dt><dd><a href="tel:{{ application.phone }}">{{ application.phone }}</a></dd>{% endif %}
+        <dt>Wysłano</dt><dd>{{ application.submitted_at|date:"d.m.Y H:i" }}</dd>
+        {% for answer in application.answers.all %}
+          <dt>{{ answer.label }}</dt><dd class="answer">{{ answer.value|default:"—"|linebreaksbr }}</dd>
+        {% endfor %}
+        {% if application.remarks %}<dt>Uwagi uczestnika</dt><dd class="answer">{{ application.remarks|linebreaksbr }}</dd>{% endif %}
+        <dt>Zgody</dt>
+        <dd>
+          przetwarzanie danych: {{ application.privacy_consent_at|date:"d.m.Y H:i" }} (wersja {{ application.privacy_consent_version }})<br>
+          pełnoletność: {{ application.adult_confirmed|yesno:"tak,nie" }}<br>
+          informacje o kolejnych warsztatach: {{ application.marketing_consent|yesno:"tak,nie" }}
+        </dd>
+      </dl>
+    </section>
+
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-history">
+      <h2 id="h-history" class="h5">Historia zgłoszenia</h2>
+      <ol class="history list-unstyled mb-0">
+        <li><span class="small text-body-secondary">{{ application.submitted_at|date:"d.m.Y H:i" }}</span> — {% if application.source == "panel" %}dodane w panelu{% if application.created_by %} ({{ application.created_by.email }}){% endif %}{% else %}wysłane przez formularz{% endif %}</li>
+        {% for entry in history %}
+          <li>
+            <span class="small text-body-secondary">{{ entry.changed_at|date:"d.m.Y H:i" }}{% if entry.changed_by %}, {{ entry.changed_by.email }}{% endif %}</span> —
+            {% if entry.is_status_change %}{{ entry.get_old_status_display }} → <strong>{{ entry.get_new_status_display }}</strong>{% if entry.notified %} <i class="bi bi-envelope-check" aria-hidden="true"></i><span class="visually-hidden">(wysłano e-mail)</span>{% endif %}{% endif %}
+            {% if entry.comment %}<div class="small">{{ entry.comment }}</div>{% endif %}
+          </li>
+        {% endfor %}
+      </ol>
+    </section>
+
+    {% if emails %}
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-emails">
+      <h2 id="h-emails" class="h5">E-maile do tej osoby w sprawie zgłoszenia</h2>
+      <ul class="list-unstyled mb-0">
+        {% for email in emails %}
+          <li class="mb-1"><span class="small text-body-secondary">{{ email.created_at|date:"d.m.Y H:i" }}</span> <a href="{% url 'panel:email_detail' email.pk %}">{{ email.subject }}</a> {% include "panel/partials/email_status.html" %}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-5">
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-notes">
+      <h2 id="h-notes" class="h5">Notatki organizatora</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ notes_form }}
+        <button type="submit" class="btn btn-outline-primary">Zapisz notatkę</button>
+      </form>
+    </section>
+
+    {% if workshop.levels.count > 1 %}
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-level">
+      <h2 id="h-level" class="h5">Zmiana poziomu</h2>
+      <form method="post" action="{% url 'panel:application_level' application.pk %}">
+        {% csrf_token %}
+        {{ level_form }}
+        <button type="submit" class="btn btn-outline-primary">Zmień poziom</button>
+      </form>
+    </section>
+    {% endif %}
+
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-others">
+      <h2 id="h-others" class="h5">Udział w innych warsztatach</h2>
+      {% if others %}
+        <ul class="list-unstyled mb-0">
+          {% for other in others %}
+            <li class="mb-2">
+              <a href="{{ other.get_panel_url }}">{{ other.workshop.title }}</a>
+              <div class="small">{{ other.submitted_at|date:"d.m.Y" }} · {{ other.level.name }} · {% include "panel/partials/status_badge.html" with status=other.status position=other.waitlist_position %}</div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-body-secondary mb-0">To pierwsze zgłoszenie tej osoby.</p>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

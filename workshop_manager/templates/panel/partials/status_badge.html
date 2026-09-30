@@ -1,0 +1,6 @@
+{% if status == "new" %}<span class="badge text-bg-primary">nowe</span>
+{% elif status == "accepted" %}<span class="badge text-bg-success">przyjęte</span>
+{% elif status == "waitlisted" %}<span class="badge text-bg-warning">lista rezerwowa{% if position %} ({{ position }}){% endif %}</span>
+{% elif status == "rejected" %}<span class="badge text-bg-secondary">odrzucone</span>
+{% elif status == "withdrawn" %}<span class="badge text-bg-light border">wycofane</span>
+{% else %}<span class="badge text-bg-dark">anulowane</span>{% endif %}

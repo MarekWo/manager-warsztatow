@@ -1,0 +1,8 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Zgłoszenia{% endblock %}
+{% block panel_content %}
+<h1 class="page-title mb-1">Zgłoszenia</h1>
+<p class="text-body-secondary">Wszystkie warsztaty ({{ total }}). Zgłoszenia jednego warsztatu — w zakładce „Zgłoszenia” na jego stronie.</p>
+{% include "panel/partials/application_filters.html" %}
+{% include "panel/partials/application_table.html" %}
+{% endblock %}

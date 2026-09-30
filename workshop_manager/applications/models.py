@@ -10,6 +10,8 @@ from typing import Any
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
+from django.utils import timezone
 
 
 class Participant(models.Model):
@@ -60,6 +62,31 @@ class Status(models.TextChoices):
 #: what blocks a second application from the same address.
 ACTIVE_STATUSES = [Status.NEW, Status.ACCEPTED, Status.WAITLISTED]
 
+#: Which status an application may move to from each status (PRD §7.3). "Withdrawn" is the
+#: participant's own decision — the administrator records it when told by phone or e-mail.
+TRANSITIONS: dict[str, list[str]] = {
+    Status.NEW: [Status.ACCEPTED, Status.WAITLISTED, Status.REJECTED, Status.WITHDRAWN],
+    Status.ACCEPTED: [Status.WAITLISTED, Status.CANCELLED, Status.WITHDRAWN],
+    Status.WAITLISTED: [Status.ACCEPTED, Status.REJECTED, Status.WITHDRAWN],
+    Status.REJECTED: [Status.ACCEPTED, Status.WAITLISTED],
+    Status.WITHDRAWN: [Status.ACCEPTED, Status.WAITLISTED],
+    Status.CANCELLED: [Status.ACCEPTED, Status.WAITLISTED],
+}
+
+#: The button that leads to each status, as the administrator reads it.
+ACTION_LABELS: dict[str, str] = {
+    Status.ACCEPTED: "Przyjmij",
+    Status.WAITLISTED: "Na listę rezerwową",
+    Status.REJECTED: "Odrzuć",
+    Status.CANCELLED: "Anuluj udział",
+    Status.WITHDRAWN: "Zapisz rezygnację",
+}
+
+
+class Source(models.TextChoices):
+    FORM = "form", "formularz na stronie"
+    PANEL = "panel", "dodane w panelu"
+
 
 class Application(models.Model):
     workshop = models.ForeignKey(
@@ -94,6 +121,18 @@ class Application(models.Model):
     status = models.CharField(
         "status", max_length=12, choices=Status.choices, default=Status.NEW, db_index=True
     )
+    waitlist_position = models.PositiveIntegerField(
+        "miejsce na liście rezerwowej", null=True, blank=True
+    )
+    source = models.CharField("źródło", max_length=8, choices=Source.choices, default=Source.FORM)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="dodane przez",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
     is_seen = models.BooleanField("przejrzane", default=False)
     admin_notes = models.TextField("notatki organizatora", blank=True)
     submitted_at = models.DateTimeField("data zgłoszenia", auto_now_add=True)
@@ -119,6 +158,53 @@ class Application(models.Model):
     @property
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}".strip()
+
+    def get_panel_url(self) -> str:
+        return reverse("panel:application_detail", args=[self.pk])
+
+    @property
+    def is_active(self) -> bool:
+        return self.status in ACTIVE_STATUSES
+
+    def allowed_transitions(self) -> list[tuple[str, str]]:
+        """(status, button label) pairs for the decisions available now."""
+        return [(status, ACTION_LABELS[status]) for status in TRANSITIONS[self.status]]
+
+
+class StatusChange(models.Model):
+    """One entry in an application's history: a new status, or a level or data correction.
+
+    For corrections `old_status` equals `new_status` and `comment` says what changed.
+    """
+
+    application = models.ForeignKey(
+        Application, verbose_name="zgłoszenie", on_delete=models.CASCADE, related_name="history"
+    )
+    old_status = models.CharField("poprzedni status", max_length=12, choices=Status.choices)
+    new_status = models.CharField("nowy status", max_length=12, choices=Status.choices)
+    comment = models.TextField("komentarz", blank=True)
+    notified = models.BooleanField("wysłano powiadomienie", default=False)
+    changed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="kto",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    changed_at = models.DateTimeField("kiedy", default=timezone.now)
+
+    class Meta:
+        verbose_name = "zmiana w zgłoszeniu"
+        verbose_name_plural = "historia zgłoszeń"
+        ordering = ["changed_at", "pk"]
+
+    def __str__(self) -> str:
+        return f"{self.application}: {self.old_status} → {self.new_status}"
+
+    @property
+    def is_status_change(self) -> bool:
+        return self.old_status != self.new_status
 
 
 class Answer(models.Model):

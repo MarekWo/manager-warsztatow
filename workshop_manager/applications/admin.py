@@ -1,12 +1,26 @@
 from django.contrib import admin
 
-from workshop_manager.applications.models import Answer, Application, Participant
+from workshop_manager.applications.models import Answer, Application, Participant, StatusChange
 
 
 class AnswerInline(admin.TabularInline):
     model = Answer
     extra = 0
     readonly_fields = ("label", "value", "question")
+    can_delete = False
+
+
+class StatusChangeInline(admin.TabularInline):
+    model = StatusChange
+    extra = 0
+    readonly_fields = (
+        "old_status",
+        "new_status",
+        "comment",
+        "notified",
+        "changed_by",
+        "changed_at",
+    )
     can_delete = False
 
 
@@ -17,7 +31,7 @@ class ApplicationAdmin(admin.ModelAdmin):
     list_display = ("full_name", "email", "workshop", "level", "status", "submitted_at")
     list_filter = ("status", "workshop")
     search_fields = ("last_name", "first_name", "email")
-    inlines = [AnswerInline]
+    inlines = [AnswerInline, StatusChangeInline]
 
 
 @admin.register(Participant)
