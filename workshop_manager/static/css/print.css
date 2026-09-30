@@ -52,6 +52,8 @@ table.grid th, table.grid td {
   text-align: left;
   vertical-align: middle;
 }
+/* Long addresses break inside their cell instead of widening the page on a phone. */
+table.grid td { overflow-wrap: anywhere; }
 table.grid thead th { background: #e8e8e8; font-size: 10pt; }
 table.grid thead { display: table-header-group; }
 table.grid tr { break-inside: avoid; }

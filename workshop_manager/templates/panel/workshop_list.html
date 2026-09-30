@@ -14,7 +14,7 @@
 </ul>
 
 {% for workshop in workshops %}
-  {% include "panel/partials/workshop_card.html" %}
+  {% include "panel/partials/workshop_card.html" with heading_level=2 %}
 {% empty %}
   <p class="text-body-secondary">Brak warsztatów w tej zakładce.</p>
 {% endfor %}

@@ -104,6 +104,14 @@ def test_form_page_shows_levels_questions_and_consents(client, workshop):
     assert 'name="website"' in content
 
 
+def test_question_fields_are_styled_like_the_others(client, workshop):
+    # Added after the form's own fields; unstyled, a text area overflowed a phone's screen.
+    form = client.get(apply_url(workshop)).context["form"]
+    for question, field in form.question_rows():
+        if question.kind in (QuestionKind.LONG_TEXT, QuestionKind.SHORT_TEXT):
+            assert "form-control" in field.field.widget.attrs["class"]
+
+
 def test_valid_application_is_stored_with_answers(client, workshop):
     response = client.post(apply_url(workshop), payload(workshop))
     assert response.status_code == 302

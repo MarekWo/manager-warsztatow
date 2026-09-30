@@ -46,17 +46,25 @@ def polish_blank_choice(field: forms.Field) -> None:
         ]
 
 
+def style_field(field: forms.Field) -> None:
+    """Bootstrap's class on the widget and a Polish blank choice.
+
+    Forms that add fields after `__init__` (the application form's questions) call it for them.
+    """
+    polish_blank_choice(field)
+    css = widget_class(field.widget)
+    if css:
+        existing = field.widget.attrs.get("class", "")
+        field.widget.attrs["class"] = f"{existing} {css}".strip()
+
+
 class BootstrapFormMixin:
     fields: dict[str, forms.Field]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            polish_blank_choice(field)
-            css = widget_class(field.widget)
-            if css:
-                existing = field.widget.attrs.get("class", "")
-                field.widget.attrs["class"] = f"{existing} {css}".strip()
+            style_field(field)
 
 
 class DateInput(forms.DateInput):

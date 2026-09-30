@@ -120,6 +120,19 @@ All notable changes to this project are documented here. The format follows
   the right place in a new tab, and a "Jak to działa" page for participants linked in the footer.
   `uv run pytest -m screenshots` retakes the screenshots.
 
+### Fixed
+
+- The workshop's own questions in the application form had no Bootstrap styling; on a phone a
+  long-answer field was wider than the screen.
+- Heading order on the workshop list, keyboard access to the scrolling e-mail and event log
+  tables, long addresses widening the printouts on a phone.
+
+### Tests
+
+- Accessibility and phone-width sweep over every public, participant and panel page with the
+  demo data (axe without serious findings, no sideways scrolling at 360 px; `AUDIT_ALL=1` also
+  fails on moderate and minor findings) and a keyboard check that every control shows focus.
+
 ### Upgrading
 
 - Backups now archive `/data/media` and `/data/private` (message attachments) together;

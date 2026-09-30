@@ -7,7 +7,7 @@ from django import forms
 from django.core import signing
 from django.utils.html import format_html
 
-from workshop_manager.core.forms import BootstrapFormMixin
+from workshop_manager.core.forms import BootstrapFormMixin, style_field
 from workshop_manager.core.models import SiteSettings
 from workshop_manager.forms_builder.models import Question, QuestionKind
 from workshop_manager.workshops.models import FieldMode, Level, Workshop
@@ -145,7 +145,9 @@ class ApplicationForm(BootstrapFormMixin, forms.Form):
             workshop.questions.filter(is_active=True).select_related("level").order_by("order")
         )
         for question in self.questions:
-            self.fields[question_field_name(question)] = _question_field(question)
+            field = _question_field(question)
+            style_field(field)  # added after the mixin styled the others
+            self.fields[question_field_name(question)] = field
 
     def _apply_mode(self, name: str, mode: str) -> None:
         if mode == FieldMode.HIDDEN:

@@ -2,7 +2,7 @@
 <div class="card mb-3 shadow-sm">
   <div class="card-body d-flex flex-column flex-md-row justify-content-between gap-3">
     <div>
-      <h3 class="h5 mb-1"><a href="{% url 'panel:workshop_edit' workshop.pk %}">{{ workshop.title }}</a></h3>
+      <h{{ heading_level|default:3 }} class="h5 mb-1"><a href="{% url 'panel:workshop_edit' workshop.pk %}">{{ workshop.title }}</a></h{{ heading_level|default:3 }}>
       <div class="text-body-secondary small mb-2">{{ workshop.type }} · {{ workshop|date_range }}</div>
       {% state_badge workshop %} {% registration_badge workshop %}
       {% if workshop.state == "scheduled" %}<span class="small ms-1">publikacja: {{ workshop.publish_at|date:"j E Y, H:i" }}</span>{% endif %}
