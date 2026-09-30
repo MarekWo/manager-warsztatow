@@ -59,7 +59,10 @@
         <div class="card-body">
           <div class="mb-3">{% registration_badge workshop %}</div>
           {% with status=workshop.registration_status %}
-            {% if status == "open" %}
+            {% if own_application %}
+              <p>Masz już zgłoszenie na te warsztaty: {% include "public/partials/my_status.html" with application=own_application %}</p>
+              <div class="d-grid"><a class="btn btn-outline-primary" href="{% url 'public:my_application' own_application.pk %}">Zobacz swoje zgłoszenie</a></div>
+            {% elif status == "open" %}
               <p>Liczba miejsc jest ograniczona. O przyjęciu decyduje organizator — po zebraniu zgłoszeń otrzymasz wiadomość e-mail.</p>
               <div class="d-grid"><a class="btn btn-accent btn-lg" href="{% url 'public:apply' workshop.slug %}">Zapisz się</a></div>
             {% elif status == "not_yet" %}

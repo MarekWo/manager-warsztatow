@@ -170,6 +170,54 @@ def test_second_application_from_the_same_address_is_refused(client, workshop):
     assert Application.objects.count() == 1
 
 
+def test_second_application_explains_the_address_is_already_signed_up(client, workshop):
+    # The summary used to list only "Adres e-mail", as if the address were mistyped.
+    client.post(apply_url(workshop), payload(workshop))
+    response = client.post(apply_url(workshop), payload(workshop))
+    content = response.content.decode()
+    assert "Z adresu anna.nowak@example.com jest już zgłoszenie na te warsztaty" in content
+    assert reverse("public:my_workshops") in content
+    assert "popraw zaznaczone pola" not in content
+
+
+def test_error_summary_says_what_is_wrong(client, workshop):
+    response = client.post(apply_url(workshop), payload(workshop, email="nie-adres"))
+    content = response.content.decode()
+    assert "popraw zaznaczone pola" in content
+    assert "Adres e-mail</a> — " in content
+
+
+def test_signed_in_participant_with_an_application_is_sent_to_it(client, workshop):
+    user = UserFactory(email="anna.nowak@example.com")
+    client.post(apply_url(workshop), payload(workshop))
+    application = Application.objects.get()
+    client.force_login(user)
+
+    page = client.get(reverse("public:workshop", args=[workshop.slug])).content.decode()
+    assert "Masz już zgłoszenie na te warsztaty" in page
+    assert apply_url(workshop) not in page
+    assert reverse("public:my_application", args=[application.pk]) in page
+
+    response = client.get(apply_url(workshop))
+    assert response.url == reverse("public:my_application", args=[application.pk])
+
+    home = client.get(reverse("public:home")).content.decode()
+    assert "Twoje zgłoszenie" in home
+    assert "oczekuje na decyzję" in home
+
+
+def test_signed_in_participant_after_withdrawal_may_apply_again(client, workshop):
+    user = UserFactory(email="anna.nowak@example.com")
+    client.post(apply_url(workshop), payload(workshop))
+    Application.objects.update(status=Status.WITHDRAWN)
+    client.force_login(user)
+
+    page = client.get(reverse("public:workshop", args=[workshop.slug])).content.decode()
+    assert apply_url(workshop) in page
+    assert "Twoje zgłoszenie" not in client.get(reverse("public:home")).content.decode()
+    assert client.get(apply_url(workshop)).status_code == 200
+
+
 def test_withdrawn_application_allows_a_new_one(client, workshop):
     client.post(apply_url(workshop), payload(workshop))
     Application.objects.update(status=Status.WITHDRAWN)

@@ -31,7 +31,7 @@ from workshop_manager.core.models import SiteSettings
 signed_in = login_required(login_url="account_request_login_code")
 
 
-def _own_applications(user: Any) -> Any:
+def own_applications(user: Any) -> Any:
     return (
         Application.objects.filter(
             Q(participant__user=user) | Q(participant__email=user.email.lower())
@@ -64,7 +64,7 @@ class MyDataForm(BootstrapFormMixin, forms.Form):
 
 @signed_in
 def my_workshops(request: HttpRequest) -> HttpResponse:
-    applications = list(_own_applications(request.user).order_by("-submitted_at"))
+    applications = list(own_applications(request.user).order_by("-submitted_at"))
     today = timezone.localdate()
     current: list[Application] = []
     past: list[Application] = []
@@ -77,7 +77,7 @@ def my_workshops(request: HttpRequest) -> HttpResponse:
 @signed_in
 def my_application(request: HttpRequest, pk: int) -> HttpResponse:
     application = get_object_or_404(
-        _own_applications(request.user).prefetch_related("answers"), pk=pk
+        own_applications(request.user).prefetch_related("answers"), pk=pk
     )
     form = WithdrawForm(request.POST or None)
     if request.method == "POST" and form.is_valid():

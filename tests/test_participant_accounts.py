@@ -221,7 +221,11 @@ def test_the_form_is_prefilled_for_a_signed_in_participant(participant_client, l
     user = User.objects.get(email="anna@example.com")
     user.phone = "600 999 888"
     user.save()
-    page = participant_client.get(reverse("public:apply", args=[level.workshop.slug]))
+    # Another workshop: the one they applied for sends them to their application instead.
+    other = WorkshopFactory(publish_at=timezone.now())
+    SessionFactory(workshop=other, date=timezone.localdate() + timedelta(days=40))
+    LevelFactory(workshop=other)
+    page = participant_client.get(reverse("public:apply", args=[other.slug]))
     assert 'value="600 999 888"' in page.content.decode()
 
 

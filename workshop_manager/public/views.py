@@ -4,9 +4,10 @@ from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from workshop_manager.applications.forms import ApplicationForm
-from workshop_manager.applications.models import Application
+from workshop_manager.applications.models import ACTIVE_STATUSES, Application
 from workshop_manager.applications.services import DuplicateApplication, submit_application
 from workshop_manager.core import ratelimit
+from workshop_manager.public.account_views import own_applications
 from workshop_manager.workshops.models import Session, Workshop, WorkshopQuerySet
 
 
@@ -17,8 +18,30 @@ def _workshops() -> WorkshopQuerySet:
 
 
 def home(request: HttpRequest) -> HttpResponse:
-    """The list of current workshops, or a notice that none are planned (PRD §6.1)."""
-    return render(request, "public/home.html", {"workshops": _workshops().public()})
+    """The list of current workshops, or a notice that none are planned (PRD §6.1).
+
+    A signed-in participant sees which of them they have already applied for.
+    """
+    workshops = list(_workshops().public())
+    mine: dict[int, Application] = {}
+    if request.user.is_authenticated:
+        mine = {
+            application.workshop_id: application
+            for application in own_applications(request.user).filter(
+                workshop__in=workshops, status__in=ACTIVE_STATUSES
+            )
+        }
+    cards = [(workshop, mine.get(workshop.pk)) for workshop in workshops]
+    return render(request, "public/home.html", {"cards": cards})
+
+
+def _active_own_application(request: HttpRequest, workshop: Workshop) -> Application | None:
+    """The signed-in person's live application for this workshop, if they have one."""
+    if not request.user.is_authenticated:
+        return None
+    return (
+        own_applications(request.user).filter(workshop=workshop, status__in=ACTIVE_STATUSES).first()
+    )
 
 
 def workshop_detail(request: HttpRequest, slug: str) -> HttpResponse:
@@ -27,7 +50,11 @@ def workshop_detail(request: HttpRequest, slug: str) -> HttpResponse:
     is_preview = not workshop.is_public()
     if is_preview and not request.user.is_staff:
         raise Http404
-    context = {"workshop": workshop, "is_preview": is_preview}
+    context = {
+        "workshop": workshop,
+        "is_preview": is_preview,
+        "own_application": _active_own_application(request, workshop),
+    }
     return render(request, "public/workshop_detail.html", context)
 
 
@@ -45,6 +72,11 @@ def apply(request: HttpRequest, slug: str) -> HttpResponse:
         messages.info(request, "Zapisy na ten warsztat nie są teraz prowadzone.")
         return redirect(workshop.get_absolute_url())
 
+    own_application = _active_own_application(request, workshop)
+    if own_application is not None:
+        messages.info(request, "Masz już zgłoszenie na te warsztaty — oto jego szczegóły.")
+        return redirect("public:my_application", pk=own_application.pk)
+
     initial = {}
     if request.user.is_authenticated:
         user = request.user
@@ -55,6 +87,7 @@ def apply(request: HttpRequest, slug: str) -> HttpResponse:
             "phone": getattr(user, "phone", ""),
         }
     form = ApplicationForm(request.POST or None, workshop=workshop, initial=initial)
+    duplicate_email = ""
     if request.method == "POST":
         client_ip = getattr(request, "client_ip", "") or "unknown"
         if not ratelimit.hit(
@@ -69,6 +102,7 @@ def apply(request: HttpRequest, slug: str) -> HttpResponse:
             try:
                 application = submit_application(form, user=request.user)
             except DuplicateApplication:
+                duplicate_email = form.cleaned_data["email"]
                 form.add_error(
                     "email",
                     "Z tego adresu jest już zgłoszenie na te warsztaty. Jeśli chcesz coś w nim "
@@ -77,7 +111,8 @@ def apply(request: HttpRequest, slug: str) -> HttpResponse:
             else:
                 request.session[LAST_APPLICATION_KEY] = application.pk
                 return redirect("public:application_sent", slug=workshop.slug)
-    return render(request, "public/apply.html", {"workshop": workshop, "form": form})
+    context = {"workshop": workshop, "form": form, "duplicate_email": duplicate_email}
+    return render(request, "public/apply.html", context)
 
 
 def application_sent(request: HttpRequest, slug: str) -> HttpResponse:
