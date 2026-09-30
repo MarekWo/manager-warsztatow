@@ -1,6 +1,8 @@
 {% with name=request.resolver_match.url_name %}
-<ul class="nav nav-underline mb-4 settings-nav">
+<ul class="nav nav-underline row-gap-1 mb-4 settings-nav">
   <li class="nav-item"><a class="nav-link {% if name == 'settings' %}active{% endif %}" {% if name == 'settings' %}aria-current="page"{% endif %} href="{% url 'panel:settings' %}">Ogólne</a></li>
   <li class="nav-item"><a class="nav-link {% if 'email_template' in name %}active{% endif %}" href="{% url 'panel:email_template_list' %}">Treść e-maili</a></li>
+  <li class="nav-item"><a class="nav-link {% if 'dictionary_type' in name %}active{% endif %}" href="{% url 'panel:dictionary_type_list' %}">Rodzaje warsztatów</a></li>
+  <li class="nav-item"><a class="nav-link {% if 'dictionary_template' in name or 'dictionary_question' in name %}active{% endif %}" href="{% url 'panel:dictionary_template_list' %}">Szablony formularzy</a></li>
 </ul>
 {% endwith %}

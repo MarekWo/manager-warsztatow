@@ -7,7 +7,12 @@ from workshop_manager.communications.models import EmailTemplate
 from workshop_manager.communications.rendering import unknown_placeholders
 from workshop_manager.core.forms import BootstrapFormMixin, DateInput, DateTimeInput, TimeInput
 from workshop_manager.core.models import SiteSettings
-from workshop_manager.forms_builder.models import CHOICE_KINDS, FormTemplate, Question
+from workshop_manager.forms_builder.models import (
+    CHOICE_KINDS,
+    FormTemplate,
+    Question,
+    TemplateQuestion,
+)
 from workshop_manager.workshops.models import Level, Location, Session, Workshop, WorkshopType
 
 
@@ -164,7 +169,23 @@ class StandardFieldsForm(BootstrapFormMixin, forms.ModelForm):
         fields = ["phone_mode", "adult_confirmation_mode", "remarks_mode"]
 
 
-class QuestionForm(BootstrapFormMixin, forms.ModelForm):
+class ChoicesCleanMixin:
+    """Choice questions need at least two answers; other kinds drop leftover choices."""
+
+    def clean(self) -> dict[str, Any]:
+        data = super().clean() or {}  # type: ignore[misc]
+        kind, choices = data.get("kind"), data.get("choices", "")
+        lines = [line for line in choices.splitlines() if line.strip()]
+        if kind in CHOICE_KINDS and len(lines) < 2:
+            self.add_error(  # type: ignore[attr-defined]
+                "choices", "Podaj co najmniej dwie odpowiedzi, każdą w osobnym wierszu."
+            )
+        if kind not in CHOICE_KINDS:
+            data["choices"] = ""
+        return data
+
+
+class QuestionForm(ChoicesCleanMixin, BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Question
         fields = ["label", "help_text", "kind", "choices", "required", "level", "is_active"]
@@ -174,16 +195,6 @@ class QuestionForm(BootstrapFormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["level"].queryset = workshop.levels.all()  # type: ignore[attr-defined]
         self.fields["level"].empty_label = "Wszystkie poziomy"  # type: ignore[attr-defined]
-
-    def clean(self) -> dict[str, Any]:
-        data = super().clean() or {}
-        kind, choices = data.get("kind"), data.get("choices", "")
-        lines = [line for line in choices.splitlines() if line.strip()]
-        if kind in CHOICE_KINDS and len(lines) < 2:
-            self.add_error("choices", "Podaj co najmniej dwie odpowiedzi, każdą w osobnym wierszu.")
-        if kind not in CHOICE_KINDS:
-            data["choices"] = ""
-        return data
 
 
 class AddTemplateForm(BootstrapFormMixin, forms.Form):
@@ -366,3 +377,34 @@ class EmailTemplateForm(BootstrapFormMixin, forms.ModelForm):
                 listed = ", ".join("{" + u + "}" for u in unknown)
                 self.add_error(name, f"Nieznane pola: {listed}. Sprawdź pisownię z listą obok.")
         return data
+
+
+# --- Dictionaries (PRD §7.8) --------------------------------------------------------------------
+
+
+class WorkshopTypeForm(BootstrapFormMixin, forms.ModelForm):
+    class Meta:
+        model = WorkshopType
+        fields = ["name", "default_levels", "default_form_template", "order", "is_active"]
+        widgets = {"default_levels": forms.Textarea(attrs={"rows": 3})}
+        help_texts = {
+            "order": "Rodzaje z mniejszą liczbą są wyżej na listach.",
+            "is_active": "Nieaktywnego rodzaju nie da się wybrać w nowych warsztatach.",
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["default_form_template"].empty_label = "— bez pytań —"  # type: ignore[attr-defined]
+
+
+class FormTemplateForm(BootstrapFormMixin, forms.ModelForm):
+    class Meta:
+        model = FormTemplate
+        fields = ["name", "description"]
+
+
+class TemplateQuestionForm(ChoicesCleanMixin, BootstrapFormMixin, forms.ModelForm):
+    class Meta:
+        model = TemplateQuestion
+        fields = ["label", "help_text", "kind", "choices", "required", "level_name"]
+        widgets = {"choices": forms.Textarea(attrs={"rows": 4})}

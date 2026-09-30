@@ -101,7 +101,17 @@ def test_accessibility(live_server, page, workshop, path):
 
 @pytest.mark.parametrize(
     "path",
-    ["/panel/", "/panel/warsztaty/{pk}/", "/panel/warsztaty/{pk}/formularz/", "/panel/miejsca/"],
+    [
+        "/panel/",
+        "/panel/warsztaty/{pk}/",
+        "/panel/warsztaty/{pk}/formularz/",
+        "/panel/miejsca/",
+        "/panel/ustawienia/",
+        "/panel/ustawienia/e-maile/application_received/",
+        "/panel/ustawienia/rodzaje/",
+        "/panel/ustawienia/szablony/",
+        "/panel/e-maile/",
+    ],
 )
 def test_panel_accessibility(live_server, page, workshop, path):
     from django.conf import settings

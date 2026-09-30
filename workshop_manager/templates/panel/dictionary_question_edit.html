@@ -1,0 +1,14 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{% if question %}Edycja pytania{% else %}Nowe pytanie{% endif %} — {{ template.name }}{% endblock %}
+{% block panel_content %}
+<p class="mb-2"><a href="{% url 'panel:dictionary_template_edit' template.pk %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ template.name }}</a></p>
+<div class="row"><div class="col-lg-8">
+  <h1 class="page-title h3 mb-3">{% if question %}Edycja pytania{% else %}Nowe pytanie{% endif %}</h1>
+  <form method="post" class="card card-body shadow-sm">
+    {% csrf_token %}
+    {{ form }}
+    <div class="d-flex gap-2"><button type="submit" class="btn btn-primary">Zapisz pytanie</button>
+      <a class="btn btn-outline-primary" href="{% url 'panel:dictionary_template_edit' template.pk %}">Anuluj</a></div>
+  </form>
+</div></div>
+{% endblock %}

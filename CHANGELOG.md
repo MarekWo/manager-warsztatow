@@ -43,3 +43,18 @@ All notable changes to this project are documented here. The format follows
 - Levels, questions and draft workshops that already have applications cannot be deleted.
 - Browser tests (Playwright) with automated accessibility checks (axe) on public and panel
   pages, run in CI with the Content Security Policy enforced.
+- Settings page in the panel: organisation details and logo (shown in the header and in
+  e-mails), bank account, consent texts (a changed wording becomes a new version), outgoing
+  SMTP server with the password stored encrypted, sender and Reply-To, administrator
+  notifications, and a test e-mail that reports the server's answer.
+- E-mail queue and log: every e-mail is written together with the change that caused it and
+  sent by the worker; failures are retried with a growing delay (about ten hours in all), shown
+  with the server's error in the panel's e-mail log and can be sent again. Saving corrected SMTP
+  settings retries waiting e-mails at once. An SMTP outage never blocks an application.
+- Editable e-mail templates (plain text with placeholders such as `{imie}`, `{warsztat}`,
+  `{terminy}`, `{odpowiedzi}`), a preview with example data and "restore default"; HTML e-mails
+  with a simple layout and a plain-text part.
+- Confirmation e-mail to the applicant with a copy of the application, and a notification to
+  the organiser — immediately or as a daily summary at 19:00.
+- Dictionaries in Settings: workshop types (default levels and questions, switching off) and
+  form templates with their questions.

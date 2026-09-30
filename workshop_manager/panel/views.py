@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from workshop_manager.forms_builder.models import Question, copy_template
+from workshop_manager.panel import ordering
 from workshop_manager.panel.forms import (
     AddTemplateForm,
     DuplicateForm,
@@ -264,20 +265,10 @@ def question_edit(request: HttpRequest, pk: int, question_pk: int | None = None)
 @staff_required
 @require_POST
 def question_move(request: HttpRequest, pk: int, question_pk: int, direction: str) -> HttpResponse:
-    """Swap a question with its neighbour (buttons instead of drag and drop: keyboard-friendly)."""
+    """Swap a question with its neighbour."""
     workshop = get_object_or_404(Workshop, pk=pk)
-    questions = list(workshop.questions.order_by("order", "pk"))
-    index = next((i for i, q in enumerate(questions) if q.pk == question_pk), None)
-    if index is None:
+    if not ordering.move(list(workshop.questions.order_by("order", "pk")), question_pk, direction):
         raise Http404
-    other = index - 1 if direction == "up" else index + 1
-    if 0 <= other < len(questions):
-        questions[index], questions[other] = questions[other], questions[index]
-        with transaction.atomic():
-            for order, question in enumerate(questions):
-                if question.order != order:
-                    question.order = order
-                    question.save(update_fields=["order"])
     return redirect(reverse("panel:form_editor", args=[pk]) + f"#q{question_pk}")
 
 

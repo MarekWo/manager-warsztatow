@@ -73,3 +73,17 @@ within a minute of starting (it records a heartbeat every minute).
 
 The first administrator (`ADMIN_EMAIL`) is created on start and signs in at `/konto/login/`
 with a code sent by email — make sure email works first (Settings, or `EMAIL_URL`).
+
+## Email
+
+Outgoing mail uses the SMTP server entered in the panel (**Ustawienia → Poczta wychodząca**)
+when "wysyłaj przez poniższy serwer SMTP" is switched on; otherwise `EMAIL_URL` with
+`DEFAULT_FROM_EMAIL` as the sender. Keep `EMAIL_URL` working either way: it is the fallback,
+and it lets the first administrator sign in before anything is configured.
+
+The SMTP password is stored encrypted with `FIELD_ENCRYPTION_KEY`, or with a key derived from
+`SECRET_KEY` when that is empty. Changing the key in use makes the stored password unreadable —
+re-enter it in Settings afterwards.
+
+E-mails are queued and sent by the `worker` container; with the worker stopped they wait in the
+panel's e-mail log (**E-maile**) and go out when it is back.

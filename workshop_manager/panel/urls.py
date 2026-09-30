@@ -1,6 +1,6 @@
 from django.urls import path
 
-from workshop_manager.panel import settings_views, views
+from workshop_manager.panel import dictionary_views, settings_views, views
 
 app_name = "panel"
 
@@ -67,4 +67,42 @@ urlpatterns = [
     path("e-maile/<int:pk>/", settings_views.email_detail, name="email_detail"),
     path("e-maile/<int:pk>/html/", settings_views.email_html, name="email_html"),
     path("e-maile/<int:pk>/ponow/", settings_views.email_resend, name="email_resend"),
+    # Dictionaries
+    path("ustawienia/rodzaje/", dictionary_views.type_list, name="dictionary_type_list"),
+    path("ustawienia/rodzaje/nowy/", dictionary_views.type_edit, name="dictionary_type_add"),
+    path("ustawienia/rodzaje/<int:pk>/", dictionary_views.type_edit, name="dictionary_type_edit"),
+    path("ustawienia/szablony/", dictionary_views.template_list, name="dictionary_template_list"),
+    path(
+        "ustawienia/szablony/nowy/", dictionary_views.template_edit, name="dictionary_template_add"
+    ),
+    path(
+        "ustawienia/szablony/<int:pk>/",
+        dictionary_views.template_edit,
+        name="dictionary_template_edit",
+    ),
+    path(
+        "ustawienia/szablony/<int:pk>/usun/",
+        dictionary_views.template_delete,
+        name="dictionary_template_delete",
+    ),
+    path(
+        "ustawienia/szablony/<int:pk>/pytanie/",
+        dictionary_views.template_question_edit,
+        name="dictionary_question_add",
+    ),
+    path(
+        "ustawienia/szablony/<int:pk>/pytanie/<int:question_pk>/",
+        dictionary_views.template_question_edit,
+        name="dictionary_question_edit",
+    ),
+    path(
+        "ustawienia/szablony/<int:pk>/pytanie/<int:question_pk>/przesun/<slug:direction>/",
+        dictionary_views.template_question_move,
+        name="dictionary_question_move",
+    ),
+    path(
+        "ustawienia/szablony/<int:pk>/pytanie/<int:question_pk>/usun/",
+        dictionary_views.template_question_delete,
+        name="dictionary_question_delete",
+    ),
 ]

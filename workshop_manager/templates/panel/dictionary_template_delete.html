@@ -1,0 +1,14 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Usuń szablon{% endblock %}
+{% block panel_content %}
+<h1 class="page-title h3 mb-3">Usunąć szablon „{{ template.name }}”?</h1>
+<p>Warsztaty utworzone z tego szablonu zachowają swoje pytania.</p>
+{% if used_by %}
+  <p>To domyślny szablon dla: <strong>{{ used_by|join:", " }}</strong>. Nowe warsztaty tych rodzajów będą bez pytań, dopóki nie wybierzesz innego szablonu w rodzajach warsztatów.</p>
+{% endif %}
+<form method="post" class="d-flex gap-2">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Tak, usuń</button>
+  <a class="btn btn-outline-primary" href="{% url 'panel:dictionary_template_edit' template.pk %}">Nie, wróć</a>
+</form>
+{% endblock %}
