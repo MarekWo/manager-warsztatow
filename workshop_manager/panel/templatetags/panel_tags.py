@@ -8,6 +8,7 @@ register = template.Library()
 SECTIONS = [
     ("dashboard", "dashboard"),
     ("application", "applications"),
+    ("participant", "participants"),
     ("audit", "audit"),
     ("location", "locations"),
     ("email_template", "settings"),

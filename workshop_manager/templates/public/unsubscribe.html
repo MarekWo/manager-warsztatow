@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Rezygnacja z informacji o warsztatach{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <h1 class="page-title mb-3">Informacje o kolejnych warsztatach</h1>
+    {% if done %}
+      <div class="alert alert-success" role="status">Gotowe — nie będziemy już wysyłać Ci informacji o kolejnych warsztatach. E-maile dotyczące Twoich zgłoszeń (np. decyzje organizatora) nadal będą przychodzić.</div>
+      <p>Jeśli zmienisz zdanie, zgodę można znów zaznaczyć przy następnym zgłoszeniu albo na stronie „Moje dane” po zalogowaniu.</p>
+    {% elif not participant.marketing_consent %}
+      <div class="alert alert-info" role="status">Ten adres nie otrzymuje informacji o kolejnych warsztatach — nie trzeba nic robić.</div>
+    {% else %}
+      <p class="lead">Czy chcesz przestać otrzymywać informacje o kolejnych warsztatach?</p>
+      <p>E-maile dotyczące Twoich zgłoszeń (np. decyzje organizatora) nadal będą przychodzić.</p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary btn-lg">Tak, wypisz mnie</button>
+      </form>
+    {% endif %}
+    <p class="mt-4"><a href="{% url 'public:home' %}">Aktualne warsztaty</a></p>
+  </div>
+</div>
+{% endblock %}

@@ -16,7 +16,7 @@ from django.utils import timezone
 from django.utils.html import urlize
 from django.utils.safestring import mark_safe
 
-from workshop_manager.applications.tokens import withdraw_path
+from workshop_manager.applications.tokens import unsubscribe_path, withdraw_path
 from workshop_manager.core.models import SiteSettings, absolute_url
 from workshop_manager.workshops.templatetags.workshop_tags import long_date
 
@@ -119,4 +119,5 @@ def application_context(application: Any) -> dict[str, str]:
         "miejsce_na_liscie": str(application.waitlist_position or ""),
         "link_rezygnacji": absolute_url(withdraw_path(application.pk)),
         "link_do_konta": absolute_url(reverse("public:my_workshops")),
+        "link_wypisu": absolute_url(unsubscribe_path(application.participant_id)),
     }

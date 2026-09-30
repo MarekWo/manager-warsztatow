@@ -1,0 +1,34 @@
+{% extends "panel/base_panel.html" %}
+{% load workshop_tags %}
+{% block title %}Usuń dane osoby{% endblock %}
+{% block panel_content %}
+<p class="mb-2 small"><a href="{{ participant.get_panel_url }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ participant.full_name }}</a></p>
+<h1 class="page-title mb-3">Usuń dane osoby: {{ participant.full_name }}</h1>
+
+{% if blocking %}
+  <div class="alert alert-warning" role="alert">
+    <p class="mb-2">Ta osoba ma jeszcze miejsce albo czeka na nie w warsztatach, które się nie skończyły:</p>
+    <ul class="mb-2">
+      {% for application in blocking %}<li><a href="{{ application.get_panel_url }}">{{ application.workshop.title }}</a> ({{ application.workshop|date_range }}) — {{ application.get_status_display }}</li>{% endfor %}
+    </ul>
+    <p class="mb-0">Najpierw zapisz rezygnację w tych zgłoszeniach (przycisk „Zapisz rezygnację”), żeby lista rezerwowa i liczby miejsc były prawidłowe.</p>
+  </div>
+{% else %}
+  <div class="row"><div class="col-lg-8">
+  <p>Zostaną usunięte na zawsze:</p>
+  <ul>
+    <li>imię, nazwisko, adres e-mail i telefon — w karcie osoby i we wszystkich jej zgłoszeniach,</li>
+    <li>uwagi, odpowiedzi na pytania, notatki organizatora i komentarze w historii zgłoszeń,</li>
+    <li>treść e-maili do tej osoby i o jej zgłoszeniach, wpisy o niej w dzienniku zdarzeń,</li>
+    <li>konto (jeśli było) — osoba nie będzie mogła się już zalogować.</li>
+  </ul>
+  <p>Zostaną anonimowe zgłoszenia („Anonim #{{ participant.pk }}”) z poziomem i statusem — liczby w zestawieniach się nie zmienią — oraz rejestr zgód (bez danych osobowych).</p>
+  <p>Jeśli osoba prosiła też o kopię swoich danych, <a href="{% url 'panel:participant_export' participant.pk %}">pobierz ją</a> najpierw.</p>
+  <form method="post" class="card card-body shadow-sm border-danger">
+    {% csrf_token %}
+    {{ form }}
+    <div><button type="submit" class="btn btn-danger btn-lg">Usuń dane osoby</button></div>
+  </form>
+  </div></div>
+{% endif %}
+{% endblock %}

@@ -29,6 +29,7 @@ class Participant(models.Model):
     )
     marketing_consent = models.BooleanField("zgoda na informacje o warsztatach", default=False)
     marketing_consent_at = models.DateTimeField("data zgody na informacje", null=True, blank=True)
+    anonymised_at = models.DateTimeField("dane usunięto", null=True, blank=True)
     created_at = models.DateTimeField("utworzono", auto_now_add=True)
     updated_at = models.DateTimeField("zmieniono", auto_now=True)
 
@@ -47,6 +48,61 @@ class Participant(models.Model):
     @property
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}".strip()
+
+    def get_panel_url(self) -> str:
+        return reverse("panel:participant_detail", args=[self.pk])
+
+    @property
+    def is_anonymised(self) -> bool:
+        return self.anonymised_at is not None
+
+
+class ConsentKind(models.TextChoices):
+    PRIVACY = "privacy", "przetwarzanie danych (klauzula w formularzu)"
+    MARKETING = "marketing", "informacje o kolejnych warsztatach"
+
+
+class ConsentChannel(models.TextChoices):
+    FORM = "form", "formularz zgłoszenia"
+    PANEL = "panel", "zgłoszenie wpisane przez organizatora"
+    ACCOUNT = "account", "strona „Moje dane”"
+    LINK = "link", "link wypisu z e-maila"
+
+
+class ConsentRecord(models.Model):
+    """A consent given or withdrawn, with the wording shown at the time (PRD §8).
+
+    Written next to the change and never edited; the participant's current marketing consent
+    is on `Participant`, this is the record of how it got there. Kept after anonymisation — it
+    holds no personal data of its own.
+    """
+
+    participant = models.ForeignKey(
+        Participant, verbose_name="uczestnik", on_delete=models.CASCADE, related_name="consents"
+    )
+    application = models.ForeignKey(
+        "Application",
+        verbose_name="zgłoszenie",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    kind = models.CharField("zgoda", max_length=10, choices=ConsentKind.choices)
+    given = models.BooleanField("udzielona", default=True)
+    text = models.TextField("treść", blank=True)
+    version = models.CharField("wersja", max_length=20, blank=True)
+    channel = models.CharField("sposób", max_length=10, choices=ConsentChannel.choices)
+    created_at = models.DateTimeField("kiedy", default=timezone.now)
+
+    class Meta:
+        verbose_name = "zgoda"
+        verbose_name_plural = "rejestr zgód"
+        ordering = ["created_at", "pk"]
+
+    def __str__(self) -> str:
+        what = "udzielono" if self.given else "wycofano"
+        return f"{self.get_kind_display()}: {what}"
 
 
 class Status(models.TextChoices):

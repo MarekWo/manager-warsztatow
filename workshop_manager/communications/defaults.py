@@ -24,6 +24,8 @@ APPLICATION_PLACEHOLDERS: dict[str, str] = {
     "link_do_warsztatu": "adres strony warsztatu",
     "link_rezygnacji": "link, którym uczestnik może zrezygnować (także bez konta)",
     "link_do_konta": "adres strony „Moje warsztaty”",
+    "link_wypisu": "link, którym uczestnik jednym kliknięciem wycofuje zgodę na informacje o "
+    "kolejnych warsztatach",
 }
 
 #: Placeholders about the organiser, available in every template.
@@ -246,6 +248,7 @@ SAMPLE_CONTEXT: dict[str, str] = {
     "miejsce_na_liscie": "2",
     "link_rezygnacji": "https://warsztaty.example.com/rezygnacja/przyklad/",
     "link_do_konta": "https://warsztaty.example.com/moje-warsztaty/",
+    "link_wypisu": "https://warsztaty.example.com/wypisz/przyklad/",
     "powod": "Choroba w rodzinie.",
     "pierwszy_z_rezerwy": "Zwolniło się miejsce. Pierwsza osoba z listy rezerwowej: Jan "
     "Przykładowy (https://warsztaty.example.com/panel/zgloszenia/2/).",

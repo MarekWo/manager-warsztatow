@@ -97,7 +97,10 @@
     {% endif %}
 
     <section class="card card-body shadow-sm mb-4" aria-labelledby="h-others">
-      <h2 id="h-others" class="h5">Udział w innych warsztatach</h2>
+      <div class="d-flex justify-content-between align-items-start gap-2">
+        <h2 id="h-others" class="h5">Udział w innych warsztatach</h2>
+        <a class="btn btn-sm btn-outline-primary text-nowrap" href="{% url 'panel:participant_detail' application.participant_id %}">Karta osoby</a>
+      </div>
       {% if others %}
         <ul class="list-unstyled mb-0">
           {% for other in others %}

@@ -1,0 +1,55 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Uczestnicy{% endblock %}
+{% block panel_content %}
+<h1 class="page-title mb-1">Uczestnicy</h1>
+<p class="text-body-secondary">Każda osoba, która kiedykolwiek się zgłosiła — z jej zgłoszeniami ze wszystkich warsztatów i zgodami.</p>
+
+<form method="get" class="row g-2 align-items-end mb-3" role="search">
+  <div class="col-md-6">
+    <label class="form-label" for="q">Szukaj</label>
+    <input type="search" class="form-control" id="q" name="q" value="{{ query }}" placeholder="Imię, nazwisko, e-mail, telefon…">
+  </div>
+  <div class="col-md-4">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="zgoda" value="1" id="f-zgoda" {% if marketing %}checked{% endif %}>
+      <label class="form-check-label" for="f-zgoda">tylko ze zgodą na informacje</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="anonimowi" value="1" id="f-anon" {% if show_anonymised %}checked{% endif %}>
+      <label class="form-check-label" for="f-anon">pokaż też usunięte (anonimowe)</label>
+    </div>
+  </div>
+  <div class="col-md-2"><button type="submit" class="btn btn-outline-primary w-100">Pokaż</button></div>
+</form>
+
+{% if page.object_list %}
+<p class="small text-body-secondary">Znaleziono: {{ page.paginator.count }}</p>
+<div class="table-responsive" tabindex="0" role="region" aria-label="Lista uczestników">
+<table class="table align-middle">
+  <thead><tr><th scope="col">Nazwisko i imię</th><th scope="col">E-mail</th><th scope="col">Telefon</th><th scope="col" class="text-end">Zgłoszeń</th><th scope="col">Informacje</th></tr></thead>
+  <tbody>
+  {% for person in page %}
+    <tr>
+      <td><a href="{{ person.get_panel_url }}">{{ person.last_name }} {{ person.first_name }}</a>{% if person.user_id %} <span class="badge text-bg-light border">konto</span>{% endif %}</td>
+      <td class="small">{% if person.is_anonymised %}—{% else %}{{ person.email }}{% endif %}</td>
+      <td class="small text-nowrap">{{ person.phone|default:"—" }}</td>
+      <td class="text-end">{{ person.application_count }}</td>
+      <td>{% if person.marketing_consent %}<i class="bi bi-check-lg" aria-hidden="true"></i><span class="visually-hidden">zgoda</span>{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if page.has_other_pages %}
+<nav aria-label="Strony listy">
+  <ul class="pagination">
+    {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?q={{ query|urlencode }}{% if marketing %}&amp;zgoda=1{% endif %}{% if show_anonymised %}&amp;anonimowi=1{% endif %}&amp;page={{ page.previous_page_number }}">Poprzednia</a></li>{% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ page.number }} / {{ page.paginator.num_pages }}</span></li>
+    {% if page.has_next %}<li class="page-item"><a class="page-link" href="?q={{ query|urlencode }}{% if marketing %}&amp;zgoda=1{% endif %}{% if show_anonymised %}&amp;anonimowi=1{% endif %}&amp;page={{ page.next_page_number }}">Następna</a></li>{% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% else %}
+  <p class="text-body-secondary">Brak osób{% if query or marketing %} spełniających warunki{% endif %}.</p>
+{% endif %}
+{% endblock %}

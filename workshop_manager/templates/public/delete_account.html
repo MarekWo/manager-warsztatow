@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load workshop_tags %}
+{% block title %}Usuń moje konto{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <p class="mb-2"><a href="{% url 'public:my_data' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Moje dane</a></p>
+    <h1 class="page-title mb-3">Usuń moje konto</h1>
+
+    {% if blocking %}
+      <div class="alert alert-warning" role="alert">
+        <p class="mb-2"><strong>Najpierw zrezygnuj z udziału</strong> w warsztatach, które jeszcze się nie skończyły:</p>
+        <ul class="mb-2">
+          {% for application in blocking %}
+            <li><a href="{% url 'public:my_application' application.pk %}">{{ application.workshop.title }}</a> ({{ application.workshop|date_range }})</li>
+          {% endfor %}
+        </ul>
+        <p class="mb-0">Dzięki temu organizator dowie się o rezygnacji, a Twoje miejsce otrzyma ktoś z listy rezerwowej. Potem wróć tutaj.</p>
+      </div>
+    {% else %}
+      <p>Usuniemy Twoje konto oraz dane osobowe ze wszystkich zgłoszeń: imię i nazwisko, adres e-mail, telefon, uwagi, odpowiedzi na pytania i e-maile, które do Ciebie wysłaliśmy. W zestawieniach organizatora zostanie tylko anonimowy ślad (np. że na poziomie było jedno zgłoszenie więcej).</p>
+      <p>Jeśli chcesz zachować kopię swoich danych, <a href="{% url 'public:my_data_download' %}">pobierz ją</a> przed usunięciem.</p>
+      <p>Kopie zapasowe serwera zawierają dane jeszcze przez najwyżej 30 dni, potem znikają same.</p>
+      <form method="post" class="card card-body shadow-sm border-danger">
+        {% csrf_token %}
+        {{ form }}
+        <div><button type="submit" class="btn btn-danger btn-lg">Usuń moje konto i dane</button></div>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

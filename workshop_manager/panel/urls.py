@@ -3,6 +3,7 @@ from django.urls import path
 from workshop_manager.panel import (
     application_views,
     dictionary_views,
+    participant_views,
     report_views,
     settings_views,
     views,
@@ -174,4 +175,20 @@ urlpatterns += [
     path("warsztaty/<int:pk>/lista-obecnosci/", report_views.attendance, name="attendance"),
     path("warsztaty/<int:pk>/lista-kontaktowa/", report_views.contacts, name="contacts"),
     path("warsztaty/<int:pk>/materialy/", report_views.materials, name="materials"),
+]
+
+urlpatterns += [
+    # People and their data (PRD §7.4, §8)
+    path("uczestnicy/", participant_views.participant_list, name="participant_list"),
+    path("uczestnicy/<int:pk>/", participant_views.participant_detail, name="participant_detail"),
+    path(
+        "uczestnicy/<int:pk>/dane.json",
+        participant_views.participant_export,
+        name="participant_export",
+    ),
+    path(
+        "uczestnicy/<int:pk>/usun-dane/",
+        participant_views.participant_anonymise,
+        name="participant_anonymise",
+    ),
 ]

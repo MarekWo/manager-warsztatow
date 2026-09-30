@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Konto usunięte{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <h1 class="page-title mb-3">Konto zostało usunięte</h1>
+    <p class="lead">Twoje konto i dane osobowe zostały usunięte. Dziękujemy za udział w warsztatach.</p>
+    <p>Jeśli zechcesz kiedyś znów się zapisać, po prostu wypełnij formularz zgłoszenia — nie trzeba zakładać konta.</p>
+    <p class="mt-4"><a class="btn btn-primary btn-lg" href="{% url 'public:home' %}">Aktualne warsztaty</a></p>
+  </div>
+</div>
+{% endblock %}

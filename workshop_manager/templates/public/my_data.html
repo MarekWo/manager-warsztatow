@@ -17,6 +17,16 @@
       <div><button type="submit" class="btn btn-primary btn-lg">Zapisz</button></div>
     </form>
     <p class="small text-body-secondary mt-3">Zmiany nie dotyczą zgłoszeń już wysłanych — w nich zostają dane podane wtedy. Jeśli coś trzeba w nich poprawić, napisz do organizatora.</p>
+
+    <h2 class="h4 mt-5">Twoje dane osobowe</h2>
+    <p>Dane przetwarza {{ site_settings.org_name }} — zasady opisuje <a href="{{ site_settings.privacy_policy_url }}">polityka prywatności</a>.</p>
+    <div class="d-flex flex-column flex-sm-row gap-2">
+      {% if has_participant %}
+        <a class="btn btn-outline-primary" href="{% url 'public:my_data_download' %}"><i class="bi bi-download" aria-hidden="true"></i> Pobierz kopię moich danych</a>
+      {% endif %}
+      <a class="btn btn-outline-danger" href="{% url 'public:delete_account' %}"><i class="bi bi-trash" aria-hidden="true"></i> Usuń moje konto</a>
+    </div>
+    {% if has_participant %}<p class="small text-body-secondary mt-2">Kopia to plik JSON ze wszystkimi Twoimi zgłoszeniami, zgodami i wysłanymi do Ciebie e-mailami.</p>{% endif %}
   </div>
 </div>
 {% endblock %}

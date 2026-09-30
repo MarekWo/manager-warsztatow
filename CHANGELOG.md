@@ -105,6 +105,15 @@ All notable changes to this project are documented here. The format follows
 - Error pages in Polish (404, 403, 400, 500 and an expired-form page instead of Django's CSRF
   failure page), a favicon and home-screen icon, page descriptions and Open Graph tags (the
   workshop's subtitle and photo when shared).
+- GDPR (PRD §8): a consent register (privacy and marketing consents with their wording,
+  version, channel and time; existing applications backfilled); the participant downloads a copy
+  of their data (JSON), withdraws the marketing consent in "Moje dane" or with the one-click
+  unsubscribe link (`{link_wypisu}` placeholder), and deletes their account ("Usuń moje konto").
+  Panel "Uczestnicy": people register with search, a person's card (applications from every
+  workshop, consent history), a full data copy for the organiser, and anonymisation — names,
+  addresses, phone, remarks, answers, notes, comments, e-mails and log entries are removed while
+  the anonymous applications keep the numbers; blocked while the person still holds or waits for
+  a place in a workshop that has not ended.
 
 ### Upgrading
 

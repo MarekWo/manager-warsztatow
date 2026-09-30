@@ -1,0 +1,78 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{{ participant.full_name }} — uczestnik{% endblock %}
+{% block panel_content %}
+<p class="mb-2 small"><a href="{% url 'panel:participant_list' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Uczestnicy</a></p>
+<h1 class="page-title mb-1">{{ participant.full_name }}</h1>
+{% if participant.is_anonymised %}
+  <div class="alert alert-secondary" role="status">Dane tej osoby usunięto {{ participant.anonymised_at|date:"d.m.Y H:i" }}. Zostały tylko anonimowe zgłoszenia (do statystyk).</div>
+{% endif %}
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-applications">
+      <h2 id="h-applications" class="h5">Zgłoszenia</h2>
+      {% if applications %}
+        <ul class="list-unstyled mb-0">
+          {% for application in applications %}
+            <li class="mb-2">
+              <a href="{{ application.get_panel_url }}">{{ application.workshop.title }}</a>
+              <div class="small">{{ application.submitted_at|date:"d.m.Y" }} · {{ application.level.name }} · {% include "panel/partials/status_badge.html" with status=application.status position=application.waitlist_position %}</div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-body-secondary mb-0">Brak zgłoszeń.</p>
+      {% endif %}
+    </section>
+
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-consents">
+      <h2 id="h-consents" class="h5">Zgody</h2>
+      <p class="mb-2">Informacje o kolejnych warsztatach: <strong>{{ participant.marketing_consent|yesno:"tak,nie" }}</strong>{% if participant.marketing_consent_at %} (od {{ participant.marketing_consent_at|date:"d.m.Y" }}){% endif %}</p>
+      {% if consents %}
+        <div class="table-responsive" tabindex="0" role="region" aria-label="Historia zgód">
+        <table class="table table-sm align-middle mb-0">
+          <thead><tr><th scope="col">Kiedy</th><th scope="col">Zgoda</th><th scope="col">Jak</th></tr></thead>
+          <tbody>
+          {% for consent in consents %}
+            <tr>
+              <td class="small text-nowrap">{{ consent.created_at|date:"d.m.Y H:i" }}</td>
+              <td>
+                {% if consent.given %}udzielona{% else %}<strong>wycofana</strong>{% endif %}: {{ consent.get_kind_display }}{% if consent.version %} (wersja {{ consent.version }}){% endif %}
+                {% if consent.text %}<details class="small"><summary>treść</summary>{{ consent.text|linebreaksbr }}</details>{% endif %}
+              </td>
+              <td class="small">{{ consent.get_channel_display }}{% if consent.application %}<br>{{ consent.application.workshop.title }}{% endif %}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <div class="col-lg-5">
+    {% if not participant.is_anonymised %}
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-contact">
+      <h2 id="h-contact" class="h5">Dane kontaktowe</h2>
+      <dl class="summary mb-0">
+        <dt>E-mail</dt><dd><a href="mailto:{{ participant.email }}">{{ participant.email }}</a></dd>
+        <dt>Telefon</dt><dd>{% if participant.phone %}<a href="tel:{{ participant.phone }}">{{ participant.phone }}</a>{% else %}—{% endif %}</dd>
+        <dt>Konto</dt><dd>{% if participant.user_id %}tak — osoba loguje się kodem z e-maila{% else %}nie (zgłoszenia bez logowania){% endif %}</dd>
+        <dt>Pierwsze zgłoszenie</dt><dd>{{ participant.created_at|date:"d.m.Y" }}</dd>
+      </dl>
+      <p class="small text-body-secondary mt-2 mb-0">Imię, nazwisko i telefon pochodzą z ostatniego zgłoszenia (albo ze strony „Moje dane”, gdy osoba ma konto). Dane w samych zgłoszeniach poprawia się w zgłoszeniu.</p>
+    </section>
+
+    <section class="card card-body shadow-sm mb-4" aria-labelledby="h-gdpr">
+      <h2 id="h-gdpr" class="h5">RODO</h2>
+      <p class="small">Gdy osoba prosi o swoje dane albo o ich usunięcie.</p>
+      <div class="d-flex flex-column gap-2">
+        <a class="btn btn-outline-primary" href="{% url 'panel:participant_export' participant.pk %}"><i class="bi bi-download" aria-hidden="true"></i> Pobierz kopię danych (JSON)</a>
+        <a class="btn btn-outline-danger" href="{% url 'panel:participant_anonymise' participant.pk %}"><i class="bi bi-person-x" aria-hidden="true"></i> Usuń dane osoby…</a>
+      </div>
+      {% if blocking %}<p class="small text-body-secondary mt-2 mb-0">Usunięcie będzie możliwe po zapisaniu rezygnacji z warsztatów, które jeszcze się nie skończyły.</p>{% endif %}
+    </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

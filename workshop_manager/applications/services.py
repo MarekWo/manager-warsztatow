@@ -6,10 +6,13 @@ from django.db import IntegrityError, transaction
 from django.utils import timezone
 
 from workshop_manager.applications.forms import ApplicationForm
+from workshop_manager.applications.gdpr import record_consent
 from workshop_manager.applications.models import (
     ACTIVE_STATUSES,
     Answer,
     Application,
+    ConsentChannel,
+    ConsentKind,
     Participant,
     Source,
 )
@@ -104,6 +107,18 @@ def submit_application(
                 )
                 for order, (question, value) in enumerate(form.answers())
             )
+            channel = ConsentChannel.PANEL if added_by else ConsentChannel.FORM
+            record_consent(
+                participant,
+                ConsentKind.PRIVACY,
+                channel=channel,
+                application=application,
+                version=form.privacy_version,
+            )
+            if application.marketing_consent:
+                record_consent(
+                    participant, ConsentKind.MARKETING, channel=channel, application=application
+                )
             notifications.application_submitted(
                 application, confirm=send_confirmation, notify_organiser=added_by is None
             )
