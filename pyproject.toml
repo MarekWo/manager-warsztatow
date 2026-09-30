@@ -7,7 +7,7 @@ license-files = ["LICENSE"]
 authors = [{ name = "Marek Wojtaszek" }]
 requires-python = ">=3.13,<3.14"
 # VERSION is the source of truth; this PEP 440 copy is kept equal by a test.
-version = "1.0.0rc1"
+version = "1.0.0.dev0"
 classifiers = [
     "Framework :: Django",
     "Framework :: Django :: 6.1",
