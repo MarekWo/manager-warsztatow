@@ -1,3 +1,6 @@
+import logging
+import smtplib
+
 from allauth.account.views import RequestLoginCodeView as BaseRequestLoginCodeView
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
@@ -5,6 +8,13 @@ from django.urls import reverse
 
 from workshop_manager.accounts.services import login_with_link, user_from_login_token
 from workshop_manager.accounts.sessions import REMEMBER_SESSION_KEY
+
+logger = logging.getLogger(__name__)
+
+SEND_FAILED = (
+    "Nie udało się teraz wysłać kodu — serwer poczty nie odpowiada. Spróbuj ponownie za kilka "
+    "minut. Jeśli problem się powtarza, napisz do organizatora."
+)
 
 
 class RequestLoginCodeView(BaseRequestLoginCodeView):
@@ -16,7 +26,14 @@ class RequestLoginCodeView(BaseRequestLoginCodeView):
 
     def form_valid(self, form) -> HttpResponse:
         self.request.session[REMEMBER_SESSION_KEY] = bool(form.cleaned_data.get("remember"))
-        return super().form_valid(form)
+        try:
+            return super().form_valid(form)
+        except (OSError, smtplib.SMTPException):
+            # The code is sent at once, not queued: a mail server that is down must read as
+            # "try again later" on the page, not as a server error.
+            logger.exception("Sending a sign-in code failed")
+            form.add_error(None, SEND_FAILED)
+            return self.form_invalid(form)
 
 
 request_login_code = RequestLoginCodeView.as_view()

@@ -149,3 +149,17 @@ def test_remembered_participant_stays_signed_in_for_months(client, settings):
 def test_remembered_administrator_gets_a_shorter_session(client, settings):
     _sign_in(client, AdminFactory(), remember=True)
     assert client.session.get_expiry_age() == settings.STAFF_SESSION_REMEMBER_DAYS * 86400
+
+
+@pytest.mark.django_db
+def test_a_mail_server_that_is_down_reads_as_try_again(client, monkeypatch):
+    from workshop_manager.communications import mailer
+
+    def refuse(*args, **kwargs):
+        raise ConnectionRefusedError(111, "Connection refused")
+
+    monkeypatch.setattr(mailer, "send_now", refuse)
+    UserFactory(email="anna@example.com")
+    response = client.post("/konto/login/code/", {"email": "anna@example.com"})
+    assert response.status_code == 200
+    assert "Nie udało się teraz wysłać kodu" in response.content.decode()
