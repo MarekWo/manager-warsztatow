@@ -15,6 +15,9 @@ The user interface is in Polish. Code, comments and technical documentation are 
   sections, a configurable application form), schedule their publication, review applications
   (accept, wait-list, reject — with an email to the applicant), message participants, and print
   or export lists.
+- **Personal data** is handled as GDPR asks: consents are recorded with their wording and
+  version, people download a copy of their data or delete their account (anonymisation), and
+  the news consent is withdrawn with one click. Built-in help in Polish guides the organiser.
 
 The project is under active development; see [CHANGELOG.md](CHANGELOG.md).
 
@@ -65,6 +68,14 @@ Install the git hooks once with `uv run pre-commit install`.
 Servers pull the image `ghcr.io/marekwo/manager-warsztatow` (`:dev` for TEST, `:X.Y.Z` for
 production) and run it with `compose.yaml` + `compose.prod.yaml` (a Caddy edge in front of
 gunicorn), adding `compose.npm.yaml` behind Nginx Proxy Manager. See [docs/deploy.md](docs/deploy.md).
+
+## Documentation
+
+- [docs/deploy.md](docs/deploy.md) — servers, updates, backups and restore
+- [docs/configuration.md](docs/configuration.md) — environment variables and panel settings
+- [docs/architecture.md](docs/architecture.md) — processes, data, packages and design choices
+- [docs/admin-guide.md](docs/admin-guide.md) — the operator's tasks; the organiser's guide is
+  the in-app help (in Polish) at `/panel/pomoc/`
 
 ## Licence
 

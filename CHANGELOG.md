@@ -119,6 +119,7 @@ All notable changes to this project are documented here. The format follows
   FAQ) with screenshots from the demo data, a "?" next to harder sections of the panel that opens
   the right place in a new tab, and a "Jak to działa" page for participants linked in the footer.
   `uv run pytest -m screenshots` retakes the screenshots.
+- Documentation: `docs/configuration.md`, `docs/architecture.md`, `docs/admin-guide.md`.
 
 ### Fixed
 
