@@ -3,7 +3,10 @@ from typing import Any
 from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory
 
+from workshop_manager.communications.models import EmailTemplate
+from workshop_manager.communications.rendering import unknown_placeholders
 from workshop_manager.core.forms import BootstrapFormMixin, DateInput, DateTimeInput, TimeInput
+from workshop_manager.core.models import SiteSettings
 from workshop_manager.forms_builder.models import CHOICE_KINDS, FormTemplate, Question
 from workshop_manager.workshops.models import Level, Location, Session, Workshop, WorkshopType
 
@@ -204,3 +207,162 @@ class LocationForm(BootstrapFormMixin, forms.ModelForm):
         model = Location
         fields = ["name", "address", "map_url", "directions", "is_active"]
         widgets = {"directions": forms.Textarea(attrs={"rows": 4})}
+
+
+# --- Settings (PRD §7.8, §7.5) ------------------------------------------------------------------
+
+#: Maximum size of an uploaded logo.
+LOGO_MAX_BYTES = 2 * 1024 * 1024
+
+
+class SiteSettingsForm(BootstrapFormMixin, forms.ModelForm):
+    """All settings on one page, drawn in sections (`SECTIONS`).
+
+    The SMTP password is write-only: an empty field keeps the stored one, and the stored value
+    is never sent back to the browser.
+    """
+
+    smtp_password = forms.CharField(
+        label="hasło",
+        required=False,
+        strip=False,
+        widget=forms.PasswordInput(render_value=False, attrs={"autocomplete": "new-password"}),
+    )
+    smtp_password_clear = forms.BooleanField(label="usuń zapisane hasło", required=False)
+
+    SECTIONS = [
+        (
+            "Organizator",
+            "Dane pokazywane na stronie i w stopce e-maili.",
+            ["org_name", "org_short_name", "org_address", "contact_email", "contact_phone", "logo"],
+        ),
+        (
+            "Konto bankowe",
+            "Do wpisania w e-mailach polem {konto_bankowe}.",
+            ["bank_account_holder", "bank_account_number"],
+        ),
+        (
+            "Zgody w formularzu",
+            "Zmiana treści zgody tworzy jej nową wersję; zgłoszenia wysłane wcześniej zachowują "
+            "wersję, na którą osoba się zgodziła.",
+            ["privacy_policy_url", "privacy_text", "marketing_text"],
+        ),
+        (
+            "Poczta wychodząca",
+            "Serwer, przez który system wysyła e-maile. Po zapisaniu wyślij wiadomość testową.",
+            [
+                "smtp_enabled",
+                "smtp_host",
+                "smtp_port",
+                "smtp_security",
+                "smtp_username",
+                "smtp_password",
+                "smtp_password_clear",
+                "from_name",
+                "from_email",
+                "reply_to",
+            ],
+        ),
+        (
+            "Powiadomienia o zgłoszeniach",
+            "",
+            ["admin_notifications", "admin_notification_email"],
+        ),
+    ]
+
+    class Meta:
+        model = SiteSettings
+        fields = [
+            "org_name",
+            "org_short_name",
+            "org_address",
+            "contact_email",
+            "contact_phone",
+            "logo",
+            "bank_account_holder",
+            "bank_account_number",
+            "privacy_policy_url",
+            "privacy_text",
+            "marketing_text",
+            "smtp_enabled",
+            "smtp_host",
+            "smtp_port",
+            "smtp_security",
+            "smtp_username",
+            "from_name",
+            "from_email",
+            "reply_to",
+            "admin_notifications",
+            "admin_notification_email",
+        ]
+        widgets = {
+            "privacy_text": forms.Textarea(attrs={"rows": 5}),
+            "logo": forms.ClearableFileInput(attrs={"accept": "image/png,image/jpeg"}),
+            "admin_notifications": forms.RadioSelect(),
+            "smtp_security": forms.RadioSelect(),
+        }
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        if self.instance.has_smtp_password:
+            self.fields[
+                "smtp_password"
+            ].help_text = "Hasło jest zapisane (zaszyfrowane). Pozostaw puste, aby go nie zmieniać."
+        else:
+            self.fields["smtp_password"].help_text = "Hasła aplikacji, nie hasła do konta."
+            del self.fields["smtp_password_clear"]
+
+    def sections(self) -> list[tuple[str, str, list[forms.BoundField]]]:
+        return [
+            (title, intro, [self[name] for name in names if name in self.fields])
+            for title, intro, names in self.SECTIONS
+        ]
+
+    def clean_logo(self) -> Any:
+        logo = self.cleaned_data.get("logo")
+        if logo and getattr(logo, "size", 0) > LOGO_MAX_BYTES:
+            raise forms.ValidationError("Plik jest za duży (najwyżej 2 MB).")
+        return logo
+
+    def clean(self) -> dict[str, Any]:
+        data = super().clean() or {}
+        if data.get("smtp_enabled"):
+            if not data.get("smtp_host"):
+                self.add_error("smtp_host", "Podaj adres serwera SMTP albo wyłącz własny serwer.")
+            if not (data.get("from_email") or data.get("smtp_username")):
+                self.add_error("from_email", "Podaj adres nadawcy.")
+        return data
+
+    def save(self, commit: bool = True) -> Any:
+        site = super().save(commit=False)
+        if self.cleaned_data.get("smtp_password_clear"):
+            site.set_smtp_password("")
+        elif self.cleaned_data.get("smtp_password"):
+            site.set_smtp_password(self.cleaned_data["smtp_password"])
+        if commit:
+            site.save()
+        return site
+
+
+class TestEmailForm(BootstrapFormMixin, forms.Form):
+    to_email = forms.EmailField(label="Wyślij wiadomość testową na adres")
+
+
+class EmailTemplateForm(BootstrapFormMixin, forms.ModelForm):
+    class Meta:
+        model = EmailTemplate
+        fields = ["subject", "body"]
+        widgets = {"body": forms.Textarea(attrs={"rows": 16})}
+
+    def __init__(self, *args: Any, placeholders: dict[str, str], **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.placeholders = placeholders
+
+    def clean(self) -> dict[str, Any]:
+        data = super().clean() or {}
+        for name in ("subject", "body"):
+            unknown = unknown_placeholders(data.get(name, ""), self.placeholders)
+            if unknown:
+                listed = ", ".join("{" + u + "}" for u in unknown)
+                self.add_error(name, f"Nieznane pola: {listed}. Sprawdź pisownię z listą obok.")
+        return data

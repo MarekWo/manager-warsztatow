@@ -1,12 +1,17 @@
 {% extends "base.html" %}
+{% load panel_tags %}
 {% block main_class %}panel-page{% endblock %}
 {% block content %}
+  {% with section=request.resolver_match.url_name|panel_section %}
   <nav class="panel-nav mb-4" aria-label="Menu panelu">
     <ul class="nav nav-pills gap-1">
-      <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'panel:dashboard' %}"><i class="bi bi-speedometer2" aria-hidden="true"></i> Pulpit</a></li>
-      <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name != 'dashboard' and 'location' not in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel:workshop_list' %}"><i class="bi bi-easel" aria-hidden="true"></i> Warsztaty</a></li>
-      <li class="nav-item"><a class="nav-link {% if 'location' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'panel:location_list' %}"><i class="bi bi-geo-alt" aria-hidden="true"></i> Miejsca</a></li>
+      <li class="nav-item"><a class="nav-link {% if section == 'dashboard' %}active{% endif %}" href="{% url 'panel:dashboard' %}"><i class="bi bi-speedometer2" aria-hidden="true"></i> Pulpit</a></li>
+      <li class="nav-item"><a class="nav-link {% if section == 'workshops' %}active{% endif %}" href="{% url 'panel:workshop_list' %}"><i class="bi bi-easel" aria-hidden="true"></i> Warsztaty</a></li>
+      <li class="nav-item"><a class="nav-link {% if section == 'locations' %}active{% endif %}" href="{% url 'panel:location_list' %}"><i class="bi bi-geo-alt" aria-hidden="true"></i> Miejsca</a></li>
+      <li class="nav-item"><a class="nav-link {% if section == 'emails' %}active{% endif %}" href="{% url 'panel:email_log' %}"><i class="bi bi-envelope" aria-hidden="true"></i> E-maile</a></li>
+      <li class="nav-item"><a class="nav-link {% if section == 'settings' %}active{% endif %}" href="{% url 'panel:settings' %}"><i class="bi bi-gear" aria-hidden="true"></i> Ustawienia</a></li>
     </ul>
   </nav>
+  {% endwith %}
   {% block panel_content %}{% endblock %}
 {% endblock %}

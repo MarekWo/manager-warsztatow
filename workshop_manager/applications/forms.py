@@ -7,8 +7,8 @@ from django import forms
 from django.core import signing
 from django.utils.html import format_html
 
-from workshop_manager.core import consents
 from workshop_manager.core.forms import BootstrapFormMixin
+from workshop_manager.core.models import SiteSettings
 from workshop_manager.forms_builder.models import Question, QuestionKind
 from workshop_manager.workshops.models import FieldMode, Level, Workshop
 
@@ -102,8 +102,9 @@ class ApplicationForm(BootstrapFormMixin, forms.Form):
         help_text="Np. dane do faktury lub inne informacje dla organizatora.",
         widget=forms.Textarea(attrs={"rows": 3}),
     )
-    privacy = forms.BooleanField(label=consents.PRIVACY_TEXT)
-    marketing = forms.BooleanField(label=consents.MARKETING_TEXT, required=False)
+    # Labels come from Settings (`__init__`).
+    privacy = forms.BooleanField()
+    marketing = forms.BooleanField(required=False)
     # Anti-spam: rendered off-screen and labelled for people using screen readers.
     website = forms.CharField(
         label="Nie wypełniaj tego pola",
@@ -129,9 +130,13 @@ class ApplicationForm(BootstrapFormMixin, forms.Form):
         self._apply_mode("phone", workshop.phone_mode)
         self._apply_mode("adult", workshop.adult_confirmation_mode)
         self._apply_mode("remarks", workshop.remarks_mode)
+        site = SiteSettings.load()
+        self.privacy_version = site.privacy_version
+        self.fields["privacy"].label = site.privacy_text
+        self.fields["marketing"].label = site.marketing_text
         self.fields["privacy"].help_text = format_html(
             '<a href="{}" target="_blank" rel="noopener">Polityka prywatności</a>',
-            consents.PRIVACY_POLICY_URL,
+            site.privacy_policy_url,
         )
         if not self.is_bound:
             self.fields["started"].initial = signing.dumps(time.time(), salt=_STAMP_SALT)

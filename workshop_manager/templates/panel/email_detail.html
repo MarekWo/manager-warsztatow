@@ -1,0 +1,38 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{{ email.subject }}{% endblock %}
+{% block panel_content %}
+<p class="mb-2"><a href="{% url 'panel:email_log' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Dziennik e-maili</a></p>
+<h1 class="page-title h3 mb-3">{{ email.subject }}</h1>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <dl class="summary">
+      <dt>Status</dt><dd>{% include "panel/partials/email_status.html" %}</dd>
+      <dt>Odbiorca</dt><dd>{% if email.to_name %}{{ email.to_name }} &lt;{{ email.to_email }}&gt;{% else %}{{ email.to_email }}{% endif %}</dd>
+      <dt>Utworzono</dt><dd>{{ email.created_at|date:"d.m.Y H:i:s" }}</dd>
+      {% if email.sent_at %}<dt>Wysłano</dt><dd>{{ email.sent_at|date:"d.m.Y H:i:s" }}</dd>{% endif %}
+      <dt>Próby wysłania</dt><dd>{{ email.attempts }}</dd>
+      {% if email.template_key %}<dt>Rodzaj</dt><dd>{{ email.get_template_key_display }}</dd>{% endif %}
+      {% if email.application %}<dt>Zgłoszenie</dt><dd>{{ email.application }}</dd>{% endif %}
+    </dl>
+    {% if email.last_error %}
+      <div class="alert alert-danger small" role="alert">
+        <strong>Ostatni błąd:</strong><br>{{ email.last_error }}
+      </div>
+    {% endif %}
+    {% if email.status != "sending" %}
+    <form method="post" action="{% url 'panel:email_resend' email.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-primary"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Wyślij ponownie</button>
+    </form>
+    {% endif %}
+  </div>
+  <div class="col-lg-7">
+    <iframe class="email-frame" title="Treść e-maila" src="{% url 'panel:email_html' email.pk %}"></iframe>
+    <details class="mt-3">
+      <summary>Wersja tekstowa</summary>
+      <pre class="email-text mt-2">{{ email.body_text }}</pre>
+    </details>
+  </div>
+</div>
+{% endblock %}

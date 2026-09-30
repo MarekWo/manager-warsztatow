@@ -14,6 +14,12 @@ from workshop_manager.core.tasks import schedule
 #: are spread out so they never run at once. The heartbeat is what `/healthz` listens for.
 SCHEDULES: list[tuple[str, str, str]] = [
     ("heartbeat", "workshop_manager.core.tasks.heartbeat", "* * * * *"),
+    ("send-due-emails", "workshop_manager.communications.services.send_due_emails", "* * * * *"),
+    (
+        "admin-daily-digest",
+        "workshop_manager.communications.notifications.send_admin_digest",
+        "0 19 * * *",
+    ),
     ("clear-sessions", "workshop_manager.core.tasks.clear_sessions", "10 3 * * *"),
     ("prune-task-results", "workshop_manager.core.tasks.prune_task_results", "20 3 * * *"),
 ]

@@ -1,6 +1,8 @@
 from typing import Any
 
 from allauth.account.adapter import DefaultAccountAdapter
+from allauth.core import context as allauth_context
+from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpRequest
 
 
@@ -14,6 +16,26 @@ class AccountAdapter(DefaultAccountAdapter):
 
     def is_open_for_signup(self, request: HttpRequest) -> bool:
         return False
+
+    def send_mail(self, template_prefix: str, email: str, context: dict[str, Any]) -> None:
+        """Send sign-in codes through the same server as every other e-mail (Settings).
+
+        Directly, not through the queue: a code is needed within seconds and must not be kept
+        in the e-mail log.
+        """
+        from workshop_manager.communications import mailer
+
+        request = allauth_context.request
+        context = {
+            "request": request,
+            "email": email,
+            "current_site": get_current_site(request),
+        } | context
+        message = self.render_mail(template_prefix, email, context)
+        transport = mailer.transport()
+        message.from_email = transport.from_email
+        message.reply_to = [transport.reply_to] if transport.reply_to else []
+        mailer.send_now(message, transport.connection)
 
     def format_email_subject(self, subject: str) -> str:
         return f"Manager Warsztatów — {subject}"

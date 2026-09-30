@@ -1,0 +1,19 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Treść e-maili{% endblock %}
+{% block panel_content %}
+<h1 class="page-title mb-3">Ustawienia</h1>
+{% include "panel/partials/settings_nav.html" %}
+<p>E-maile wysyłane automatycznie przez system. Kliknij „Edytuj”, aby zmienić ich treść.</p>
+{% for template, recipients in templates %}
+  <div class="card mb-3 shadow-sm">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between gap-2">
+      <div>
+        <h2 class="h5 mb-1">{{ template.get_key_display }}</h2>
+        <div class="text-body-secondary small">Do kogo: {{ recipients }}</div>
+        <div class="small">Temat: {{ template.subject }}</div>
+      </div>
+      <a class="btn btn-sm btn-outline-primary align-self-md-center" href="{% url 'panel:email_template_edit' template.key %}">Edytuj</a>
+    </div>
+  </div>
+{% endfor %}
+{% endblock %}

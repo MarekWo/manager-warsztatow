@@ -9,6 +9,9 @@ from typing import Any
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+from workshop_manager.communications.defaults import DEFAULTS as EMAIL_DEFAULTS
+from workshop_manager.communications.models import EmailTemplate
+from workshop_manager.core.models import SiteSettings
 from workshop_manager.forms_builder.models import FormTemplate, QuestionKind, TemplateQuestion
 from workshop_manager.workshops.models import Location, WorkshopType
 
@@ -113,5 +116,10 @@ class Command(BaseCommand):
         if not Location.objects.exists():
             Location.objects.create(
                 name="Pracownia Stowarzyszenia Ecclesia", address="ul. Kopernika 26, Kraków"
+            )
+        SiteSettings.load()
+        for key, (subject, body) in EMAIL_DEFAULTS.items():
+            EmailTemplate.objects.get_or_create(
+                key=key, defaults={"subject": subject, "body": body}
             )
         self.stdout.write("Default data in place.")

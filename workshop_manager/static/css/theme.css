@@ -128,6 +128,11 @@ main {
   line-height: 1.2;
 }
 
+.site-header .site-logo {
+  max-height: 48px;
+  width: auto;
+}
+
 .site-header .navbar-brand small {
   display: block;
   color: #666;
@@ -339,4 +344,36 @@ main {
   border: 2px solid var(--mw-primary);
   background: var(--mw-primary-light);
   font-weight: 600;
+}
+
+/* --- Settings and e-mail --- */
+
+.settings-logo-preview {
+  max-height: 64px;
+  width: auto;
+}
+
+.email-frame {
+  width: 100%;
+  min-height: 560px;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  background: #f4f4f7;
+}
+
+.email-text {
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.placeholder-list dt {
+  font-weight: 400;
+}
+
+.placeholder-list dd {
+  margin-bottom: 0.4rem;
+  color: #555;
 }

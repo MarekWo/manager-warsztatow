@@ -1,0 +1,47 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Ustawienia{% endblock %}
+{% block panel_content %}
+<h1 class="page-title mb-3">Ustawienia</h1>
+{% include "panel/partials/settings_nav.html" %}
+
+{% if problem_count %}
+  <div class="alert alert-warning" role="alert">
+    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+    Niektórych e-maili nie udało się wysłać ({{ problem_count }}).
+    <a href="{% url 'panel:email_log' %}?status=problems">Zobacz dziennik e-maili</a>.
+  </div>
+{% endif %}
+
+<div class="row"><div class="col-xl-9">
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {% for error in form.non_field_errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+  {% for title, intro, fields in form.sections %}
+    <section class="card card-body shadow-sm mb-4" {% if forloop.counter == 4 %}id="poczta"{% endif %} aria-labelledby="section-{{ forloop.counter }}">
+      <h2 class="h4" id="section-{{ forloop.counter }}">{{ title }}</h2>
+      {% if intro %}<p class="small text-body-secondary">{{ intro }}</p>{% endif %}
+      {% if forloop.counter == 1 and site_settings.logo %}
+        <p class="mb-2"><img src="{{ site_settings.logo.url }}" alt="Aktualne logo" class="settings-logo-preview"></p>
+      {% endif %}
+      {% if forloop.counter == 3 %}
+        <p class="small">Aktualna wersja klauzuli: <strong>{{ site_settings.privacy_version }}</strong></p>
+      {% endif %}
+      {% for field in fields %}{{ field.as_field_group }}{% endfor %}
+    </section>
+  {% endfor %}
+  <div class="d-flex gap-2 mb-4">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg" aria-hidden="true"></i> Zapisz ustawienia</button>
+  </div>
+</form>
+
+<section class="card card-body shadow-sm mb-4" aria-labelledby="test-email">
+  <h2 class="h4" id="test-email">Wiadomość testowa</h2>
+  <p class="small text-body-secondary">Sprawdza zapisane ustawienia poczty: wiadomość wychodzi od razu, a ewentualny błąd serwera pojawi się na górze strony.</p>
+  <form method="post" action="{% url 'panel:settings_test_email' %}" class="row g-2 align-items-end">
+    {% csrf_token %}
+    <div class="col-md-8">{{ test_form.to_email.as_field_group }}</div>
+    <div class="col-md-4 mb-3"><button type="submit" class="btn btn-outline-primary w-100"><i class="bi bi-send" aria-hidden="true"></i> Wyślij e-mail testowy</button></div>
+  </form>
+</section>
+</div></div>
+{% endblock %}

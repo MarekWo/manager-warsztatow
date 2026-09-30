@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ subject }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f7;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f7;">
+<tr><td align="center" style="padding:24px 12px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:8px;border-top:4px solid #283878;">
+    <tr><td style="padding:24px 28px 8px 28px;font-family:Arial,Helvetica,sans-serif;">
+      {% if site.logo_url %}<img src="{{ site.logo_url }}" alt="{{ site.org_short_name }}" style="max-height:56px;max-width:260px;height:auto;border:0;">{% else %}<div style="font-size:18px;font-weight:bold;color:#283878;">{{ site.org_short_name }}</div>{% endif %}
+    </td></tr>
+    <tr><td style="padding:8px 28px 24px 28px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.55;color:#222222;">
+      {{ content }}
+    </td></tr>
+    <tr><td style="padding:16px 28px;border-top:1px solid #e5e5ea;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#666666;">
+      {{ site.org_name }}{% if site.org_address %}<br>{{ site.org_address }}{% endif %}{% if site.contact_email %}<br><a href="mailto:{{ site.contact_email }}" style="color:#283878;">{{ site.contact_email }}</a>{% endif %}
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</body>
+</html>

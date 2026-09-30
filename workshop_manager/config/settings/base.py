@@ -28,7 +28,9 @@ APP_BUILD = env.str("APP_BUILD", default="")
 
 DEBUG = env.bool("DEBUG", default=False)
 SECRET_KEY = env.str("SECRET_KEY", default="")
-SITE_URL = env.str("SITE_URL", default="http://localhost:8000")
+SITE_URL = env.str("SITE_URL", default="http://localhost:8000").rstrip("/")
+# Encrypts secrets kept in the database (the SMTP password). Empty = derived from SECRET_KEY.
+FIELD_ENCRYPTION_KEY = env.str("FIELD_ENCRYPTION_KEY", default="")
 # TEST servers must stay out of search engines: every response then says `noindex, nofollow`.
 SITE_NOINDEX = env.bool("SITE_NOINDEX", default=False)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     "workshop_manager.workshops",
     "workshop_manager.forms_builder",
     "workshop_manager.applications",
+    "workshop_manager.communications",
     "workshop_manager.public",
     "workshop_manager.panel",
     "django.contrib.admin",
@@ -229,7 +232,8 @@ STORAGES = {
 
 # --- Email ---------------------------------------------------------------------------------------
 
-# The fallback transport; SMTP settings saved in the admin panel take precedence (Stage 3).
+# The fallback transport; SMTP settings saved in the panel take precedence when switched on
+# (communications.mailer).
 # Lower-case, so the URL (with its password) never becomes a setting a debug page could print.
 _email_url = env.str("EMAIL_URL", default="consolemail://")
 MAILERS = {"default": mailer_from_url(_email_url)}

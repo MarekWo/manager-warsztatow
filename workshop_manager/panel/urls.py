@@ -1,6 +1,6 @@
 from django.urls import path
 
-from workshop_manager.panel import views
+from workshop_manager.panel import settings_views, views
 
 app_name = "panel"
 
@@ -43,4 +43,28 @@ urlpatterns = [
         views.question_delete,
         name="question_delete",
     ),
+    # Settings and e-mail
+    path("ustawienia/", settings_views.settings_edit, name="settings"),
+    path("ustawienia/test/", settings_views.settings_test_email, name="settings_test_email"),
+    path("ustawienia/e-maile/", settings_views.email_template_list, name="email_template_list"),
+    path(
+        "ustawienia/e-maile/<slug:key>/",
+        settings_views.email_template_edit,
+        name="email_template_edit",
+    ),
+    path(
+        "ustawienia/e-maile/<slug:key>/domyslny/",
+        settings_views.email_template_reset,
+        name="email_template_reset",
+    ),
+    path(
+        "ustawienia/e-maile/<slug:key>/podglad/",
+        settings_views.email_template_preview,
+        name="email_template_preview",
+    ),
+    path("e-maile/", settings_views.email_log, name="email_log"),
+    path("e-maile/ponow-nieudane/", settings_views.email_resend_failed, name="email_resend_failed"),
+    path("e-maile/<int:pk>/", settings_views.email_detail, name="email_detail"),
+    path("e-maile/<int:pk>/html/", settings_views.email_html, name="email_html"),
+    path("e-maile/<int:pk>/ponow/", settings_views.email_resend, name="email_resend"),
 ]

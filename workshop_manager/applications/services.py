@@ -12,7 +12,7 @@ from workshop_manager.applications.models import (
     Application,
     Participant,
 )
-from workshop_manager.core import consents
+from workshop_manager.communications import notifications
 
 
 class DuplicateApplication(Exception):
@@ -27,6 +27,9 @@ def has_active_application(workshop: Any, email: str) -> bool:
 
 def submit_application(form: ApplicationForm, *, user: Any = None) -> Application:
     """Store a valid form as a new application; raise `DuplicateApplication` for a repeat.
+
+    The confirmation e-mail and the organiser's notification are queued in the same
+    transaction and sent by the worker after the commit.
 
     The participant is found by email. Their stored name and phone follow the latest
     application unless they have an account — then only they may change their details
@@ -70,7 +73,7 @@ def submit_application(form: ApplicationForm, *, user: Any = None) -> Applicatio
                 remarks=data.get("remarks", ""),
                 adult_confirmed=bool(data.get("adult")),
                 privacy_consent_at=now,
-                privacy_consent_version=consents.PRIVACY_VERSION,
+                privacy_consent_version=form.privacy_version,
                 marketing_consent=bool(data.get("marketing")),
             )
             Answer.objects.bulk_create(
@@ -83,6 +86,7 @@ def submit_application(form: ApplicationForm, *, user: Any = None) -> Applicatio
                 )
                 for order, (question, value) in enumerate(form.answers())
             )
+            notifications.application_submitted(application)
     except IntegrityError as error:  # two submissions racing past the check above
         raise DuplicateApplication from error
     return application

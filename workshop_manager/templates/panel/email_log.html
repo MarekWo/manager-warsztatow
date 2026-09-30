@@ -1,0 +1,56 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}E-maile{% endblock %}
+{% block panel_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+  <h1 class="page-title mb-0">Dziennik e-maili</h1>
+  {% if failed_count %}
+    <form method="post" action="{% url 'panel:email_resend_failed' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-primary"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Wyślij ponownie nieudane ({{ failed_count }})</button>
+    </form>
+  {% endif %}
+</div>
+
+<form method="get" class="row g-2 mb-3" role="search">
+  <div class="col-md-5">
+    <label class="visually-hidden" for="q">Szukaj</label>
+    <input type="search" class="form-control" id="q" name="q" value="{{ query }}" placeholder="Adres lub temat">
+  </div>
+  <div class="col-md-4">
+    <label class="visually-hidden" for="status">Status</label>
+    <select class="form-select" id="status" name="status">
+      {% for value, label in filters %}<option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3"><button type="submit" class="btn btn-outline-primary w-100">Pokaż</button></div>
+</form>
+
+{% if page.object_list %}
+<div class="table-responsive">
+<table class="table align-middle">
+  <thead><tr><th scope="col">Data</th><th scope="col">Odbiorca</th><th scope="col">Temat</th><th scope="col">Status</th></tr></thead>
+  <tbody>
+  {% for email in page %}
+    <tr>
+      <td class="text-nowrap">{{ email.created_at|date:"d.m.Y H:i" }}</td>
+      <td>{{ email.to_email }}</td>
+      <td><a href="{% url 'panel:email_detail' email.pk %}">{{ email.subject }}</a></td>
+      <td>{% include "panel/partials/email_status.html" %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if page.has_other_pages %}
+<nav aria-label="Strony dziennika">
+  <ul class="pagination">
+    {% if page.has_previous %}<li class="page-item"><a class="page-link" href="?status={{ status }}&amp;q={{ query|urlencode }}&amp;page={{ page.previous_page_number }}">Nowsze</a></li>{% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ page.number }} / {{ page.paginator.num_pages }}</span></li>
+    {% if page.has_next %}<li class="page-item"><a class="page-link" href="?status={{ status }}&amp;q={{ query|urlencode }}&amp;page={{ page.next_page_number }}">Starsze</a></li>{% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% else %}
+  <p class="text-body-secondary">Brak e-maili{% if status or query %} spełniających warunki{% endif %}.</p>
+{% endif %}
+{% endblock %}

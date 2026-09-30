@@ -1,0 +1,5 @@
+{% if email.status == "sent" %}<span class="badge text-bg-success">wysłano</span>
+{% elif email.status == "failed" %}<span class="badge text-bg-danger">błąd</span>
+{% elif email.is_retrying %}<span class="badge text-bg-warning">ponowienie o {{ email.next_attempt_at|date:"H:i" }}</span>
+{% elif email.status == "sending" %}<span class="badge text-bg-info">wysyłanie</span>
+{% else %}<span class="badge text-bg-secondary">w kolejce</span>{% endif %}
