@@ -377,3 +377,13 @@ main {
   margin-bottom: 0.4rem;
   color: #555;
 }
+
+/* --- Error pages --- */
+
+.error-code {
+  color: var(--mw-accent-dark);
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}

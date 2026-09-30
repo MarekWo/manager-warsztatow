@@ -1,0 +1,11 @@
+{% extends "errors/base_error.html" %}
+{% block title %}Brak dostępu{% endblock %}
+{% block code %}403{% endblock %}
+{% block heading %}Brak dostępu do tej strony{% endblock %}
+{% block message %}
+  <p class="lead">Ta strona jest dostępna tylko dla osób z odpowiednimi uprawnieniami.</p>
+  {% if not user.is_authenticated %}<p>Jeśli masz konto, zaloguj się i spróbuj jeszcze raz.</p>{% endif %}
+{% endblock %}
+{% block extra_actions %}
+  {% if not user.is_authenticated %}<a class="btn btn-outline-primary btn-lg" href="{% url 'account_request_login_code' %}?next={{ request.path|urlencode }}"><i class="bi bi-person-circle" aria-hidden="true"></i> Zaloguj się</a>{% endif %}
+{% endblock %}

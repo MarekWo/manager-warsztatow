@@ -254,6 +254,7 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 # --- Security -----------------------------------------------------------------------------------
 
 X_FRAME_OPTIONS = "DENY"
+CSRF_FAILURE_VIEW = "workshop_manager.core.views.csrf_failure"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 

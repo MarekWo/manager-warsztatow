@@ -2,6 +2,10 @@
 {% load workshop_tags %}
 
 {% block title %}{{ workshop.title }}{% endblock %}
+{% block meta_description %}{% firstof workshop.subtitle workshop.description|striptags|truncatewords:40 workshop.title %}{% endblock %}
+{% block og_title %}{{ workshop.title }}{% endblock %}
+{% block og_description %}{% firstof workshop.subtitle workshop.description|striptags|truncatewords:40 workshop.title %}{% endblock %}
+{% block og_image %}{% if workshop.cover_image and workshop.show_cover_image %}{{ site_url }}{{ workshop.cover_image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block content %}
   {% if is_preview %}

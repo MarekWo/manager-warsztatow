@@ -1,0 +1,8 @@
+{% extends "errors/base_error.html" %}
+{% block title %}Formularz wygasł{% endblock %}
+{% block code %}403{% endblock %}
+{% block heading %}Formularz wygasł — spróbuj jeszcze raz{% endblock %}
+{% block message %}
+  <p class="lead">Ze względów bezpieczeństwa formularz ważny jest tylko przez pewien czas. Najpewniej strona była otwarta dłużej albo przeglądarka nie zapisała plików cookie.</p>
+  <p>Wróć do poprzedniej strony, odśwież ją (klawisz F5 lub przeciągnięcie palcem w dół na telefonie) i wyślij formularz ponownie. Wpisane dane mogą wymagać ponownego wpisania.</p>
+{% endblock %}

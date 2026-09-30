@@ -102,6 +102,9 @@ All notable changes to this project are documented here. The format follows
 - Printouts as a page to print and as PDF (WeasyPrint): attendance list (accepted per level,
   a signature column per session, A4 landscape), contact list, materials summary (accepted and
   waiting counted apart, with names); filter by material order on the application list.
+- Error pages in Polish (404, 403, 400, 500 and an expired-form page instead of Django's CSRF
+  failure page), a favicon and home-screen icon, page descriptions and Open Graph tags (the
+  workshop's subtitle and photo when shared).
 
 ### Upgrading
 

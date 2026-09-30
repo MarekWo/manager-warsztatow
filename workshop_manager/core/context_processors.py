@@ -9,10 +9,13 @@ from workshop_manager.core.models import SiteSettings
 
 
 def app(request: HttpRequest) -> dict[str, Any]:
-    """Values every template may use: the version, the noindex flag and the site settings."""
+    """Values every template may use: the version, the public address, the noindex flag and the
+    site settings."""
     return {
         "app_version": version_string(),
         "site_noindex": settings.SITE_NOINDEX,
+        # Absolute links in meta tags (Open Graph) must point at the public address.
+        "site_url": settings.SITE_URL,
         # Lazy: pages that never touch it (healthz, redirects) cost no query.
         "site_settings": SimpleLazyObject(SiteSettings.load),
     }

@@ -1,7 +1,9 @@
 import contextlib
 
 from django.db import DatabaseError, connection
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest, HttpResponse, HttpResponsePermanentRedirect, JsonResponse
+from django.shortcuts import render
+from django.templatetags.static import static
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
@@ -42,3 +44,20 @@ def healthz(request: HttpRequest) -> JsonResponse:
     if request.method == "HEAD":
         response.content = b""  # gunicorn drops (and logs) bodies sent on HEAD responses
     return response
+
+
+def csrf_failure(request: HttpRequest, reason: str = "") -> HttpResponse:
+    """The page shown when a form's CSRF token is missing or stale (`CSRF_FAILURE_VIEW`).
+
+    Django's own page is in English and meant for developers; people see this mostly after
+    leaving a form open for a long time, so it says that in plain Polish and how to go on.
+    """
+    return render(request, "errors/csrf.html", status=403)
+
+
+def static_redirect(request: HttpRequest, path: str) -> HttpResponse:
+    """Send `/favicon.ico` and friends, which browsers ask for at the root, to the static file.
+
+    Resolved per request: the hashed name comes from the static files manifest.
+    """
+    return HttpResponsePermanentRedirect(static(path))

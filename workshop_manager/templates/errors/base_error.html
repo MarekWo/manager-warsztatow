@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7 text-center error-page">
+    <p class="error-code" aria-hidden="true">{% block code %}{% endblock %}</p>
+    <h1 class="page-title mb-3">{% block heading %}{% endblock %}</h1>
+    {% block message %}{% endblock %}
+    <p class="mt-4 d-flex flex-wrap justify-content-center gap-2">
+      <a class="btn btn-primary btn-lg" href="{% url 'public:home' %}"><i class="bi bi-house" aria-hidden="true"></i> Aktualne warsztaty</a>
+      {% block extra_actions %}{% endblock %}
+    </p>
+    {% if site_settings.contact_email %}
+      <p class="small text-body-secondary mt-4">Jeśli problem się powtarza, napisz do organizatora: <a href="mailto:{{ site_settings.contact_email }}">{{ site_settings.contact_email }}</a>{% if site_settings.contact_phone %} lub zadzwoń: {{ site_settings.contact_phone }}{% endif %}.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

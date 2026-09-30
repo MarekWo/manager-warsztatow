@@ -1,0 +1,29 @@
+{% load static %}<!doctype html>
+{% comment %}
+  Rendered without a request or context processors (the error may come from the database), so
+  it depends on nothing but static files: no site settings, no user, no links built from data.
+{% endcomment %}
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Błąd serwera — Warsztaty</title>
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-5.3.8/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+</head>
+<body>
+  <main id="content" class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 text-center error-page">
+        <p class="error-code" aria-hidden="true">500</p>
+        <h1 class="page-title mb-3">Coś poszło nie tak po naszej stronie</h1>
+        <p class="lead">Serwer nie zdołał obsłużyć tej strony. Błąd został zapisany, żeby można go było naprawić.</p>
+        <p>Spróbuj ponownie za kilka minut. Jeśli był to formularz zgłoszenia, najpierw sprawdź skrzynkę e-mail — gdy zgłoszenie dotarło, przyjdzie potwierdzenie i nie trzeba wysyłać go drugi raz.</p>
+        <p class="mt-4"><a class="btn btn-primary btn-lg" href="/">Aktualne warsztaty</a></p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

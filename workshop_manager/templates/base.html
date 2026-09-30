@@ -6,6 +6,18 @@
   {% if site_noindex %}<meta name="robots" content="noindex, nofollow">{% endif %}
   <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
   <title>{% block title %}Warsztaty{% endblock %} — {{ site_settings.org_short_name }}</title>
+  <meta name="description" content="{% block meta_description %}Zapisy na warsztaty — {{ site_settings.org_name }}.{% endblock %}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pl_PL">
+  <meta property="og:site_name" content="Warsztaty — {{ site_settings.org_short_name }}">
+  <meta property="og:title" content="{% block og_title %}Warsztaty — {{ site_settings.org_short_name }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Zapisy na warsztaty — {{ site_settings.org_name }}.{% endblock %}">
+  <meta property="og:url" content="{{ site_url }}{{ request.path }}">
+  <meta property="og:image" content="{% block og_image %}{% if site_settings.logo %}{{ site_settings.logo_url }}{% else %}{{ site_url }}{% static 'img/icon-512.png' %}{% endif %}{% endblock %}">
+  <link rel="icon" href="{% static 'img/favicon.ico' %}" sizes="48x48">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+  <meta name="theme-color" content="#283878">
   <link rel="stylesheet" href="{% static 'vendor/bootstrap-5.3.8/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons-1.13.1/bootstrap-icons.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/theme.css' %}">
