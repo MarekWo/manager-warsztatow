@@ -1,0 +1,34 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<p class="lead">Wiadomość do uczestników jednego warsztatu — np. „co przynieść” do przyjętych. Każda osoba dostaje osobny e-mail ze swoimi danymi; nikt nie widzi adresów innych.</p>
+
+<h2 id="krok-po-kroku">Krok po kroku</h2>
+<ol>
+  <li>Na stronie warsztatu otwórz zakładkę <span class="ui">Wiadomości</span> i kliknij <span class="ui">Nowa wiadomość</span>.</li>
+  <li>Wybierz, <strong>do kogo</strong>, wpisz temat i treść, ewentualnie dodaj załącznik.</li>
+  <li>Kliknij <span class="ui">Dalej: podgląd i odbiorcy</span>. Wiadomość zapisuje się jako szkic — jeszcze nic nie wychodzi.</li>
+  <li>Sprawdź podgląd (z danymi pierwszej osoby) i listę odbiorców. Jeśli trzeba — <span class="ui">Popraw</span>.</li>
+  <li>Kliknij <span class="ui">Wyślij do … os.</span> Wiadomość wysyła się raz; potem widać, do kogo doszła.</li>
+</ol>
+{% help_shot "wiadomosc" "Podgląd wiadomości do uczestników z listą odbiorców" "Podgląd przed wysłaniem: treść z danymi jednej osoby i lista odbiorców." %}
+
+<h2 id="grupy">Grupy odbiorców</h2>
+<ul>
+  <li><strong>przyjęci</strong>,</li>
+  <li><strong>lista rezerwowa</strong>,</li>
+  <li><strong>wszyscy zgłoszeni</strong> — nowi, przyjęci i z listy rezerwowej,</li>
+  <li><strong>przyjęci na wybranym poziomie</strong>,</li>
+  <li><strong>zaznaczone osoby</strong> — zaznacz je na liście zgłoszeń i wybierz akcję <span class="ui">Napisz wiadomość do zaznaczonych</span>.</li>
+</ul>
+<p>Lista odbiorców jest ustalana w chwili wysyłki — osoba przyjęta już po napisaniu szkicu też dostanie wiadomość. Jedna osoba dostaje jeden e-mail, nawet gdy ma dwa zgłoszenia.</p>
+
+<h2 id="pola">Pola z danymi</h2>
+<p>W treści i temacie możesz wpisać pola w nawiasach klamrowych — każda osoba zobaczy swoje dane. Najczęściej: <code>{imie}</code>, <code>{imie_nazwisko}</code>, <code>{poziom}</code>, <code>{warsztat}</code>, <code>{terminy}</code>, <code>{miejsce}</code>, <code>{cena}</code>, <code>{konto_bankowe}</code>, <code>{link_rezygnacji}</code>. Pełna lista jest obok pola treści. Pole z literówką zostaje w tekście tak, jak je wpisano — łatwo to zauważyć w podglądzie.</p>
+
+<h2 id="zalacznik">Załącznik</h2>
+<p>Jeden plik do 5 MB (np. PDF z listą materiałów). Załączniki są przechowywane poza publiczną częścią strony — nikt nie pobierze ich bez e-maila.</p>
+
+<h2 id="po-wysylce">Po wysłaniu</h2>
+<p>Każdy e-mail jest w <a href="{% url 'help:chapter' 'poczta' %}#dziennik">dzienniku e-maili</a>. Jeśli któryś się nie wyśle (np. chwilowy problem serwera poczty), system ponawia próby sam.</p>
+{% endblock %}

@@ -45,6 +45,7 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'public:my_workshops' %}"><i class="bi bi-person-check" aria-hidden="true"></i> Moje warsztaty</a></li>
             {% if user.is_staff %}
               <li class="nav-item"><a class="nav-link" href="{% url 'panel:dashboard' %}"><i class="bi bi-speedometer2" aria-hidden="true"></i> Panel</a></li>
+              <li class="nav-item"><a class="nav-link" href="{% url 'help:index' %}"><i class="bi bi-question-circle" aria-hidden="true"></i> Pomoc</a></li>
             {% endif %}
             <li class="nav-item">
               <form method="post" action="{% url 'account_logout' %}" class="d-inline">
@@ -76,7 +77,8 @@
     <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
       <div>{{ site_settings.org_name }}{% if site_settings.contact_email %}<br><a href="mailto:{{ site_settings.contact_email }}">{{ site_settings.contact_email }}</a>{% endif %}</div>
       <div>
-        <a href="{{ site_settings.privacy_policy_url }}">Polityka prywatności</a>
+        <a href="{% url 'public:help' %}">Jak to działa</a>
+        <a class="ms-3" href="{{ site_settings.privacy_policy_url }}">Polityka prywatności</a>
         <span class="ms-3 small">v{{ app_version }}</span>
       </div>
     </div>

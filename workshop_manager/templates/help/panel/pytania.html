@@ -1,0 +1,30 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<h2 id="nie-widac-warsztatu">Warsztatu nie widać na stronie</h2>
+<p>Sprawdź stan warsztatu (po prawej na stronie edycji). <em>Szkic</em> — brak daty publikacji; <em>zaplanowany</em> — data publikacji jeszcze nie nadeszła; <em>w archiwum</em> — przywróć go. Warsztat bez żadnego spotkania nie może być opublikowany.</p>
+
+<h2 id="brak-formularza">Na stronie warsztatu nie ma formularza</h2>
+<p>Zapisy są poza oknem (<span class="ui">zapisy od</span> / <span class="ui">zapisy do</span>), zostały zamknięte ręcznie, warsztat jest odwołany albo pierwsze spotkanie już się zaczęło. Zobacz <a href="{% url 'help:chapter' 'warsztaty' %}#zapisy">Okno zapisów</a>.</p>
+
+<h2 id="nie-doszedl-email">Uczestnik mówi, że nie dostał e-maila</h2>
+<p>Znajdź e-mail w <span class="ui">E-maile</span> (wpisz adres osoby). Jeśli ma status „wysłano” — poproś o sprawdzenie folderu „Spam” i czy adres jest poprawny (w zgłoszeniu możesz go poprawić: <span class="ui">Popraw dane</span>, a potem <span class="ui">Wyślij ponownie</span> w dzienniku). Jeśli „błąd” — sprawdź <a href="{% url 'help:chapter' 'poczta' %}">ustawienia poczty</a>.</p>
+
+<h2 id="ta-sama-osoba">Ktoś zgłosił się dwa razy</h2>
+<p>Z jednego adresu może być tylko jedno aktywne zgłoszenie na warsztat, więc drugie zgłoszenie jest zwykle z innego adresu. Zostaw jedno, a drugie odrzuć bez wysyłania e-maila (odznacz <span class="ui">Wyślij powiadomienie e-mailem</span>) i dopisz komentarz do historii.</p>
+
+<h2 id="zmiana-poziomu">Ktoś chce przejść na inny poziom</h2>
+<p>W zgłoszeniu: <span class="ui">Zmiana poziomu</span>. Jeśli osoba była na liście rezerwowej, trafi na koniec listy nowego poziomu.</p>
+
+<h2 id="pomylka">Pomyłkowa decyzja</h2>
+<p>Zmień status jeszcze raz (np. z „odrzucone” na „przyjęte”) — przy okazji system zaproponuje e-mail z nową decyzją. Wszystko zostaje w historii zgłoszenia.</p>
+
+<h2 id="zwolnione-miejsce">Zwolniło się miejsce — kto następny?</h2>
+<p>Po rezygnacji lub anulowaniu przyjętej osoby system podpowie pierwszą osobę z listy rezerwowej na tym poziomie (w komunikacie i w e-mailu o rezygnacji). Przyjmij ją zwykłą decyzją.</p>
+
+<h2 id="kod-logowania">Uczestnik nie umie się zalogować</h2>
+<p>Konto działa tylko na adres, z którego osoba wysłała zgłoszenie. Kod przychodzi w ciągu minuty; jeśli nie — folder „Spam”. Zamiast przepisywać kod, można kliknąć link w tym samym e-mailu. Logowanie nie jest potrzebne do zgłoszenia ani do rezygnacji (link w e-mailu).</p>
+
+<h2 id="platnosci">Płatności i zaświadczenia</h2>
+<p>Pojawią się w wersji 1.1. Do tego czasu numer konta i termin wpłaty wpisuj w uwagach organizacyjnych warsztatu i w e-mailu o przyjęciu (pole <code>{konto_bankowe}</code>).</p>
+{% endblock %}

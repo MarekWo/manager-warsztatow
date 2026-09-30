@@ -1,0 +1,30 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<p class="lead">Ustawienia mają cztery zakładki: <span class="ui">Ogólne</span>, <span class="ui">Treść e-maili</span>, <span class="ui">Rodzaje warsztatów</span> i <span class="ui">Szablony formularzy</span>. Miejsca są osobno w menu.</p>
+
+<h2 id="organizator">Organizator</h2>
+<p>Pełna i skrócona nazwa, adres, e-mail i telefon kontaktowy — pokazywane na stronie, w stopce e-maili i na stronach błędów. Skrócona nazwa jest też nazwą nadawcy e-maili, jeśli nie podano innej. Logo (PNG lub JPG, najlepiej poziome, do 2 MB) pojawia się w nagłówku strony i w e-mailach.</p>
+
+<h2 id="konto">Konto bankowe</h2>
+<p>Odbiorca i numer konta — wstawiane do e-maili polem <code>{konto_bankowe}</code> (np. w e-mailu o przyjęciu).</p>
+
+<h2 id="zgody">Zgody w formularzu</h2>
+<p>Treść zgody na przetwarzanie danych (klauzula pod formularzem), treść zgody na informacje o kolejnych warsztatach i link do polityki prywatności. <strong>Każda zmiana treści klauzuli tworzy nową wersję</strong> (oznaczoną datą i godziną); zgłoszenia wysłane wcześniej zachowują wersję, na którą osoba się zgodziła. Więcej: <a href="{% url 'help:chapter' 'rodo' %}">RODO</a>.</p>
+
+<h2 id="poczta">Poczta wychodząca</h2>
+<p>Opisana w rozdziale <a href="{% url 'help:chapter' 'poczta' %}">Ustawienia poczty i treść e-maili</a>.</p>
+
+<h2 id="rodzaje">Rodzaje warsztatów</h2>
+<p>Rodzaj (np. ikonopisanie, mozaika, witraż) podpowiada, jak przygotować nowy warsztat: jakie poziomy utworzyć (po jednym w wierszu) i który szablon pytań dodać. Rodzaju, którego już nie używasz, nie usuwasz — odznaczasz <span class="ui">aktywny</span>, a zniknie z listy przy tworzeniu warsztatu.</p>
+
+<h2 id="szablony">Szablony formularzy</h2>
+<p>Gotowe zestawy pytań. Pytanie w szablonie może być oznaczone nazwą poziomu (np. „Początkujący”) — w nowym warsztacie trafi wtedy tylko do poziomu o tej nazwie; jeśli warsztat takiego poziomu nie ma, pytanie zostanie pominięte.</p>
+<p class="tip">Zmiany w rodzajach i szablonach <strong>nie zmieniają warsztatów już utworzonych</strong> — dotyczą tylko nowych. Warsztat ma własną kopię pytań, którą zmieniasz w jego formularzu.</p>
+
+<h2 id="miejsca">Miejsca</h2>
+<p>Opisane w rozdziale <a href="{% url 'help:chapter' 'warsztaty' %}#miejsca">Jak utworzyć warsztat</a>.</p>
+
+<h2 id="administratorzy">Administratorzy</h2>
+<p>Każdy administrator ma pełny dostęp do wszystkiego. Dodanie kolejnego administratora robi na razie koordynator — napisz do niego z adresem e-mail tej osoby.</p>
+{% endblock %}

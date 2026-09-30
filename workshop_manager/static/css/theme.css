@@ -387,3 +387,83 @@ main {
   line-height: 1;
   margin-bottom: 0.5rem;
 }
+
+/* --- Help --- */
+
+.help-link {
+  display: inline-block;
+  margin-left: 0.25rem;
+  color: var(--mw-primary);
+  text-decoration: none;
+  font-size: 1.1em;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.help-toc .nav-link {
+  color: var(--mw-primary);
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+}
+
+.help-toc .nav-link.active {
+  background: var(--mw-primary);
+  color: #fff;
+}
+
+.help-content h2 {
+  color: var(--mw-primary);
+  font-size: 1.4rem;
+  margin-top: 2.25rem;
+  scroll-margin-top: 1rem;
+}
+
+.help-content h3 {
+  font-size: 1.15rem;
+  margin-top: 1.5rem;
+}
+
+.help-content .tip {
+  background: var(--mw-primary-light);
+  border-left: 4px solid var(--mw-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+}
+
+.help-content .warning {
+  background: #fff4e0;
+  border-left: 4px solid var(--mw-accent-dark);
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+}
+
+.help-shot {
+  margin: 1.25rem 0;
+}
+
+.help-shot img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+}
+
+.help-shot figcaption {
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 0.4rem;
+}
+
+.help-content kbd,
+.help-content .ui {
+  font-weight: 600;
+}
+
+.help-content .ui {
+  color: var(--mw-primary-dark);
+}
+
+.page-title .help-link {
+  font-size: 0.6em;
+}

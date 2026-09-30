@@ -1,0 +1,42 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<p class="lead">Panel służy do prowadzenia zapisów na warsztaty: tworzysz warsztat, system sam go publikuje o ustalonej godzinie, uczestnicy wysyłają zgłoszenia, a Ty decydujesz, kogo przyjąć — e-maile do uczestników wychodzą same.</p>
+
+<h2 id="logowanie">Logowanie</h2>
+<p>Nie ma haseł. Na stronie logowania wpisujesz swój adres e-mail, a system wysyła na niego sześciocyfrowy kod (i link, który loguje jednym kliknięciem). Kod jest ważny 15 minut. Jeśli zaznaczysz <span class="ui">Zapamiętaj mnie</span>, logowanie na tym urządzeniu wystarczy na 30 dni od ostatniej wizyty.</p>
+<p class="tip">Kod nie przyszedł? Sprawdź folder „Spam” / „Oferty”. Nowy kod można zamówić po minucie.</p>
+
+<h2 id="menu">Menu panelu</h2>
+<dl>
+  <dt>Pulpit</dt><dd>Co wymaga uwagi: nowe zgłoszenia, e-maile z błędem, warsztaty, które zaraz się opublikują, i liczby zgłoszeń w bieżących warsztatach.</dd>
+  <dt>Warsztaty</dt><dd>Lista warsztatów w zakładkach według stanu (szkice, zaplanowane, opublikowane, zakończone, archiwum). Tu tworzysz nowe i otwierasz istniejące.</dd>
+  <dt>Zgłoszenia</dt><dd>Wszystkie zgłoszenia ze wszystkich warsztatów. Liczba przy tej pozycji to zgłoszenia, których nikt jeszcze nie otworzył.</dd>
+  <dt>Uczestnicy</dt><dd>Kartoteka osób: kto, na jakie warsztaty się zgłaszał, jakie zgody wyraził. Tu też sprawy RODO.</dd>
+  <dt>Miejsca</dt><dd>Adresy, w których odbywają się warsztaty — wybierasz je potem z listy.</dd>
+  <dt>E-maile</dt><dd>Dziennik wszystkich wysłanych e-maili z ich stanem (wysłany, w kolejce, błąd).</dd>
+  <dt>Ustawienia</dt><dd>Dane organizatora, poczta, treść e-maili, rodzaje warsztatów, szablony formularzy.</dd>
+  <dt>Dziennik</dt><dd>Kto, co i kiedy zmienił — decyzje, zmiany warsztatów, ustawień.</dd>
+</dl>
+{% help_shot "pulpit" "Pulpit panelu z listą bieżących warsztatów i liczbą zgłoszeń" "Pulpit — pierwsza strona po zalogowaniu." %}
+
+<h2 id="cykl">Cykl jednego warsztatu</h2>
+<ol>
+  <li><strong>Przygotowanie</strong> — utwórz warsztat (albo zduplikuj podobny z poprzedniego roku), uzupełnij terminy spotkań, poziomy z limitami i cenami, opis. Zobacz: <a href="{% url 'help:chapter' 'warsztaty' %}">Jak utworzyć warsztat</a>.</li>
+  <li><strong>Formularz</strong> — sprawdź pytania, które zobaczy zgłaszający. Zobacz: <a href="{% url 'help:chapter' 'formularz' %}">Jak ustawić formularz</a>.</li>
+  <li><strong>Publikacja</strong> — ustaw datę i godzinę publikacji. Warsztat pojawi się na stronie sam, nie trzeba nic klikać w tym dniu.</li>
+  <li><strong>Zgłoszenia</strong> — każdy zgłaszający dostaje e-mail z potwierdzeniem, a Ty powiadomienie. Przyjmujesz, wpisujesz na listę rezerwową albo odrzucasz; uczestnik dostaje e-mail z decyzją. Zobacz: <a href="{% url 'help:chapter' 'zgloszenia' %}">Jak rozpatrywać zgłoszenia</a>.</li>
+  <li><strong>Przed warsztatami</strong> — wiadomość do przyjętych („co przynieść”), lista obecności do druku, zestawienie materiałów do zamówienia. Zobacz: <a href="{% url 'help:chapter' 'wiadomosci' %}">Wiadomości</a> i <a href="{% url 'help:chapter' 'wydruki' %}">Wydruki</a>.</li>
+  <li><strong>Po warsztatach</strong> — warsztat sam przechodzi do „zakończonych” po ostatnim spotkaniu. Gdy nie jest już potrzebny na co dzień, przenieś go do archiwum.</li>
+</ol>
+
+<h2 id="podglad">Jak to widzi uczestnik</h2>
+<p>Przy każdym warsztacie w panelu jest przycisk <span class="ui">Podgląd strony</span> — pokazuje stronę warsztatu tak, jak zobaczy ją uczestnik, także zanim warsztat zostanie opublikowany. Szkiców i warsztatów zaplanowanych nikt poza administratorami nie widzi.</p>
+
+<h2 id="bezpieczenstwo">Dobre nawyki</h2>
+<ul>
+  <li>Na cudzym komputerze nie zaznaczaj „Zapamiętaj mnie” i wyloguj się po pracy.</li>
+  <li>Kopie zapasowe danych robią się same każdej nocy — nie trzeba o nie dbać.</li>
+  <li>Jeśli coś działa inaczej niż opisano tutaj, zanotuj, co było klikane, i daj znać koordynatorowi.</li>
+</ul>
+{% endblock %}

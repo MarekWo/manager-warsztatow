@@ -1,5 +1,5 @@
 {% extends "panel/base_panel.html" %}
-{% load workshop_tags %}
+{% load help_tags workshop_tags %}
 {% block title %}{{ workshop.title }} — edycja{% endblock %}
 {% block panel_content %}
 {% include "panel/partials/workshop_nav.html" %}
@@ -26,7 +26,7 @@
 
       <section class="card shadow-sm mb-4" aria-labelledby="h-sessions">
         <div class="card-body">
-          <h2 id="h-sessions" class="h5 mb-1">Terminy spotkań</h2>
+          <h2 id="h-sessions" class="h5 mb-1">Terminy spotkań {% help_link "warsztaty" "terminy" %}</h2>
           <p class="small text-body-secondary">Daty i godziny wszystkich spotkań — zawsze widoczne dla uczestników.</p>
           {{ sessions.management_form }}
           {% for error in sessions.non_form_errors %}<div class="alert alert-danger py-2">{{ error }}</div>{% endfor %}
@@ -43,7 +43,7 @@
 
       <section class="card shadow-sm mb-4" aria-labelledby="h-levels">
         <div class="card-body">
-          <h2 id="h-levels" class="h5 mb-1">Poziomy (grupy)</h2>
+          <h2 id="h-levels" class="h5 mb-1">Poziomy (grupy) {% help_link "warsztaty" "poziomy" "Poziomy i limit miejsc" %}</h2>
           <p class="small text-body-secondary">Każdy poziom ma własny limit miejsc i cenę. Limit jest tylko wskazówką — o przyjęciu decydujesz Ty.</p>
           {{ levels.management_form }}
           {% for error in levels.non_form_errors %}<div class="alert alert-danger py-2">{{ error }}</div>{% endfor %}
@@ -70,7 +70,7 @@
 
       <section class="card shadow-sm mb-4" aria-labelledby="h-sections">
         <div class="card-body">
-          <h2 id="h-sections" class="h5 mb-1">Dodatkowe sekcje</h2>
+          <h2 id="h-sections" class="h5 mb-1">Dodatkowe sekcje {% help_link "warsztaty" "opis" %}</h2>
           <p class="small text-body-secondary">Sekcja pojawi się na stronie warsztatu, gdy jest zaznaczona i ma treść.</p>
           <div class="border-top pt-3">{{ form.notes.as_field_group }}{{ form.show_notes.as_field_group }}</div>
           <div class="border-top pt-3">{{ form.program.as_field_group }}{{ form.show_program.as_field_group }}</div>
@@ -82,7 +82,7 @@
 
       <section class="card shadow-sm mb-4" aria-labelledby="h-publication">
         <div class="card-body">
-          <h2 id="h-publication" class="h5 mb-1">Publikacja i zapisy</h2>
+          <h2 id="h-publication" class="h5 mb-1">Publikacja i zapisy {% help_link "warsztaty" "publikacja" "Publikacja i okno zapisów" %}</h2>
           <p class="small text-body-secondary">Warsztat pojawi się na stronie sam, o ustawionej godzinie. Bez daty publikacji jest szkicem.</p>
           <div class="row">
             <div class="col-md-4">{{ form.publish_at.as_field_group }}</div>
@@ -107,7 +107,7 @@
   <aside class="col-lg-4">
     <div class="card shadow-sm mb-4">
       <div class="card-body">
-        <h2 class="h6 text-uppercase text-body-secondary">Stan</h2>
+        <h2 class="h6 text-uppercase text-body-secondary">Stan {% help_link "warsztaty" "szybkie-akcje" "Stany i szybkie akcje" %}</h2>
         <p class="mb-1">{% state_badge workshop %} {% registration_badge workshop %}</p>
         <p class="small mb-3">{{ workshop|date_range }}</p>
         {% if workshop.publish_at %}<p class="small mb-1">Publikacja: {{ workshop.publish_at|date:"j E Y, H:i" }}</p>{% endif %}

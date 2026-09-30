@@ -114,6 +114,11 @@ All notable changes to this project are documented here. The format follows
   addresses, phone, remarks, answers, notes, comments, e-mails and log entries are removed while
   the anonymous applications keep the numbers; blocked while the person still holds or waits for
   a place in a workshop that has not ended.
+- In-app help in Polish (PRD §7.10): eleven chapters for administrators (first steps, workshops,
+  the form, reviewing applications, participants, messages, printouts, mail, settings, GDPR,
+  FAQ) with screenshots from the demo data, a "?" next to harder sections of the panel that opens
+  the right place in a new tab, and a "Jak to działa" page for participants linked in the footer.
+  `uv run pytest -m screenshots` retakes the screenshots.
 
 ### Upgrading
 

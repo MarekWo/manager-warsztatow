@@ -1,0 +1,40 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<p class="lead">System wysyła e-maile sam: potwierdzenia zgłoszeń, decyzje, powiadomienia dla organizatora, wiadomości do uczestników. Tu ustawiasz, przez jaki serwer wychodzą i co w nich jest.</p>
+
+<h2 id="serwer">Serwer poczty (SMTP)</h2>
+<p>W <span class="ui">Ustawienia → Ogólne</span>, ramka <span class="ui">Poczta wychodząca</span>. Są dwie możliwości:</p>
+<ul>
+  <li><strong>poczta instalacji</strong> — pole <span class="ui">wysyłaj przez poniższy serwer SMTP</span> niezaznaczone: e-maile idą przez serwer ustawiony przy instalacji systemu (przez koordynatora);</li>
+  <li><strong>własny serwer</strong> — zaznacz to pole i wpisz dane skrzynki, z której mają wychodzić e-maile: serwer, port, szyfrowanie, użytkownika i hasło, nazwę i adres nadawcy.</li>
+</ul>
+<p>Adres nadawcy musi być adresem, z którego serwer pozwala wysyłać — zwykle tym samym co użytkownik. <span class="ui">Odpowiedzi kieruj na</span> (Reply-To) to adres, na który trafi odpowiedź uczestnika, gdy kliknie „Odpowiedz”; puste = adres kontaktowy organizatora.</p>
+<p>Hasło jest zapisane w zaszyfrowanej postaci i nie wyświetla się ponownie. Żeby go nie zmieniać, zostaw pole puste.</p>
+
+<h3 id="google">Skrzynka Google (Gmail, Google Workspace)</h3>
+<p>Google nie przyjmuje zwykłego hasła do konta. Potrzebne jest <strong>hasło aplikacji</strong>: w ustawieniach konta Google włącz weryfikację dwuetapową, potem w sekcji „Hasła do aplikacji” utwórz nowe hasło (16 liter) i wpisz je tutaj. Serwer: <code>smtp.gmail.com</code>, port <code>587</code>, szyfrowanie STARTTLS.</p>
+
+<h2 id="test">Wiadomość testowa</h2>
+<p>Po zapisaniu ustawień wyślij wiadomość testową na swój adres (na dole strony Ustawień). Wychodzi od razu; jeśli serwer odmówi, komunikat błędu pojawi się na górze strony — najczęściej to złe hasło, port albo adres nadawcy.</p>
+
+<h2 id="powiadomienia">Powiadomienia dla organizatora</h2>
+<p>W tej samej ramce wybierasz, jak dowiadywać się o nowych zgłoszeniach: <strong>od razu</strong> po każdym, <strong>raz dziennie</strong> (wieczorne podsumowanie o 19:00) albo <strong>wcale</strong>. Powiadomienia idą na wskazany adres albo, gdy pole jest puste, na e-mail kontaktowy. O rezygnacji uczestnika organizator dostaje e-mail zawsze.</p>
+
+<h2 id="szablony">Treść e-maili</h2>
+<p><span class="ui">Ustawienia → Treść e-maili</span> — lista wszystkich rodzajów e-maili z informacją, do kogo i kiedy wychodzą. W każdym możesz zmienić temat i treść. Pisze się zwykłym tekstem: pusta linia zaczyna akapit, adresy stron stają się linkami. Logo i stopka z danymi organizatora dodają się same.</p>
+<p><strong>Pola z danymi</strong> wpisujesz w nawiasach klamrowych, np. <code>{imie}</code>, <code>{warsztat}</code>, <code>{terminy}</code>, <code>{link_rezygnacji}</code> — lista dostępnych pól jest obok treści. <span class="ui">Pokaż podgląd</span> pokazuje e-mail z przykładowymi danymi. <span class="ui">Przywróć domyślną treść</span> cofa Twoje zmiany.</p>
+<p class="tip">Zmiana szablonu dotyczy e-maili wysyłanych od tej chwili. W oknie decyzji możesz też poprawić pojedynczy e-mail, nie zmieniając szablonu.</p>
+
+<h2 id="dziennik">Dziennik e-maili</h2>
+<p>W menu <span class="ui">E-maile</span> jest każdy e-mail, który system wysłał albo ma wysłać, z filtrem: wszystkie, z błędem, w kolejce, wysłane. Statusy:</p>
+<ul>
+  <li><strong>w kolejce</strong> — czeka na wysłanie (zwykle kilka sekund); jeśli jest przy nim błąd, to znaczy, że próba się nie udała i system spróbuje ponownie,</li>
+  <li><strong>wysyłanie</strong> — właśnie wychodzi,</li>
+  <li><strong>wysłano</strong> — serwer poczty przyjął e-mail,</li>
+  <li><strong>błąd</strong> — mimo kilku prób się nie udało.</li>
+</ul>
+<p>Po nieudanej próbie system ponawia wysyłkę sam: po 1, 5, 15 minutach, po godzinie, 3 i 6 godzinach. Dopiero potem e-mail dostaje status „błąd”. Wtedy sprawdź ustawienia poczty i kliknij <span class="ui">Wyślij ponownie</span> przy e-mailu albo <span class="ui">Wyślij ponownie nieudane</span> nad listą. O e-mailach z błędem przypomina też pulpit.</p>
+<p class="warning">„Wysłano” znaczy, że serwer poczty przyjął wiadomość. Czy trafiła do skrzynki odbiorczej, czy do spamu, zależy od poczty odbiorcy — w razie wątpliwości poproś uczestnika o sprawdzenie folderu „Spam”.</p>
+<p>E-maile z kodem logowania nie są zapisywane w dzienniku (są ważne 15 minut i nie powinny być nigdzie przechowywane).</p>
+{% endblock %}

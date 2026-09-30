@@ -1,0 +1,32 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<p class="lead">Uczestnik nie musi zakładać konta. Zgłasza się przez formularz, a jeśli chce, loguje się potem kodem z e-maila — i widzi swoje zgłoszenia.</p>
+
+<h2 id="konta">Skąd biorą się konta</h2>
+<p>Nie ma rejestracji ani haseł. Konto powstaje samo, gdy osoba, która kiedykolwiek wysłała zgłoszenie, poprosi o kod logowania na ten sam adres. Po zalogowaniu widzi wszystkie swoje zgłoszenia z tego adresu — także te wysłane przed założeniem konta. Na adres, z którego nigdy nie było zgłoszenia, kod nie przychodzi (strona wygląda tak samo, żeby nie zdradzać, kto jest w bazie).</p>
+<p>Na stronie z podziękowaniem za zgłoszenie jest przycisk <span class="ui">Zapamiętaj moje dane — wyślij kod</span>: po wpisaniu kodu osoba ma konto, a przy następnym zgłoszeniu dane wpiszą się same.</p>
+
+<h2 id="logowanie">Logowanie kodem i linkiem</h2>
+<p>E-mail z kodem zawiera też link, który loguje jednym kliknięciem — to wygodne dla osób, którym trudno przepisać kod. Kod i link są ważne 15 minut i działają raz. Na jeden adres można zamówić kod raz na minutę i najwyżej pięć razy na godzinę.</p>
+
+<h2 id="moje-warsztaty">Co widzi uczestnik</h2>
+<ul>
+  <li><strong>Moje warsztaty</strong> — zgłoszenia ze statusem opisanym prostymi słowami (oczekuje na decyzję, przyjęte, lista rezerwowa z numerem miejsca, nieprzyjęte, zrezygnowano, udział anulowany), bieżące i minione osobno; w zgłoszeniu — terminy, miejsce, poziom i jego odpowiedzi.</li>
+  <li><strong>Moje dane</strong> — imię, nazwisko, telefon (do podpowiadania w formularzu) i zgoda na informacje o kolejnych warsztatach; tu też pobiera kopię swoich danych i może usunąć konto (<a href="{% url 'help:chapter' 'rodo' %}">RODO</a>).</li>
+</ul>
+<p>Uczestnik nie widzi notatek organizatora ani komentarzy w historii.</p>
+
+<h2 id="rezygnacje">Rezygnacje</h2>
+<p>Uczestnik może zrezygnować sam — w „Moich warsztatach” albo linkiem z e-maila (<code>{link_rezygnacji}</code>, działa także bez konta). Może podać powód. Rezygnacja jest możliwa, dopóki zgłoszenie jest aktywne i warsztat się nie skończył.</p>
+<p>Po rezygnacji:</p>
+<ul>
+  <li>uczestnik dostaje potwierdzenie e-mailem,</li>
+  <li>organizator dostaje powiadomienie z powodem i — jeśli zwolniło się miejsce — z nazwiskiem pierwszej osoby z listy rezerwowej,</li>
+  <li>zgłoszenie zmienia status na „wycofane” i wraca na listę jako nieprzejrzane.</li>
+</ul>
+<p>Kogo przyjąć na zwolnione miejsce, decydujesz Ty — nic nie dzieje się automatycznie.</p>
+
+<h2 id="kartoteka">Kartoteka uczestników</h2>
+<p>W menu <span class="ui">Uczestnicy</span> jest lista wszystkich osób, które kiedykolwiek się zgłosiły (szukanie po imieniu, nazwisku, e-mailu, telefonie; filtr „tylko ze zgodą na informacje”). Karta osoby pokazuje jej zgłoszenia ze wszystkich warsztatów, historię zgód i przyciski spraw RODO. Dane w karcie pochodzą z ostatniego zgłoszenia albo ze strony „Moje dane” — w samych zgłoszeniach zostają dane podane wtedy.</p>
+{% endblock %}

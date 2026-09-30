@@ -1,0 +1,37 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<p class="lead">Administratorem danych uczestników jest {{ site_settings.org_name }}. System zbiera tylko to, co potrzebne do organizacji warsztatów, zapisuje zgody z ich treścią i pozwala spełnić prośby osób o dostęp do danych i ich usunięcie.</p>
+
+<h2 id="zgody">Zgody i ich wersje</h2>
+<ul>
+  <li><strong>Zgoda na przetwarzanie danych</strong> (klauzula pod formularzem) — wymagana. Zapisujemy datę, wersję i treść.</li>
+  <li><strong>Zgoda na informacje o kolejnych warsztatach</strong> — zawsze nieobowiązkowa. Osoba może ją wycofać sama: na stronie „Moje dane” albo jednym kliknięciem w linku z e-maila (pole <code>{link_wypisu}</code>).</li>
+</ul>
+<p>Każde udzielenie i wycofanie zgody trafia do <strong>rejestru zgód</strong> — widać go w karcie osoby (<span class="ui">Uczestnicy</span> → osoba → <span class="ui">Zgody</span>): kiedy, jaka treść i wersja, w jaki sposób (formularz, wpis organizatora, „Moje dane”, link wypisu).</p>
+<p>Zmiana treści klauzuli w Ustawieniach tworzy nową wersję — wcześniejsze zgody zachowują swoją.</p>
+<p class="tip">W formularzu nie pytamy o datę urodzenia — wystarcza oświadczenie o pełnoletności. Strona nie używa ciasteczek śledzących ani zewnętrznych skryptów, dlatego nie ma banera cookies.</p>
+
+<h2 id="kopia">Prośba o dostęp do danych</h2>
+<p>Uczestnik z kontem pobiera kopię swoich danych sam („Moje dane” → <span class="ui">Pobierz kopię moich danych</span>). Jeśli ktoś poprosi o nią e-mailem lub listownie, otwórz jego kartę w <span class="ui">Uczestnicy</span> i kliknij <span class="ui">Pobierz kopię danych (JSON)</span>. Plik zawiera dane kontaktowe, wszystkie zgłoszenia z odpowiedziami i historią, zgody oraz e-maile wysłane do tej osoby; wersja pobrana przez organizatora ma też notatki organizatora. Pobranie jest zapisywane w dzienniku.</p>
+<p class="warning">Zanim wyślesz komuś kopię danych, upewnij się, że prośba przyszła od tej osoby — najlepiej odpowiedz na adres zapisany w jej zgłoszeniu.</p>
+
+<h2 id="usuniecie">Prośba o usunięcie danych</h2>
+<p>Uczestnik z kontem usuwa je sam („Moje dane” → <span class="ui">Usuń moje konto</span>). W pozostałych przypadkach: karta osoby → <span class="ui">Usuń dane osoby…</span>, zaznacz potwierdzenie i zatwierdź.</p>
+<p>Usunięcie to <strong>anonimizacja</strong>: znika imię, nazwisko, e-mail, telefon, uwagi, odpowiedzi, notatki, komentarze w historii, treść e-maili do tej osoby i wpisy o niej w dzienniku; konto jest usuwane. Zostają anonimowe zgłoszenia („Anonim #12”) z poziomem i statusem, żeby liczby w zestawieniach się zgadzały. <strong>Tego nie da się cofnąć.</strong></p>
+<p>Nie można usunąć danych osoby, która ma jeszcze miejsce albo czeka na nie w warsztacie, który się nie skończył — najpierw zapisz jej rezygnację (albo ona sama rezygnuje), żeby lista rezerwowa i liczby miejsc były prawidłowe.</p>
+<p>Kopie zapasowe serwera przechowują dane jeszcze najwyżej 30 dni, potem znikają same.</p>
+
+<h2 id="sprzeciw">Ktoś nie chce więcej informacji</h2>
+<p>Gdy osoba prosi, żeby nie wysyłać jej informacji o kolejnych warsztatach, wystarczy, że skorzysta z linku wypisu. Możesz też poprosić ją o zalogowanie się i odznaczenie zgody w „Moich danych”. E-maile dotyczące jej zgłoszeń (decyzje) nadal będą do niej wychodzić — są potrzebne do organizacji warsztatów.</p>
+
+<h2 id="przechowywanie">Jak długo przechowujemy dane</h2>
+<p>Obecnie — do odwołania albo do prośby o usunięcie. Jeśli Stowarzyszenie ustali okres przechowywania (np. usuwanie danych po kilku latach od ostatniego udziału), system można tak ustawić.</p>
+
+<h2 id="dobre-praktyki">Dobre praktyki</h2>
+<ul>
+  <li>Pliki Excel i PDF z danymi uczestników trzymaj tylko tak długo, jak są potrzebne.</li>
+  <li>Listy kontaktowej nie przekazuj nikomu poza prowadzącym warsztaty.</li>
+  <li>W notatkach organizatora pisz tylko to, co potrzebne do organizacji — osoba może poprosić o wgląd w swoje dane.</li>
+</ul>
+{% endblock %}

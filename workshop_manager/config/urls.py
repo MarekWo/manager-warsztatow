@@ -24,6 +24,7 @@ urlpatterns = [
     path("konto/login/code/", request_login_code, name="account_request_login_code"),
     path("konto/link/<str:token>/", login_link, name="account_login_link"),
     path("konto/", include("allauth.urls")),
+    path("panel/pomoc/", include("workshop_manager.help.urls")),
     path("panel/", include("workshop_manager.panel.urls")),
     path("", include("workshop_manager.public.urls")),
 ]

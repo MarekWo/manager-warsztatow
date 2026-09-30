@@ -1,0 +1,19 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<p class="lead">Wszystkie zestawienia jednego warsztatu są w zakładce <span class="ui">Zestawienia</span> na jego stronie.</p>
+
+<h2 id="excel">Zgłoszenia do Excela</h2>
+<p>Plik <code>.xlsx</code> ze wszystkimi danymi i odpowiedziami — po jednej kolumnie na pytanie. Wybierasz, kogo ująć: przyjętych, aktywnych (nowi, przyjęci, rezerwa) albo wszystkich. Plik zawiera dane osobowe — nie przesyłaj go dalej bez potrzeby i usuń, gdy nie będzie potrzebny.</p>
+
+<h2 id="obecnosc">Lista obecności</h2>
+<p>Przyjęci uczestnicy według poziomów, z kolumną do podpisu na każde spotkanie. Kartka A4 w poziomie. <span class="ui">Do druku</span> otwiera stronę do wydrukowania z przeglądarki, <span class="ui">PDF</span> — gotowy plik (polskie znaki są zachowane).</p>
+{% help_shot "lista-obecnosci" "Lista obecności z kolumnami na podpisy" "Lista obecności — strona do druku." %}
+
+<h2 id="kontakty">Lista kontaktowa</h2>
+<p>Przyjęci: imię i nazwisko, telefon, e-mail — np. dla prowadzącego.</p>
+
+<h2 id="materialy">Zestawienie materiałów</h2>
+<p>Dla pytań typu „zamówienie materiału”: ile czego zamówić, osobno przyjęci i osobno oczekujący (nowi i z listy rezerwowej), z nazwiskami. Na liście zgłoszeń warsztatu działa też filtr <span class="ui">Zamówienie materiałów</span> — pokazuje, kto wybrał konkretną odpowiedź.</p>
+<p class="tip">Zestawienie pojawia się tylko wtedy, gdy formularz warsztatu ma pytanie rodzaju „zamówienie materiału” (<a href="{% url 'help:chapter' 'formularz' %}#pytania">Jak ustawić formularz</a>).</p>
+{% endblock %}

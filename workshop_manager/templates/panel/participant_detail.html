@@ -1,4 +1,5 @@
 {% extends "panel/base_panel.html" %}
+{% load help_tags %}
 {% block title %}{{ participant.full_name }} — uczestnik{% endblock %}
 {% block panel_content %}
 <p class="mb-2 small"><a href="{% url 'panel:participant_list' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Uczestnicy</a></p>
@@ -26,7 +27,7 @@
     </section>
 
     <section class="card card-body shadow-sm mb-4" aria-labelledby="h-consents">
-      <h2 id="h-consents" class="h5">Zgody</h2>
+      <h2 id="h-consents" class="h5">Zgody {% help_link "rodo" "zgody" %}</h2>
       <p class="mb-2">Informacje o kolejnych warsztatach: <strong>{{ participant.marketing_consent|yesno:"tak,nie" }}</strong>{% if participant.marketing_consent_at %} (od {{ participant.marketing_consent_at|date:"d.m.Y" }}){% endif %}</p>
       {% if consents %}
         <div class="table-responsive" tabindex="0" role="region" aria-label="Historia zgód">
@@ -64,7 +65,7 @@
     </section>
 
     <section class="card card-body shadow-sm mb-4" aria-labelledby="h-gdpr">
-      <h2 id="h-gdpr" class="h5">RODO</h2>
+      <h2 id="h-gdpr" class="h5">RODO {% help_link "rodo" "kopia" %}</h2>
       <p class="small">Gdy osoba prosi o swoje dane albo o ich usunięcie.</p>
       <div class="d-flex flex-column gap-2">
         <a class="btn btn-outline-primary" href="{% url 'panel:participant_export' participant.pk %}"><i class="bi bi-download" aria-hidden="true"></i> Pobierz kopię danych (JSON)</a>

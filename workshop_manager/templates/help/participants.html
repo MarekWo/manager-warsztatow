@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Jak to działa{% endblock %}
+{% block meta_description %}Jak zapisać się na warsztaty, zalogować, sprawdzić swoje zgłoszenia i zrezygnować.{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <article class="col-lg-8 help-content">
+    <h1 class="page-title mb-3">Jak to działa</h1>
+    <p class="lead">Zapisy na warsztaty są proste: nie trzeba zakładać konta ani wymyślać hasła.</p>
+
+    <h2 id="zapis">Jak się zapisać</h2>
+    <ol>
+      <li>Na stronie <a href="{% url 'public:home' %}">Aktualne warsztaty</a> wybierz warsztat i przeczytaj opis.</li>
+      <li>Kliknij <span class="ui">Zapisz się</span>, wybierz poziom (jeśli jest do wyboru), wpisz swoje dane i odpowiedz na pytania.</li>
+      <li>Zaznacz zgodę na przetwarzanie danych i wyślij formularz.</li>
+    </ol>
+    <p>Od razu przyjdzie e-mail z potwierdzeniem i kopią zgłoszenia. Jeśli go nie widać, zajrzyj do folderu „Spam” lub „Oferty”.</p>
+
+    <h2 id="decyzja">Co dalej</h2>
+    <p>Wysłanie formularza nie oznacza jeszcze przyjęcia. Organizator rozpatruje zgłoszenia i o decyzji informuje e-mailem: <strong>przyjęcie</strong>, wpisanie na <strong>listę rezerwową</strong> (z numerem miejsca na liście) albo brak miejsca. Gdy ktoś zrezygnuje, organizator może przyjąć kolejną osobę z listy rezerwowej — wtedy przyjdzie e-mail o przyjęciu.</p>
+
+    <h2 id="logowanie">Logowanie — kod z e-maila</h2>
+    <p>Jeśli masz za sobą choć jedno zgłoszenie, możesz się zalogować i zobaczyć swoje zgłoszenia:</p>
+    <ol>
+      <li>Kliknij <a href="{% url 'account_request_login_code' %}">Zaloguj się</a> i wpisz adres e-mail, z którego wysyłano zgłoszenie.</li>
+      <li>Na ten adres przyjdzie sześciocyfrowy kod. Wpisz go na stronie — albo po prostu kliknij link w tym samym e-mailu.</li>
+    </ol>
+    <p>Kod jest ważny 15 minut. Na swoim telefonie lub komputerze zaznacz <span class="ui">Zapamiętaj mnie</span>, żeby nie logować się za każdym razem.</p>
+
+    <h2 id="moje-warsztaty">Moje warsztaty</h2>
+    <p>Po zalogowaniu w <span class="ui">Moich warsztatach</span> widać wszystkie Twoje zgłoszenia i ich stan, terminy spotkań i miejsce. W <span class="ui">Moich danych</span> możesz poprawić imię, nazwisko i telefon — wpiszą się same przy kolejnym zgłoszeniu.</p>
+
+    <h2 id="rezygnacja">Rezygnacja</h2>
+    <p>Jeśli nie możesz przyjść, zrezygnuj jak najszybciej — Twoje miejsce dostanie ktoś z listy rezerwowej. Można to zrobić na dwa sposoby:</p>
+    <ul>
+      <li>linkiem „zrezygnuj tutaj” z e-maila o zgłoszeniu lub decyzji (bez logowania),</li>
+      <li>w <span class="ui">Moich warsztatach</span> — przycisk <span class="ui">Rezygnuję z udziału</span>.</li>
+    </ul>
+    <p>Przyjdzie e-mail z potwierdzeniem, a organizator dostanie informację.</p>
+
+    <h2 id="dane">Twoje dane</h2>
+    <p>Dane przetwarza {{ site_settings.org_name }} wyłącznie w celu organizacji warsztatów — szczegóły w <a href="{{ site_settings.privacy_policy_url }}">polityce prywatności</a>. Zgoda na informacje o kolejnych warsztatach jest dobrowolna; wycofasz ją jednym kliknięciem w linku z e-maila albo w <span class="ui">Moich danych</span>. Tam też pobierzesz kopię swoich danych i usuniesz konto wraz z danymi.</p>
+
+    <h2 id="kontakt">Pytania</h2>
+    <p>W sprawie konkretnego warsztatu{% if site_settings.contact_email %} napisz do organizatora: <a href="mailto:{{ site_settings.contact_email }}">{{ site_settings.contact_email }}</a>{% if site_settings.contact_phone %} lub zadzwoń: {{ site_settings.contact_phone }}{% endif %}{% else %} odpowiedz na e-mail od organizatora{% endif %}.</p>
+  </article>
+</div>
+{% endblock %}

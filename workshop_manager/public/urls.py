@@ -1,11 +1,13 @@
 from django.urls import path
 
+from workshop_manager.help.views import participants as participant_help
 from workshop_manager.public import account_views, views
 
 app_name = "public"
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("pomoc/", participant_help, name="help"),
     path("warsztaty/<slug:slug>/", views.workshop_detail, name="workshop"),
     path("warsztaty/<slug:slug>/zgloszenie/", views.apply, name="apply"),
     path(

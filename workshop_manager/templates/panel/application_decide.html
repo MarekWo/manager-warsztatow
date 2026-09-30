@@ -1,8 +1,9 @@
 {% extends "panel/base_panel.html" %}
+{% load help_tags %}
 {% block title %}{{ action_label }} — {{ application.full_name }}{% endblock %}
 {% block panel_content %}
 <p class="mb-2 small"><a href="{{ application.get_panel_url }}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Wróć do zgłoszenia</a></p>
-<h1 class="page-title mb-1">{{ action_label }}: {{ application.full_name }}</h1>
+<h1 class="page-title mb-1">{{ action_label }}: {{ application.full_name }} {% help_link "zgloszenia" "decyzja" "Okno decyzji" %}</h1>
 <p class="mb-4">{{ workshop.title }} · poziom {{ application.level.name }} ·
   {% include "panel/partials/status_badge.html" with status=application.status position=application.waitlist_position %}
   → {% include "panel/partials/status_badge.html" with status=target_status %}</p>

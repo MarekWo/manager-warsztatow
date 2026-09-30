@@ -1,4 +1,5 @@
 {% extends "panel/base_panel.html" %}
+{% load help_tags %}
 {% block title %}Formularz — {{ workshop.title }}{% endblock %}
 {% block panel_content %}
 {% include "panel/partials/workshop_nav.html" %}
@@ -7,7 +8,7 @@
     <section class="card shadow-sm mb-4" aria-labelledby="h-questions">
       <div class="card-body">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-          <h2 id="h-questions" class="h5 mb-0">Pytania w formularzu</h2>
+          <h2 id="h-questions" class="h5 mb-0">Pytania w formularzu {% help_link "formularz" "pytania" %}</h2>
           <a class="btn btn-primary btn-sm" href="{% url 'panel:question_add' workshop.pk %}"><i class="bi bi-plus-lg" aria-hidden="true"></i> Dodaj pytanie</a>
         </div>
         <p class="small text-body-secondary">Imię i nazwisko, e-mail oraz zgoda na przetwarzanie danych są w formularzu zawsze. Poniżej pytania dodatkowe — w tej kolejności zobaczy je zgłaszający.</p>
@@ -43,7 +44,7 @@
 
     <section class="card shadow-sm" aria-labelledby="h-template">
       <div class="card-body">
-        <h2 id="h-template" class="h6">Dodaj pytania z szablonu</h2>
+        <h2 id="h-template" class="h6">Dodaj pytania z szablonu {% help_link "formularz" "szablony" %}</h2>
         <form method="post" action="{% url 'panel:questions_from_template' workshop.pk %}" class="d-flex flex-wrap gap-2 align-items-end">
           {% csrf_token %}
           <div class="flex-grow-1">{{ template_form.template.as_field_group }}</div>
@@ -56,7 +57,7 @@
   <aside class="col-lg-4">
     <form method="post" class="card shadow-sm">
       <div class="card-body">
-        <h2 class="h5 mb-3">Pola standardowe</h2>
+        <h2 class="h5 mb-3">Pola standardowe {% help_link "formularz" "pola-standardowe" %}</h2>
         {% csrf_token %}
         {{ fields_form }}
         <button type="submit" class="btn btn-primary">Zapisz</button>

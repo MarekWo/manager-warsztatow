@@ -1,8 +1,9 @@
 {% extends "panel/base_panel.html" %}
+{% load help_tags %}
 {% block title %}Nowy warsztat{% endblock %}
 {% block panel_content %}
 <div class="row"><div class="col-lg-8">
-  <h1 class="page-title mb-3">Nowy warsztat</h1>
+  <h1 class="page-title mb-3">Nowy warsztat {% help_link "warsztaty" "nowy-czy-kopia" %}</h1>
   <p class="mb-4">Wybierz rodzaj i wpisz tytuł. System przygotuje szkic z poziomami i pytaniami typowymi dla tego rodzaju warsztatów — wszystko potem zmienisz.
     Jeśli warsztat przypomina któryś z poprzednich, szybciej będzie go <a href="{% url 'panel:workshop_list' %}?tab=finished">zduplikować</a>.</p>
   <form method="post" class="card card-body shadow-sm">

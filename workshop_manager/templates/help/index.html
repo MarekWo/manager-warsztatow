@@ -1,0 +1,17 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Pomoc{% endblock %}
+{% block panel_content %}
+<h1 class="page-title mb-1">Pomoc</h1>
+<p class="lead mb-4">Jak korzystać z panelu — od utworzenia warsztatu po listę obecności. Przy trudniejszych polach w panelu jest znak <i class="bi bi-question-circle text-primary" aria-hidden="true"></i><span class="visually-hidden">znak zapytania</span>, który otwiera właściwy fragment pomocy w nowej karcie.</p>
+<div class="row g-3">
+  {% for chapter in chapters %}
+    <div class="col-md-6 col-xl-4">
+      <a class="card card-body h-100 shadow-sm text-decoration-none" href="{% url 'help:chapter' chapter.slug %}">
+        <span class="h5 text-primary"><i class="bi bi-{{ chapter.icon }}" aria-hidden="true"></i> {{ chapter.title }}</span>
+        <span class="text-body">{{ chapter.summary }}</span>
+      </a>
+    </div>
+  {% endfor %}
+</div>
+<p class="mt-4 small text-body-secondary">Pomoc dla uczestników (jak się zapisać, zalogować, zrezygnować) jest na stronie publicznej: <a href="{% url 'public:help' %}">Jak to działa</a>. Płatności i zaświadczenia pojawią się w wersji 1.1 — wtedy dojdą też ich rozdziały.</p>
+{% endblock %}

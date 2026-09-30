@@ -1,0 +1,59 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<p class="lead">Każde zgłoszenie ma status. Ty go zmieniasz — przyjmujesz, wpisujesz na listę rezerwową, odrzucasz — a uczestnik dostaje e-mail z decyzją, który przed wysłaniem możesz przeczytać i poprawić.</p>
+
+<h2 id="gdzie">Gdzie są zgłoszenia</h2>
+<ul>
+  <li><span class="ui">Zgłoszenia</span> w menu — ze wszystkich warsztatów, z filtrami (warsztat, status, szukanie po nazwisku lub e-mailu, tylko nieprzejrzane),</li>
+  <li>zakładka <span class="ui">Zgłoszenia</span> na stronie warsztatu — tylko ten warsztat, z podsumowaniem miejsc na każdym poziomie, listami rezerwowymi i filtrem zamówienia materiałów.</li>
+</ul>
+<p>Zgłoszenie, którego nikt jeszcze nie otworzył, jest oznaczone jako <strong>nieprzejrzane</strong>; ich liczbę widać przy pozycji „Zgłoszenia” w menu. Otwarcie zgłoszenia oznacza je jako przejrzane.</p>
+{% help_shot "zgloszenia" "Lista zgłoszeń warsztatu z podsumowaniem poziomów" "Zgłoszenia jednego warsztatu: podsumowanie miejsc i lista." %}
+
+<h2 id="statusy">Statusy i dozwolone zmiany</h2>
+<table class="table">
+  <thead><tr><th scope="col">Status</th><th scope="col">Znaczy</th><th scope="col">Można zmienić na</th></tr></thead>
+  <tbody>
+    <tr><td><strong>nowe</strong></td><td>czeka na Twoją decyzję</td><td>przyjęte, lista rezerwowa, odrzucone, wycofane</td></tr>
+    <tr><td><strong>przyjęte</strong></td><td>ma miejsce</td><td>lista rezerwowa, anulowane, wycofane</td></tr>
+    <tr><td><strong>lista rezerwowa</strong></td><td>czeka na zwolnienie miejsca</td><td>przyjęte, odrzucone, wycofane</td></tr>
+    <tr><td><strong>odrzucone</strong></td><td>bez miejsca</td><td>przyjęte, lista rezerwowa</td></tr>
+    <tr><td><strong>wycofane</strong></td><td>uczestnik zrezygnował</td><td>przyjęte, lista rezerwowa</td></tr>
+    <tr><td><strong>anulowane</strong></td><td>organizator odwołał udział przyjętej osoby</td><td>przyjęte, lista rezerwowa</td></tr>
+  </tbody>
+</table>
+<p>Nowe, przyjęte i z listy rezerwowej to zgłoszenia <strong>aktywne</strong> — tylko one liczą się do limitu miejsc. Z jednego adresu może być tylko jedno aktywne zgłoszenie na dany warsztat.</p>
+
+<h2 id="decyzja">Okno decyzji</h2>
+<p>W zgłoszeniu kliknij przycisk decyzji (<span class="ui">Przyjmij</span>, <span class="ui">Na listę rezerwową</span>, <span class="ui">Odrzuć</span>, <span class="ui">Anuluj udział</span>, <span class="ui">Zapisz rezygnację</span>). Otworzy się okno z e-mailem do uczestnika, już wypełnionym danymi według szablonu. Możesz:</p>
+<ul>
+  <li>dopisać osobiste zdanie albo zmienić treść — zmiana dotyczy tylko tego jednego e-maila, szablon zostaje bez zmian,</li>
+  <li>odznaczyć <span class="ui">Wyślij powiadomienie e-mailem</span> — status się zmieni, ale e-mail nie wyjdzie (np. gdy sprawa została już omówiona przez telefon),</li>
+  <li>wpisać komentarz do historii — widzi go tylko organizator.</li>
+</ul>
+<p>Zapisanie rezygnacji w panelu (gdy ktoś zadzwonił) nie wysyła e-maila.</p>
+{% help_shot "decyzja" "Okno decyzji z podglądem e-maila do uczestnika" "Okno decyzji: e-mail do uczestnika można poprawić albo nie wysyłać." %}
+
+<h2 id="grupowo">Decyzje dla wielu zgłoszeń naraz</h2>
+<p>Na liście zaznacz zgłoszenia (pole przy nazwisku), wybierz akcję pod listą (<span class="ui">Przyjmij zaznaczone</span>, <span class="ui">Wpisz zaznaczone na listę rezerwową</span>, <span class="ui">Odrzuć zaznaczone</span>, <span class="ui">Oznacz zaznaczone jako przejrzane</span>, <span class="ui">Napisz wiadomość do zaznaczonych</span>) i kliknij <span class="ui">Wykonaj</span>. Przy decyzjach grupowych e-maile wychodzą według szablonu, bez możliwości poprawiania każdego osobno — chyba że odznaczysz <span class="ui">Wyślij powiadomienie e-mailem</span>. Zgłoszenia, dla których dana zmiana nie jest dozwolona, zostaną pominięte (system napisze, które).</p>
+
+<h2 id="rezerwa">Lista rezerwowa</h2>
+<p>Osoby na liście rezerwowej mają numer kolejności na swoim poziomie. Nowa osoba trafia na koniec; numer dostaje też w e-mailu (pole <code>{miejsce_na_liscie}</code>). Kolejność zmieniasz strzałkami w sekcji <span class="ui">Listy rezerwowe</span> zakładki „Zgłoszenia” warsztatu.</p>
+<p class="tip"><strong>Gdy zwolni się miejsce</strong> (przyjęta osoba zrezygnuje, zostanie anulowana albo przeniesiona na rezerwę), system podpowie pierwszą osobę z listy rezerwowej na tym poziomie. To tylko podpowiedź — nikt nie jest przyjmowany automatycznie, decyzję podejmujesz Ty.</p>
+
+<h2 id="telefon">Zgłoszenie przyjęte telefonicznie</h2>
+<p>W zakładce „Zgłoszenia” warsztatu kliknij <span class="ui">Dodaj zgłoszenie</span>. Formularz jest ten sam co na stronie, ale wymagane są tylko dane kontaktowe i potwierdzenie zgody na przetwarzanie danych (np. wyrażonej przez telefon) — odpowiedzi na pytania możesz pominąć. Zdecyduj, czy wysłać osobie potwierdzenie e-mailem. Takie zgłoszenie jest oznaczone „dodane w panelu” i nie trafia do powiadomień o nowych zgłoszeniach.</p>
+
+<h2 id="zgloszenie">W zgłoszeniu</h2>
+<ul>
+  <li><strong>Popraw dane</strong> — poprawka imienia, nazwiska, e-maila lub telefonu (np. literówka); poprzednie wartości zostają w historii.</li>
+  <li><strong>Zmiana poziomu</strong> — gdy ktoś wybrał nie ten poziom. Uwaga: pytania przypisane do poziomu zostają takie, jak były wypełnione.</li>
+  <li><strong>Notatki organizatora</strong> — widoczne tylko dla administratorów (uczestnik ich nie widzi, nie ma ich też w kopii danych pobieranej przez uczestnika).</li>
+  <li><strong>Historia</strong> — każda zmiana statusu z datą i autorem, z informacją, czy wysłano e-mail.</li>
+  <li><strong>Udział w innych warsztatach</strong> i przycisk <span class="ui">Karta osoby</span> — wszystkie zgłoszenia tej osoby.</li>
+</ul>
+
+<h2 id="dziennik">Dziennik zdarzeń</h2>
+<p>W menu <span class="ui">Dziennik</span> widać, kto, co i kiedy zmienił: decyzje, poprawki, zmiany warsztatów, pytań, ustawień i treści e-maili. Można szukać po nazwisku, warsztacie lub adresie osoby.</p>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "help/base_help.html" %}
+{% load help_tags %}
+{% block help_content %}
+<p class="lead">Warsztat to strona z opisem, terminami spotkań, poziomami (grupami) i formularzem zgłoszeniowym. Najszybciej powstaje przez skopiowanie podobnego warsztatu z poprzedniego razu.</p>
+
+<h2 id="nowy-czy-kopia">Nowy warsztat czy kopia?</h2>
+<p><strong>Duplikowanie</strong> jest najwygodniejsze, gdy warsztat powtarza się co roku. Na stronie warsztatu wybierz <span class="ui">Duplikuj</span>, wpisz tytuł i <strong>datę pierwszego spotkania</strong> nowej edycji. Kopia przejmie opis, miejsce, sekcje, poziomy (z limitami i cenami), pytania formularza i terminy spotkań — wszystkie spotkania przesuną się o tyle samo dni, więc zostaną te same dni tygodnia i odstępy. Zgłoszenia nie są kopiowane. Kopia powstaje jako szkic.</p>
+<p><strong>Nowy warsztat</strong> (<span class="ui">Warsztaty → Nowy warsztat</span>) tworzysz, wybierając rodzaj i tytuł. System przygotuje szkic z poziomami i pytaniami typowymi dla tego rodzaju (ustawia się je w <a href="{% url 'help:chapter' 'ustawienia' %}#rodzaje">Ustawieniach</a>).</p>
+{% help_shot "warsztat-edycja" "Strona edycji warsztatu z sekcjami: podstawowe informacje, terminy, poziomy" "Edycja warsztatu. Po prawej stan warsztatu i szybkie akcje." %}
+
+<h2 id="terminy">Terminy spotkań</h2>
+<p>Każde spotkanie to osobny wiersz: data, godzina od–do i ewentualna uwaga (np. „przerwa na obiad”). Przycisk <span class="ui">Dodaj spotkanie</span> dopisuje wiersz; zaznaczenie <span class="ui">Usuń</span> w wierszu i zapisanie usuwa spotkanie. Terminy są zawsze widoczne dla uczestników. Warsztat bez żadnego spotkania nie może zostać opublikowany.</p>
+
+<h2 id="poziomy">Poziomy (grupy)</h2>
+<p>Poziom to grupa w ramach warsztatu, np. „Początkujący” i „Zaawansowani”. Każdy ma własny <strong>limit miejsc</strong>, cenę i uwagę do ceny (np. „deska płatna osobno”). Zgłaszający wybiera poziom w formularzu; gdy poziom jest jeden, wybiera się sam.</p>
+<p class="tip"><strong>Limit miejsc jest tylko wskazówką.</strong> System nie blokuje zgłoszeń ponad limit — o przyjęciu decydujesz Ty. Gdy na poziom jest już tyle zgłoszeń, ile miejsc, formularz uprzedza zgłaszającego, że może trafić na listę rezerwową (można to wyłączyć: <span class="ui">informuj o przekroczonym limicie</span>).</p>
+<p>Poziomu, na który ktoś się już zgłosił, nie da się usunąć — zmień najpierw poziom w tych zgłoszeniach.</p>
+
+<h2 id="opis">Opis i sekcje</h2>
+<p>Opis i sekcje (uwagi organizacyjne, program, co zabrać, noclegi i wyżywienie, zdjęcie) to zwykły tekst: pusta linia zaczyna nowy akapit, a adresy stron same stają się linkami. Sekcja pojawia się na stronie warsztatu tylko wtedy, gdy jest zaznaczona <span class="ui">pokazuj</span> i ma treść. Przy prowadzącym i miejscu też można wyłączyć pokazywanie.</p>
+
+<h2 id="publikacja">Publikacja — sama, o ustawionej godzinie</h2>
+<p>Pole <span class="ui">publikacja od</span> to chwila, od której warsztat jest widoczny na stronie. Nie trzeba niczego klikać w tym dniu — o 9:00 warsztat po prostu się pojawia. Bez daty publikacji warsztat jest <strong>szkicem</strong> i widzą go tylko administratorzy.</p>
+<p>Stany warsztatu (liczone z dat, na bieżąco):</p>
+<ul>
+  <li><strong>szkic</strong> — bez daty publikacji,</li>
+  <li><strong>zaplanowany</strong> — data publikacji w przyszłości,</li>
+  <li><strong>opublikowany</strong> — widoczny na stronie,</li>
+  <li><strong>zakończony</strong> — po ostatnim spotkaniu (nadal widoczny, bez zapisów),</li>
+  <li><strong>w archiwum</strong> — ukryty z list; przenosisz go tam ręcznie.</li>
+</ul>
+
+<h2 id="zapisy">Okno zapisów</h2>
+<p><span class="ui">Zapisy od</span> i <span class="ui">zapisy do</span> ograniczają czas, w którym formularz przyjmuje zgłoszenia. Puste <em>zapisy od</em> = od publikacji; puste <em>zapisy do</em> = do rozpoczęcia pierwszego spotkania. Poza oknem strona warsztatu jest widoczna, ale zamiast formularza jest informacja „zapisy od…” albo „zapisy zakończone”.</p>
+
+<h2 id="szybkie-akcje">Szybkie akcje</h2>
+<p>Po prawej stronie edycji warsztatu:</p>
+<ul>
+  <li><span class="ui">Opublikuj teraz</span> — ustawia datę publikacji na tę chwilę,</li>
+  <li><span class="ui">Wycofaj publikację</span> — warsztat wraca do szkiców i znika ze strony,</li>
+  <li><span class="ui">Zamknij zapisy teraz</span> / <span class="ui">Otwórz ponownie zapisy</span> — niezależnie od dat (np. gdy miejsc już na pewno nie będzie),</li>
+  <li><span class="ui">Przenieś do archiwum</span> / <span class="ui">Przywróć z archiwum</span>,</li>
+  <li><span class="ui">Usuń szkic</span> — tylko szkic bez zgłoszeń; warsztat, który był publiczny, przenosi się do archiwum.</li>
+</ul>
+
+<h2 id="odwolanie">Odwołanie warsztatu</h2>
+<p>Zaznacz <span class="ui">odwołany</span> i wpisz krótką informację (np. „z powodu choroby prowadzącego”). Strona pokaże komunikat, a zapisy się zamkną. Osobom zgłoszonym wyślij wiadomość (<a href="{% url 'help:chapter' 'wiadomosci' %}">Wiadomości</a>) — odwołanie samo nie wysyła e-maili.</p>
+
+<h2 id="miejsca">Miejsca</h2>
+<p>W menu <span class="ui">Miejsca</span> zapisujesz adresy (nazwa, adres, link do mapy, wskazówki dojazdu). Przy warsztacie wybierasz miejsce z listy. Miejsca, z którego już nie korzystasz, nie trzeba usuwać — wystarczy odznaczyć <span class="ui">aktywne</span>, a zniknie z listy wyboru.</p>
+{% endblock %}

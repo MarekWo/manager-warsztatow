@@ -1,11 +1,12 @@
 {% extends "panel/base_panel.html" %}
+{% load help_tags %}
 {% block title %}Zestawienia — {{ workshop.title }}{% endblock %}
 {% block panel_content %}
 {% include "panel/partials/workshop_nav.html" %}
 <div class="row g-4">
   <div class="col-md-6">
     <section class="card card-body shadow-sm h-100" aria-labelledby="h-xlsx">
-      <h2 id="h-xlsx" class="h5"><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i> Zgłoszenia do Excela</h2>
+      <h2 id="h-xlsx" class="h5"><i class="bi bi-file-earmark-spreadsheet" aria-hidden="true"></i> Zgłoszenia do Excela {% help_link "wydruki" "excel" %}</h2>
       <p>Wszystkie dane i odpowiedzi — po jednej kolumnie na pytanie.</p>
       <form method="get" action="{% url 'panel:export_xlsx' workshop.pk %}" class="d-flex flex-wrap gap-2 align-items-end">
         <div>
@@ -40,7 +41,7 @@
   </div>
   <div class="col-md-6">
     <section class="card card-body shadow-sm h-100" aria-labelledby="h-materials">
-      <h2 id="h-materials" class="h5"><i class="bi bi-box-seam" aria-hidden="true"></i> Zestawienie materiałów</h2>
+      <h2 id="h-materials" class="h5"><i class="bi bi-box-seam" aria-hidden="true"></i> Zestawienie materiałów {% help_link "wydruki" "materialy" %}</h2>
       {% if has_materials %}
         <p>Ile czego zamówić — przyjęci osobno, oczekujący osobno.</p>
         <div class="d-flex flex-wrap gap-2">

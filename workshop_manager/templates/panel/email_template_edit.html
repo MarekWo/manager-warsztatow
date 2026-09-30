@@ -1,4 +1,5 @@
 {% extends "panel/base_panel.html" %}
+{% load help_tags %}
 {% block title %}{{ template.get_key_display }}{% endblock %}
 {% block panel_content %}
 <p class="mb-2"><a href="{% url 'panel:email_template_list' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Treść e-maili</a></p>
@@ -24,7 +25,7 @@
   </div>
   <div class="col-lg-5">
     <div class="card card-body shadow-sm">
-      <h2 class="h5">Pola do wstawienia</h2>
+      <h2 class="h5">Pola do wstawienia {% help_link "poczta" "szablony" "Treść e-maili i pola" %}</h2>
       <p class="small text-body-secondary">Wpisz nazwę w nawiasach klamrowych, np. <code>{imie}</code> — w wysłanym e-mailu pojawią się dane.</p>
       <dl class="placeholder-list small mb-0">
         {% for name, description in placeholders.items %}

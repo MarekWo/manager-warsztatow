@@ -2,7 +2,7 @@
 {% load panel_tags %}
 {% block main_class %}panel-page{% endblock %}
 {% block content %}
-  {% with section=request.resolver_match.url_name|panel_section %}
+  {% with section=request.resolver_match|panel_section %}
   <nav class="panel-nav mb-4" aria-label="Menu panelu">
     <ul class="nav nav-pills gap-1">
       <li class="nav-item"><a class="nav-link {% if section == 'dashboard' %}active{% endif %}" href="{% url 'panel:dashboard' %}"><i class="bi bi-speedometer2" aria-hidden="true"></i> Pulpit</a></li>

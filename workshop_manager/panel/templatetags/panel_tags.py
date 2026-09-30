@@ -1,5 +1,7 @@
 """Helpers for the panel's templates."""
 
+from typing import Any
+
 from django import template
 
 register = template.Library()
@@ -19,9 +21,13 @@ SECTIONS = [
 
 
 @register.filter
-def panel_section(url_name: str | None) -> str:
+def panel_section(match: Any) -> str:
+    """The menu item to highlight for the current page (a `ResolverMatch`)."""
+    if getattr(match, "namespace", "") == "help":
+        return "help"
+    url_name = getattr(match, "url_name", None) or ""
     for prefix, section in SECTIONS:
-        if (url_name or "").startswith(prefix):
+        if url_name.startswith(prefix):
             return section
     return "workshops"
 

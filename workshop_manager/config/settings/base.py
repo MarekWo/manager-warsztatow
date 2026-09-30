@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "workshop_manager.communications",
     "workshop_manager.public",
     "workshop_manager.panel",
+    "workshop_manager.help",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

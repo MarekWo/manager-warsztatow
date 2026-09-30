@@ -1,4 +1,5 @@
 {% extends "panel/base_panel.html" %}
+{% load help_tags %}
 {% block title %}Zgłoszenia — {{ workshop.title }}{% endblock %}
 {% block panel_content %}
 {% include "panel/partials/workshop_nav.html" %}
@@ -11,12 +12,12 @@
   {% include "panel/partials/level_summary.html" %}
 </div>
 
-<h2 class="h4 mb-3">Lista zgłoszeń ({{ total }})</h2>
+<h2 class="h4 mb-3">Lista zgłoszeń ({{ total }}) {% help_link "zgloszenia" "statusy" "Statusy zgłoszeń" %}</h2>
 {% include "panel/partials/application_filters.html" %}
 {% include "panel/partials/application_table.html" %}
 
 <section id="rezerwa" class="mt-5" aria-labelledby="h-waitlist">
-  <h2 id="h-waitlist" class="h4 mb-2">Listy rezerwowe</h2>
+  <h2 id="h-waitlist" class="h4 mb-2">Listy rezerwowe {% help_link "zgloszenia" "rezerwa" "Lista rezerwowa" %}</h2>
   <p class="small text-body-secondary">Kolejność decyduje, kogo system podpowie, gdy zwolni się miejsce. Zmieniasz ją strzałkami.</p>
   {% for level, waiting in waitlists %}
     {% if waiting %}

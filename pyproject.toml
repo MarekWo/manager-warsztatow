@@ -90,11 +90,12 @@ known-first-party = ["workshop_manager"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "workshop_manager.config.settings.test"
-addopts = "--reuse-db --strict-markers -ra -m 'not browser'"
+addopts = "--reuse-db --strict-markers -ra -m 'not browser and not screenshots'"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 markers = [
     "browser: needs a real browser (uv run pytest -m browser)",
+    "screenshots: retakes the help's screenshots (uv run pytest -m screenshots)",
 ]
 
 [tool.coverage.run]

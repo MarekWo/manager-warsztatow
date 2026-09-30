@@ -1,4 +1,5 @@
 {% extends "panel/base_panel.html" %}
+{% load help_tags %}
 {% block title %}Ustawienia{% endblock %}
 {% block panel_content %}
 <h1 class="page-title mb-3">Ustawienia</h1>
@@ -18,7 +19,7 @@
   {% for error in form.non_field_errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
   {% for title, intro, fields in form.sections %}
     <section class="card card-body shadow-sm mb-4" {% if forloop.counter == 4 %}id="poczta"{% endif %} aria-labelledby="section-{{ forloop.counter }}">
-      <h2 class="h4" id="section-{{ forloop.counter }}">{{ title }}</h2>
+      <h2 class="h4" id="section-{{ forloop.counter }}">{{ title }} {% if forloop.counter == 3 %}{% help_link "rodo" "zgody" "Zgody i ich wersje" %}{% elif forloop.counter == 4 %}{% help_link "poczta" "serwer" "Serwer poczty" %}{% else %}{% help_link "ustawienia" %}{% endif %}</h2>
       {% if intro %}<p class="small text-body-secondary">{{ intro }}</p>{% endif %}
       {% if forloop.counter == 1 and site_settings.logo %}
         <p class="mb-2"><img src="{{ site_settings.logo.url }}" alt="Aktualne logo" class="settings-logo-preview"></p>
@@ -35,7 +36,7 @@
 </form>
 
 <section class="card card-body shadow-sm mb-4" aria-labelledby="test-email">
-  <h2 class="h4" id="test-email">Wiadomość testowa</h2>
+  <h2 class="h4" id="test-email">Wiadomość testowa {% help_link "poczta" "test" %}</h2>
   <p class="small text-body-secondary">Sprawdza zapisane ustawienia poczty: wiadomość wychodzi od razu, a ewentualny błąd serwera pojawi się na górze strony.</p>
   <form method="post" action="{% url 'panel:settings_test_email' %}" class="row g-2 align-items-end">
     {% csrf_token %}

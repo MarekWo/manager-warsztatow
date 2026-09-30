@@ -1,8 +1,9 @@
 {% extends "panel/base_panel.html" %}
+{% load help_tags %}
 {% block title %}Wiadomość do uczestników — {{ workshop.title }}{% endblock %}
 {% block panel_content %}
 {% include "panel/partials/workshop_nav.html" %}
-<h2 class="h4 mb-3">{% if broadcast %}Popraw wiadomość{% else %}Nowa wiadomość do uczestników{% endif %}</h2>
+<h2 class="h4 mb-3">{% if broadcast %}Popraw wiadomość{% else %}Nowa wiadomość do uczestników{% endif %} {% help_link "wiadomosci" %}</h2>
 <div class="row g-4">
   <div class="col-lg-7">
     <form method="post" enctype="multipart/form-data" class="card card-body shadow-sm" novalidate>
