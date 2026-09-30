@@ -7,6 +7,7 @@ from django.core import mail
 from django.urls import reverse
 
 from tests.factories import AdminFactory, UserFactory
+from workshop_manager.accounts.models import User
 
 CODE = re.compile(r"\b(\d{6})\b")
 
@@ -163,3 +164,12 @@ def test_a_mail_server_that_is_down_reads_as_try_again(client, monkeypatch):
     response = client.post("/konto/login/code/", {"email": "anna@example.com"})
     assert response.status_code == 200
     assert "Nie udało się teraz wysłać kodu" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_the_technical_admin_adds_a_user_by_address_alone(client):
+    client.force_login(AdminFactory())
+    response = client.post("/django-admin/accounts/user/add/", {"email": "Nowy@Example.com"})
+    assert response.status_code == 302
+    user = User.objects.get(email="nowy@example.com")
+    assert not user.has_usable_password()
