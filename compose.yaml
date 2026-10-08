@@ -31,8 +31,16 @@ services:
     depends_on:
       web:
         condition: service_healthy
+    # The worker serves no HTTP, so the image's check does not fit: it is healthy while the
+    # every-minute heartbeat job keeps succeeding. Compose 2.x's `up --wait` (scripts/update.sh)
+    # also fails outright on a service whose check is disabled.
     healthcheck:
-      disable: true
+      test: ["CMD", "python", "manage.py", "shell", "--no-imports", "-c", "import sys; from workshop_manager.core.tasks import worker_status; sys.exit(worker_status()[0] != 'ok')"]
+      interval: 60s
+      timeout: 20s
+      start_period: 120s
+      start_interval: 10s
+      retries: 3
     restart: unless-stopped
 
 volumes:

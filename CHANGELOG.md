@@ -13,6 +13,17 @@ All notable changes to this project are documented here. The format follows
   question and its badges, all as icons (move up/down, edit, hide/show, delete) with tooltips and
   screen-reader labels. The reserve list's buttons also moved under the person's name.
 
+### Fixed
+
+- `scripts/update.sh` failed on servers with Docker Compose 2.x: `up --wait` rejects a service
+  whose healthcheck is disabled. The worker now has a real healthcheck — healthy while its
+  every-minute heartbeat job keeps succeeding.
+
+### Upgrading
+
+- Copy the new `compose.yaml` to the server (`/opt/manager-warsztatow`) before the next
+  `scripts/update.sh`.
+
 ## [1.0.0-rc1] - 2026-09-30
 
 Release candidate for acceptance tests on TEST.
