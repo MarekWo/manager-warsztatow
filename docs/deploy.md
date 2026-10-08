@@ -61,6 +61,18 @@ the public name forwarding to `manager-warsztatow-edge`, port `80`, with a Let's
 certificate, *Force SSL* and *HTTP/2*. NPM sets `X-Real-IP` and `X-Forwarded-Proto`, which the
 edge passes on.
 
+- When the DNS record is not in a zone NPM can reach through an API, the certificate uses the
+  HTTP-01 challenge: port 80 must stay open to everyone, not only while the certificate is
+  issued. Let's Encrypt's lifetimes shrink (64 days from February 2027, 45 from February 2028,
+  with domain validation reused for only hours), so every renewal validates again.
+- NPM 2.13 dropped *Force SSL* and *HTTP/2* when they were set in the same save that requested
+  the certificate. Open the host again afterwards and check them; `http://` must answer 301.
+- Leave *HSTS* off in NPM: the application sends `Strict-Transport-Security` itself
+  (`SECURE_HSTS_SECONDS`), and two different headers would contradict each other.
+
+Until outgoing mail works, `EMAIL_URL=consolemail://` lets the first administrator sign in
+without sending anything: the code is in `docker compose logs web worker`.
+
 ## Start and update
 
 ```bash
