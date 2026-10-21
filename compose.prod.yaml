@@ -15,6 +15,8 @@ services:
   web:
     # Servers only pull; there is no source to build from. APP_TAG: dev on TEST, X.Y.Z on PROD.
     build: !reset null
+    # The name the app gives itself in SMTP (EHLO) and in Message-ID; unset = the container ID.
+    hostname: ${MAIL_HOSTNAME:-}
     environment:
       TRUST_PROXY_HEADERS: "true"
     mem_limit: 384m
@@ -23,6 +25,7 @@ services:
 
   worker:
     build: !reset null
+    hostname: ${MAIL_HOSTNAME:-}
     environment:
       TRUST_PROXY_HEADERS: "true"
     mem_limit: 256m

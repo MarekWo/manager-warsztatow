@@ -23,10 +23,15 @@ All notable changes to this project are documented here. The format follows
   mail library retries with another method. The test e-mail and the e-mail log now show the
   server's actual answer, `535 Username and Password not accepted`.
 
+### Added
+
+- `MAIL_HOSTNAME` (servers): the `web` and `worker` containers' host name, which the app uses in
+  SMTP `EHLO` and in `Message-ID` instead of the container ID.
+
 ### Upgrading
 
-- Copy the new `compose.yaml` to the server (`/opt/manager-warsztatow`) before the next
-  `scripts/update.sh`.
+- Copy the new `compose.yaml` and `compose.prod.yaml` to the server (`/opt/manager-warsztatow`)
+  before the next `scripts/update.sh`; set `MAIL_HOSTNAME` to the public host name in `.env`.
 
 ## [1.0.0-rc1] - 2026-09-30
 

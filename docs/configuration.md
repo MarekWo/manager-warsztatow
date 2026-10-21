@@ -45,6 +45,7 @@ sign-in. Further administrators are created by the operator in the technical adm
 |---|---|---|
 | `EMAIL_URL` | `consolemail://` | The fallback transport, e.g. `smtp+tls://user:password@smtp.example.com:587`. Used when SMTP in the panel is switched off, and for sign-in codes before anything is configured. |
 | `DEFAULT_FROM_EMAIL` | `Manager Warsztatów <noreply@localhost>` | Sender for the fallback transport. |
+| `MAIL_HOSTNAME` | the container ID | Host name of the `web` and `worker` containers (`compose.prod.yaml`): what the app says in SMTP `EHLO` and puts in `Message-ID`. Set it to the public name, e.g. `warsztaty.example.org`; a container ID there looks careless in headers. |
 
 SMTP entered in **Ustawienia → Poczta wychodząca** takes precedence when switched on. The
 password is encrypted in the database; the sender name, address and Reply-To are set there too.
