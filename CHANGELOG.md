@@ -18,6 +18,10 @@ All notable changes to this project are documented here. The format follows
 - `scripts/update.sh` failed on servers with Docker Compose 2.x: `up --wait` rejects a service
   whose healthcheck is disabled. The worker now has a real healthcheck — healthy while its
   every-minute heartbeat job keeps succeeding.
+- A wrong SMTP password (e.g. a Google app password) was reported as "SMTPServerDisconnected:
+  Connection unexpectedly closed": Gmail hangs up after the first refused login, while the
+  mail library retries with another method. The test e-mail and the e-mail log now show the
+  server's actual answer, `535 Username and Password not accepted`.
 
 ### Upgrading
 

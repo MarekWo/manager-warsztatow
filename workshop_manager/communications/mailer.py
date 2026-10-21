@@ -6,8 +6,10 @@ With "wysyłaj przez poniższy serwer SMTP" switched on, the connection and the 
 cases replies go to the Reply-To from Settings, or else to the organiser's contact address.
 """
 
+import smtplib
 from dataclasses import dataclass
 from email.headerregistry import Address
+from typing import Any
 
 from django.conf import settings
 from django.core import mail
@@ -19,6 +21,45 @@ from workshop_manager.core.models import SiteSettings, SmtpSecurity
 
 #: Seconds to wait for the SMTP server — a worker must not hang on a dead server.
 SMTP_TIMEOUT = 15
+
+
+class _SMTP(smtplib.SMTP):
+    """Report the server's refusal of the login, not the hang-up that follows it.
+
+    smtplib tries the next AUTH mechanism after a refused one, but Gmail closes the connection
+    after the first `535 Username and Password not accepted`, so the administrator saw only
+    "Connection unexpectedly closed" — and no hint that the password was wrong.
+    """
+
+    refused_login: smtplib.SMTPAuthenticationError | None = None
+
+    def auth(self, mechanism: str, authobject: Any, *, initial_response_ok: bool = True) -> Any:
+        try:
+            return super().auth(mechanism, authobject, initial_response_ok=initial_response_ok)
+        except smtplib.SMTPAuthenticationError as error:
+            self.refused_login = error
+            raise
+
+    def login(self, user: str, password: str, *, initial_response_ok: bool = True) -> Any:
+        self.refused_login = None
+        try:
+            return super().login(user, password, initial_response_ok=initial_response_ok)
+        except smtplib.SMTPServerDisconnected:
+            if self.refused_login is not None:
+                raise self.refused_login from None
+            raise
+
+
+class _SMTP_SSL(_SMTP, smtplib.SMTP_SSL):
+    pass
+
+
+class SettingsSmtpBackend(SmtpBackend):
+    """The SMTP server from Settings, with the login errors above kept readable."""
+
+    @property
+    def connection_class(self) -> type[smtplib.SMTP]:
+        return _SMTP_SSL if self.use_ssl else _SMTP
 
 
 @dataclass
@@ -39,7 +80,7 @@ def transport(site: SiteSettings | None = None) -> Transport:
     site = site or SiteSettings.load()
     reply_to = site.reply_to or site.contact_email
     if site.uses_own_smtp():
-        connection = SmtpBackend(
+        connection = SettingsSmtpBackend(
             alias="site-settings",
             host=site.smtp_host,
             port=site.smtp_port,

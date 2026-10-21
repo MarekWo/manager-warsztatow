@@ -146,6 +146,40 @@ def test_own_smtp_transport_from_settings(site):
     assert connection.password == "tajne"
     assert transport.from_email == '"Warsztaty, Ecclesia" <ikona@example.com>'
     assert transport.reply_to == "odpowiedzi@example.com"
+    assert connection.connection_class is mailer._SMTP_SSL
+
+
+def test_refused_login_is_not_hidden_by_the_hang_up(monkeypatch):
+    # Gmail refuses the first AUTH with 535 and drops the connection, so smtplib's retry with
+    # the next mechanism used to end in "Connection unexpectedly closed".
+    attempts = []
+
+    def gmail_auth(self, mechanism, authobject, *, initial_response_ok=True):
+        attempts.append(mechanism)
+        if len(attempts) == 1:
+            raise smtplib.SMTPAuthenticationError(535, b"5.7.8 Username and Password not accepted")
+        raise smtplib.SMTPServerDisconnected("Connection unexpectedly closed")
+
+    monkeypatch.setattr(smtplib.SMTP, "auth", gmail_auth)
+    server = mailer._SMTP()
+    server.ehlo_resp = b"smtp.example.com"
+    server.esmtp_features = {"auth": "LOGIN PLAIN"}
+    with pytest.raises(smtplib.SMTPAuthenticationError) as refused:
+        server.login("ikona@example.com", "zle-haslo")
+    assert refused.value.smtp_code == 535
+    assert len(attempts) == 2
+
+
+def test_hang_up_without_a_refusal_stays_a_hang_up(monkeypatch):
+    def drop(self, mechanism, authobject, *, initial_response_ok=True):
+        raise smtplib.SMTPServerDisconnected("Connection unexpectedly closed")
+
+    monkeypatch.setattr(smtplib.SMTP, "auth", drop)
+    server = mailer._SMTP()
+    server.ehlo_resp = b"smtp.example.com"
+    server.esmtp_features = {"auth": "PLAIN"}
+    with pytest.raises(smtplib.SMTPServerDisconnected):
+        server.login("ikona@example.com", "haslo")
 
 
 # --- Rendering ----------------------------------------------------------------------------------
