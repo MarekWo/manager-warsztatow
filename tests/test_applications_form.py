@@ -112,6 +112,21 @@ def test_question_fields_are_styled_like_the_others(client, workshop):
             assert "form-control" in field.field.widget.attrs["class"]
 
 
+def test_every_choice_question_shows_its_label_above_the_options(client, workshop):
+    # A multiple-choice list reports input_type "checkbox" like a single tick box, and was drawn
+    # like one: the options first, the question under them.
+    form = client.get(apply_url(workshop)).context["form"]
+    kinds = set()
+    for question, field in form.question_rows():
+        html = str(field.as_field_group())
+        assert html.index(question.label) < html.index(f'name="{field.html_name}"'), question.kind
+        if question.kind not in (QuestionKind.LONG_TEXT, QuestionKind.SHORT_TEXT):
+            assert "<legend" in html, question.kind
+            assert "choice-list" in html, question.kind
+        kinds.add(question.kind)
+    assert QuestionKind.MULTI_CHOICE in kinds
+
+
 def test_valid_application_is_stored_with_answers(client, workshop):
     response = client.post(apply_url(workshop), payload(workshop))
     assert response.status_code == 302

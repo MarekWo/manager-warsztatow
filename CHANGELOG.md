@@ -7,6 +7,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- A question with several answers to tick ("wybór wielu odpowiedzi") showed its text under the
+  options instead of above them, without the frame the other choice questions have. It is now
+  drawn like a single-choice question: the question, the options as large tappable rows, then
+  the hint. The other question kinds were not affected.
+
 ## [1.0.0-rc2] - 2026-11-18
 
 Second release candidate: the changes asked for after the client's acceptance tests.
