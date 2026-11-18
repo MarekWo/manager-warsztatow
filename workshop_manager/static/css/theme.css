@@ -470,12 +470,14 @@ main {
 
 /* --- Workshop photos: one frame whatever was uploaded --- */
 
-/* On the list every card shows the same 16:9 window onto its photo. */
+/* On the list every card has the same 16:9 frame; the whole photo sits inside it on a quiet
+   ground, so a tall picture (a frame, an icon) is never cropped. */
 .workshop-photo {
   aspect-ratio: 16 / 9;
   width: 100%;
-  object-fit: cover;
-  object-position: center 25%;
+  object-fit: contain;
+  background: var(--mw-primary-light);
+  padding: 0.5rem;
 }
 
 /* On the workshop's own page the whole photo is shown, never taller than a third of a screen. */
