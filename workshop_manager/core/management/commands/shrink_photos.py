@@ -1,7 +1,8 @@
 """Shrink workshop photos uploaded before uploads were resized (core.images).
 
-Idempotent: a photo already within the limit is left alone, so it is safe to run again. Every
-workshop sharing a file (duplicates do) is pointed at the new one.
+Idempotent: a photo within the limit is left alone (a heavy one is re-encoded once, and kept only
+if that made it clearly lighter), so it is safe to run again. Every workshop sharing a file
+(duplicates do) is pointed at the new one.
 """
 
 from typing import Any
@@ -34,9 +35,12 @@ class Command(BaseCommand):
             with storage.open(name) as stored:
                 with Image.open(stored) as picture:
                     too_large = images.needs_shrinking(picture)
-                if not too_large:
+                size = storage.size(name)
+                if not too_large and size <= images.HEAVY_BYTES:
                     continue
                 smaller = images.shrink(stored)
+            if not too_large and smaller.size > size * 0.8:
+                continue  # already as light as it gets (a truly transparent PNG)
             folder = name.rsplit("/", 1)[0] if "/" in name else ""
             new_name = storage.save(f"{folder}/{smaller.name}".lstrip("/"), smaller)
             Workshop.objects.filter(cover_image=name).update(cover_image=new_name)

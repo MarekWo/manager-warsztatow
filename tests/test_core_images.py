@@ -29,8 +29,16 @@ def test_a_large_photo_is_brought_down_keeping_its_proportions():
         assert result.format == "JPEG"
 
 
+def test_an_opaque_alpha_channel_does_not_keep_a_photo_as_png():
+    upload = SimpleUploadedFile("obraz.png", picture(2400, 600, mode="RGBA"))
+    with Image.open(images.shrink(upload)) as result:
+        assert result.format == "JPEG"
+
+
 def test_transparency_survives_as_png():
-    upload = SimpleUploadedFile("logo.png", picture(2400, 600, mode="RGBA"))
+    output = BytesIO()
+    Image.new("RGBA", (2400, 600), (10, 20, 120, 0)).save(output, format="PNG")
+    upload = SimpleUploadedFile("logo.png", output.getvalue())
     smaller = images.shrink(upload)
     with Image.open(smaller) as result:
         assert (result.format, result.size) == ("PNG", (1200, 300))

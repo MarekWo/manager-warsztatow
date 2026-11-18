@@ -15,7 +15,7 @@ All notable changes to this project are documented here. The format follows
   still withdraw the consent in "Moje dane" or with the unsubscribe link. Asked for by the client
   after the acceptance tests.
 - Workshop photos are resized on upload to at most 1200 px on the longer side (JPEG, or PNG when
-  transparent, camera rotation applied). The workshop list shows every photo in the same 16:9
+  really transparent, camera rotation applied). The workshop list shows every photo in the same 16:9
   frame and the workshop page shows it whole but small, so a tall picture no longer fills the
   screen.
 - The sessions section of the workshop editor says how to enter a weekend or a week-long

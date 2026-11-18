@@ -19,8 +19,23 @@ COVER_MAX = 1200
 JPEG_QUALITY = 85
 
 
+#: A stored photo heavier than this is re-encoded even when its pixel size is fine (a PNG
+#: screenshot of a painting weighs megabytes; as JPEG a tenth of that).
+HEAVY_BYTES = 600 * 1024
+
+
 def needs_shrinking(image: Image.Image, max_side: int = COVER_MAX) -> bool:
     return max(image.size) > max_side
+
+
+def _is_transparent(image: Image.Image) -> bool:
+    """Really see-through somewhere — an alpha channel that is opaque everywhere does not count."""
+    if "transparency" in image.info:
+        return True
+    if image.mode not in ("RGBA", "LA"):
+        return False
+    lowest: Any = image.getchannel("A").getextrema()[0]
+    return bool(lowest < 255)
 
 
 def shrink(file: Any, *, max_side: int = COVER_MAX) -> ContentFile:
@@ -32,7 +47,7 @@ def shrink(file: Any, *, max_side: int = COVER_MAX) -> ContentFile:
     image: Image.Image = Image.open(file)
     image = ImageOps.exif_transpose(image)
     image.thumbnail((max_side, max_side), Image.Resampling.LANCZOS)
-    transparent = image.mode in ("RGBA", "LA") or "transparency" in image.info
+    transparent = _is_transparent(image)
     output = BytesIO()
     stem = PurePosixPath(getattr(file, "name", "") or "zdjecie").stem or "zdjecie"
     if transparent:
