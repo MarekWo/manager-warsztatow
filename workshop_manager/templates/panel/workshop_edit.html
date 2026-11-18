@@ -27,7 +27,7 @@
       <section class="card shadow-sm mb-4" aria-labelledby="h-sessions">
         <div class="card-body">
           <h2 id="h-sessions" class="h5 mb-1">Terminy spotkań {% help_link "warsztaty" "terminy" %}</h2>
-          <p class="small text-body-secondary">Daty i godziny wszystkich spotkań — zawsze widoczne dla uczestników.</p>
+          <p class="small text-body-secondary">Każdy dzień warsztatu to osobny wiersz z datą i godzinami. Warsztat weekendowy: dodaj sobotę i niedzielę. Warsztat tygodniowy: dodaj kolejne dni przyciskiem „Dodaj spotkanie”. Uczestnicy widzą wszystkie terminy.</p>
           {{ sessions.management_form }}
           {% for error in sessions.non_form_errors %}<div class="alert alert-danger py-2">{{ error }}</div>{% endfor %}
           <div id="sessions-rows">

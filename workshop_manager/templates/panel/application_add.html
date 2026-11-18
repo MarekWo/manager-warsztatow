@@ -41,7 +41,7 @@
     {% if form.remarks %}{{ form.remarks.as_field_group }}{% endif %}
     {% if form.adult %}{{ form.adult.as_field_group }}{% endif %}
     {{ form.privacy.as_field_group }}
-    {{ form.marketing.as_field_group }}
+    {% if form.marketing %}{{ form.marketing.as_field_group }}{% endif %}
     {{ form.send_confirmation.as_field_group }}
   </section>
 

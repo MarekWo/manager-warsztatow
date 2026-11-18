@@ -68,6 +68,12 @@ class SiteSettings(models.Model):
     privacy_version = models.CharField(
         "wersja klauzuli", max_length=20, default=consents.PRIVACY_VERSION, editable=False
     )
+    marketing_enabled = models.BooleanField(
+        "pytaj o zgodę na informacje o kolejnych warsztatach",
+        default=False,
+        help_text="Włączone = w formularzu zgłoszenia jest dodatkowe, nieobowiązkowe pole z tą "
+        "zgodą. Wyłączone = formularz ma tylko zgodę na przetwarzanie danych.",
+    )
     marketing_text = models.CharField(
         "zgoda na informacje o kolejnych warsztatach",
         max_length=300,

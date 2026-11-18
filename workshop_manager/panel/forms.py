@@ -1,11 +1,13 @@
 from typing import Any
 
 from django import forms
+from django.core.files.uploadedfile import UploadedFile
 from django.forms import BaseInlineFormSet, inlineformset_factory
 
 from workshop_manager.applications.models import Application
 from workshop_manager.communications.models import EmailTemplate
 from workshop_manager.communications.rendering import unknown_placeholders
+from workshop_manager.core import images
 from workshop_manager.core.forms import BootstrapFormMixin, DateInput, DateTimeInput, TimeInput
 from workshop_manager.core.models import SiteSettings
 from workshop_manager.forms_builder.models import (
@@ -99,6 +101,13 @@ class WorkshopForm(BootstrapFormMixin, forms.ModelForm):
         self.fields["type"].queryset = WorkshopType.objects.filter(is_active=True)  # type: ignore[attr-defined]
         self.fields["type"].empty_label = None  # type: ignore[attr-defined]
         self.fields["location"].empty_label = "— bez miejsca —"  # type: ignore[attr-defined]
+
+    def clean_cover_image(self) -> Any:
+        """A new photo is stored at one sensible size, whatever was uploaded (core.images)."""
+        photo = self.cleaned_data.get("cover_image")
+        if isinstance(photo, UploadedFile):
+            return images.shrink(photo)
+        return photo
 
     def clean(self) -> dict[str, Any]:
         data = super().clean() or {}
@@ -257,7 +266,7 @@ class SiteSettingsForm(BootstrapFormMixin, forms.ModelForm):
             "Zgody w formularzu",
             "Zmiana treści zgody tworzy jej nową wersję; zgłoszenia wysłane wcześniej zachowują "
             "wersję, na którą osoba się zgodziła.",
-            ["privacy_policy_url", "privacy_text", "marketing_text"],
+            ["privacy_policy_url", "privacy_text", "marketing_enabled", "marketing_text"],
         ),
         (
             "Poczta wychodząca",
@@ -295,6 +304,7 @@ class SiteSettingsForm(BootstrapFormMixin, forms.ModelForm):
             "bank_account_number",
             "privacy_policy_url",
             "privacy_text",
+            "marketing_enabled",
             "marketing_text",
             "smtp_enabled",
             "smtp_host",

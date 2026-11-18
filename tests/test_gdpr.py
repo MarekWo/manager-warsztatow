@@ -82,7 +82,7 @@ def anna(past_level):
 # --- Consents --------------------------------------------------------------------------------
 
 
-def test_the_form_records_consents_with_their_wording(client, level):
+def test_the_form_records_consents_with_their_wording(client, level, marketing_enabled):
     from tests.test_applications_form import started
 
     response = client.post(
@@ -108,7 +108,7 @@ def test_the_form_records_consents_with_their_wording(client, level):
     assert privacy.text
 
 
-def test_changing_the_consent_in_my_data_is_recorded(client, anna):
+def test_changing_the_consent_in_my_data_is_recorded(client, anna, marketing_enabled):
     client.force_login(anna.user)
     data = {"first_name": "Anna", "last_name": "Nowak", "phone": "", "marketing": "on"}
     client.post(reverse("public:my_data"), data)

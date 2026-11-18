@@ -13,3 +13,14 @@ def _clear_cache():
     from django.core.cache import cache
 
     cache.clear()
+
+
+@pytest.fixture
+def marketing_enabled(db):
+    """The organiser asks for the consent to news about workshops (off by default)."""
+    from workshop_manager.core.models import SiteSettings
+
+    site = SiteSettings.load()
+    site.marketing_enabled = True
+    site.save()
+    return site

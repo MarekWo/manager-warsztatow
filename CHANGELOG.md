@@ -9,12 +9,25 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- The consent to news about future workshops is now optional for the organiser: a switch in
+  Settings ("pytaj o zgodę na informacje o kolejnych warsztatach"), **off by default**. With it
+  off the application form has only the privacy consent; a participant who agreed earlier can
+  still withdraw the consent in "Moje dane" or with the unsubscribe link. Asked for by the client
+  after the acceptance tests.
+- Workshop photos are resized on upload to at most 1200 px on the longer side (JPEG, or PNG when
+  transparent, camera rotation applied). The workshop list shows every photo in the same 16:9
+  frame and the workshop page shows it whole but small, so a tall picture no longer fills the
+  screen.
+- The sessions section of the workshop editor says how to enter a weekend or a week-long
+  workshop (one row per day); the help explains it too.
+
 - Question lists in the form editor and in form templates show their buttons in a row under the
   question and its badges, all as icons (move up/down, edit, hide/show, delete) with tooltips and
   screen-reader labels. The reserve list's buttons also moved under the person's name.
 
 ### Fixed
 
+- A required checkbox (the privacy consent) had no asterisk, unlike every other required field.
 - `scripts/update.sh` failed on servers with Docker Compose 2.x: `up --wait` rejects a service
   whose healthcheck is disabled. The worker now has a real healthcheck — healthy while its
   every-minute heartbeat job keeps succeeding.
@@ -29,6 +42,10 @@ All notable changes to this project are documented here. The format follows
   SMTP `EHLO` and in `Message-ID` instead of the container ID.
 
 ### Upgrading
+
+- Run `docker compose exec web python manage.py shrink_photos` once to resize workshop photos
+  uploaded before this version (safe to repeat).
+- To keep asking for the news consent, switch it on in Settings after updating.
 
 - Copy the new `compose.yaml` and `compose.prod.yaml` to the server (`/opt/manager-warsztatow`)
   before the next `scripts/update.sh`; set `MAIL_HOSTNAME` to the public host name in `.env`.

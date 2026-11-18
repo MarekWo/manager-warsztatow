@@ -203,7 +203,7 @@ def test_no_withdrawal_after_the_workshop(client, level):
     assert application.status == Status.ACCEPTED
 
 
-def test_editing_my_data_and_consent(participant_client):
+def test_editing_my_data_and_consent(participant_client, marketing_enabled):
     participant_client.post(
         reverse("public:my_data"),
         {"first_name": "Anna", "last_name": "Nowa", "phone": "600 000 111", "marketing": "on"},

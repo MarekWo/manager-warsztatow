@@ -467,3 +467,22 @@ main {
 .page-title .help-link {
   font-size: 0.6em;
 }
+
+/* --- Workshop photos: one frame whatever was uploaded --- */
+
+/* On the list every card shows the same 16:9 window onto its photo. */
+.workshop-photo {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+/* On the workshop's own page the whole photo is shown, never taller than a third of a screen. */
+.workshop-photo-large {
+  display: block;
+  max-width: 100%;
+  max-height: 22rem;
+  width: auto;
+  height: auto;
+}

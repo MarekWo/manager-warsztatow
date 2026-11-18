@@ -57,9 +57,12 @@ class MyDataForm(BootstrapFormMixin, forms.Form):
     phone = forms.CharField(label="Telefon", max_length=32, required=False)
     marketing = forms.BooleanField(required=False)
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, show_marketing: bool, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["marketing"].label = SiteSettings.load().marketing_text
+        if show_marketing:
+            self.fields["marketing"].label = SiteSettings.load().marketing_text
+        else:
+            del self.fields["marketing"]
 
 
 @signed_in
@@ -110,7 +113,12 @@ def my_data(request: HttpRequest) -> HttpResponse:
         "phone": user.phone or (participant.phone if participant else ""),
         "marketing": bool(participant and participant.marketing_consent),
     }
-    form = MyDataForm(request.POST or None, initial=initial)
+    # Asked for only when the organiser sends such news — but someone who agreed earlier must
+    # always be able to take the consent back here.
+    show_marketing = participant is not None and (
+        SiteSettings.load().marketing_enabled or participant.marketing_consent
+    )
+    form = MyDataForm(request.POST or None, initial=initial, show_marketing=show_marketing)
     if request.method == "POST" and form.is_valid():
         data = form.cleaned_data
         with transaction.atomic():
@@ -125,9 +133,10 @@ def my_data(request: HttpRequest) -> HttpResponse:
                 participant.last_name = data["last_name"]
                 participant.phone = data["phone"]
                 participant.save()
-                gdpr.set_marketing_consent(
-                    participant, data["marketing"], channel=ConsentChannel.ACCOUNT
-                )
+                if "marketing" in data:
+                    gdpr.set_marketing_consent(
+                        participant, data["marketing"], channel=ConsentChannel.ACCOUNT
+                    )
         messages.success(request, "Zapisano Twoje dane.")
         return redirect("public:my_data")
     return render(

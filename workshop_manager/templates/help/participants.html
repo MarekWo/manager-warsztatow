@@ -39,7 +39,7 @@
     <p>Przyjdzie e-mail z potwierdzeniem, a organizator dostanie informację.</p>
 
     <h2 id="dane">Twoje dane</h2>
-    <p>Dane przetwarza {{ site_settings.org_name }} wyłącznie w celu organizacji warsztatów — szczegóły w <a href="{{ site_settings.privacy_policy_url }}">polityce prywatności</a>. Zgoda na informacje o kolejnych warsztatach jest dobrowolna; wycofasz ją jednym kliknięciem w linku z e-maila albo w <span class="ui">Moich danych</span>. Tam też pobierzesz kopię swoich danych i usuniesz konto wraz z danymi.</p>
+    <p>Dane przetwarza {{ site_settings.org_name }} wyłącznie w celu organizacji warsztatów — szczegóły w <a href="{{ site_settings.privacy_policy_url }}">polityce prywatności</a>. Jeśli przy zgłoszeniu zaznaczono zgodę na informacje o kolejnych warsztatach, wycofasz ją jednym kliknięciem w linku z e-maila albo w <span class="ui">Moich danych</span>. Tam też pobierzesz kopię swoich danych i usuniesz konto wraz z danymi.</p>
 
     <h2 id="kontakt">Pytania</h2>
     <p>W sprawie konkretnego warsztatu{% if site_settings.contact_email %} napisz do organizatora: <a href="mailto:{{ site_settings.contact_email }}">{{ site_settings.contact_email }}</a>{% if site_settings.contact_phone %} lub zadzwoń: {{ site_settings.contact_phone }}{% endif %}{% else %} odpowiedz na e-mail od organizatora{% endif %}.</p>

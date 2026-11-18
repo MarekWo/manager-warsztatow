@@ -133,7 +133,11 @@ class ApplicationForm(BootstrapFormMixin, forms.Form):
         site = SiteSettings.load()
         self.privacy_version = site.privacy_version
         self.fields["privacy"].label = site.privacy_text
-        self.fields["marketing"].label = site.marketing_text
+        if site.marketing_enabled:
+            self.fields["marketing"].label = site.marketing_text
+        else:
+            # The organiser does not send news about workshops: no consent to ask for.
+            del self.fields["marketing"]
         self.fields["privacy"].help_text = format_html(
             '<a href="{}" target="_blank" rel="noopener">Polityka prywatności</a>',
             site.privacy_policy_url,
@@ -241,7 +245,10 @@ class PanelApplicationForm(ApplicationForm):
             "(np. podczas rozmowy telefonicznej)."
         )
         self.fields["privacy"].help_text = ""
-        self.fields["marketing"].label = "Osoba chce otrzymywać informacje o kolejnych warsztatach."
+        if "marketing" in self.fields:
+            self.fields[
+                "marketing"
+            ].label = "Osoba chce otrzymywać informacje o kolejnych warsztatach."
         if "adult" in self.fields:
             self.fields["adult"].required = False
             self.fields["adult"].label = "Osoba potwierdziła, że jest pełnoletnia."

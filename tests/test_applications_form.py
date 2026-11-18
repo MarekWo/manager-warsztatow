@@ -314,7 +314,7 @@ def test_participant_with_account_keeps_their_own_details(client, workshop):
     assert Application.objects.get().first_name == "Obcy"  # the application keeps what was sent
 
 
-def test_marketing_consent_is_recorded_with_its_date(client, workshop):
+def test_marketing_consent_is_recorded_with_its_date(client, workshop, marketing_enabled):
     client.post(apply_url(workshop), payload(workshop, marketing="on"))
     participant = Participant.objects.get()
     assert participant.marketing_consent
@@ -343,3 +343,16 @@ def test_answered_question_cannot_be_deleted(client, workshop):
     question = workshop.questions.get(label="Doświadczenie")
     client.post(reverse("panel:question_delete", args=[workshop.pk, question.pk]))
     assert workshop.questions.filter(pk=question.pk).exists()
+
+
+def test_no_marketing_consent_unless_the_organiser_asks_for_it(client, workshop):
+    content = client.get(apply_url(workshop)).content.decode()
+    assert 'name="marketing"' not in content
+    assert client.post(apply_url(workshop), payload(workshop)).status_code == 302
+    assert not Application.objects.get().marketing_consent
+
+
+def test_required_consent_is_marked_like_other_required_fields(client, workshop):
+    content = client.get(apply_url(workshop)).content.decode()
+    label = content.split('for="id_privacy">', 1)[1].split("</label>", 1)[0]
+    assert 'aria-hidden="true">*</span>' in label
