@@ -7,6 +7,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.0-rc2] - 2026-11-18
+
+Second release candidate: the changes asked for after the client's acceptance tests.
+
 ### Changed
 
 - The consent to news about future workshops is now optional for the organiser: a switch in
