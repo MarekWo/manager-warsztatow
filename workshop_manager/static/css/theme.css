@@ -480,11 +480,37 @@ main {
   padding: 0.5rem;
 }
 
-/* On the workshop's own page the whole photo is shown, never taller than a third of a screen. */
+/* On the workshop's own page the description flows around the photo, so a tall picture does not
+   leave an empty column beside it. On a phone a column of text next to it would hold three words,
+   so there the photo sits centred above the text, small enough not to fill the screen. A tap
+   opens it at full size. flow-root keeps the next section below the photo when the text is short. */
+.workshop-intro {
+  display: flow-root;
+}
+
+.workshop-photo-link {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 1rem;
+}
+
 .workshop-photo-large {
   display: block;
   max-width: 100%;
-  max-height: 22rem;
+  max-height: 14rem;
   width: auto;
   height: auto;
+}
+
+@media (min-width: 576px) {
+  .workshop-photo-link {
+    float: left;
+    max-width: 40%;
+    margin: 0.35rem 1.5rem 1rem 0;
+  }
+
+  .workshop-photo-large {
+    max-height: 22rem;
+  }
 }

@@ -27,13 +27,16 @@
 
   <div class="row g-4">
     <div class="col-lg-8">
-      {% if workshop.cover_image and workshop.show_cover_image %}
-        <img src="{{ workshop.cover_image.url }}" class="workshop-photo-large rounded mb-4" alt="">
-      {% endif %}
-
-      {% if workshop.description %}
-        <div class="workshop-text mb-4">{{ workshop.description|urlize|linebreaks }}</div>
-      {% endif %}
+      <div class="workshop-intro mb-4">
+        {% if workshop.cover_image and workshop.show_cover_image %}
+          <a href="{{ workshop.cover_image.url }}" class="workshop-photo-link" target="_blank" rel="noopener">
+            <img src="{{ workshop.cover_image.url }}" class="workshop-photo-large rounded" alt="Zdjęcie warsztatu — otwórz w pełnym rozmiarze">
+          </a>
+        {% endif %}
+        {% if workshop.description %}
+          <div class="workshop-text">{{ workshop.description|rich_text }}</div>
+        {% endif %}
+      </div>
 
       <section class="mb-4" aria-labelledby="h-dates">
         <h2 id="h-dates" class="h4">Terminy spotkań</h2>
@@ -49,7 +52,7 @@
       {% for heading, text in workshop.visible_sections %}
         <section class="mb-4">
           <h2 class="h4">{{ heading }}</h2>
-          <div class="workshop-text">{{ text|urlize|linebreaks }}</div>
+          <div class="workshop-text">{{ text|rich_text }}</div>
         </section>
       {% endfor %}
     </div>
@@ -57,7 +60,8 @@
     <aside class="col-lg-4">
       <div class="card shadow-sm mb-4 registration-box">
         <div class="card-body">
-          <div class="mb-3">{% registration_badge workshop %}</div>
+          {% registration_badge workshop as badge %}
+          {% if badge %}<div class="mb-3">{{ badge }}</div>{% endif %}
           {% with status=workshop.registration_status %}
             {% if own_application %}
               <p>Masz już zgłoszenie na te warsztaty: {% include "public/partials/my_status.html" with application=own_application %}</p>
@@ -69,6 +73,10 @@
               <p class="mb-0">Zapisy ruszą {{ workshop.registration_opens|date:"j E Y" }} o {{ workshop.registration_opens|time:"H:i" }}.</p>
             {% elif status == "over" or status == "closed" %}
               <p class="mb-0">Zapisy na ten warsztat są zakończone.</p>
+            {% elif is_preview %}
+              {# Only staff see an unpublished page; tell them what the box will hold. #}
+              <p class="mb-0 text-body-secondary">Podgląd: tu pojawi się przycisk „Zapisz się”. Zapisy ruszą
+                {% if workshop.registration_opens_at %}{{ workshop.registration_opens_at|date:"j E Y" }} o {{ workshop.registration_opens_at|time:"H:i" }}{% else %}z chwilą publikacji{% endif %}{% if workshop.registration_closes %} i potrwają do {{ workshop.registration_closes|date:"j E Y" }}, {{ workshop.registration_closes|time:"H:i" }}{% endif %}.</p>
             {% endif %}
           {% endwith %}
         </div>

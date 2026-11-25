@@ -1,10 +1,11 @@
-"""Presentation helpers for workshops: dates in Polish, state and registration labels."""
+"""Presentation helpers for workshops: dates in Polish, state and registration labels, text."""
 
+import re
 from datetime import date
 
 from django import template
 from django.template.defaultfilters import date as date_filter
-from django.utils.html import format_html
+from django.utils.html import format_html, urlize
 from django.utils.safestring import SafeString, mark_safe
 
 from workshop_manager.workshops.models import Workshop
@@ -71,6 +72,64 @@ def meetings(count: int) -> str:
     if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
         return "spotkania"
     return "spotkań"
+
+
+BULLET = re.compile(r"^\s*[-–•*]\s+")
+# A Polish phone number written in groups: "737 540 105", "+48 737-540-105", "12 345 67 89".
+PHONE = re.compile(
+    r"(?<![\w/.+-])(?:\+48[ ]?)?"
+    r"(?:\d{3}[ -]\d{3}[ -]\d{3}|\d{2}[ -]\d{3}[ -]\d{2}[ -]\d{2})"
+    r"(?![\w-])"
+)
+
+
+@register.filter(is_safe=True)
+def rich_text(value: str) -> SafeString:
+    """Plain text from the panel as HTML: paragraphs, "- " lines as a bulleted list, clickable
+    web and e-mail addresses and phone numbers.
+
+    The organisers paste descriptions from Word, where lists are written with dashes; a real
+    list reads better on a phone, and a tappable number helps older participants call.
+    """
+    text = str(value).replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not text:
+        return mark_safe("")
+    blocks: list[str] = []
+    for paragraph in re.split(r"\n\s*\n", text):
+        lines: list[str] = []
+        items: list[str] = []
+        for raw in paragraph.split("\n"):
+            if BULLET.match(raw):
+                if lines:
+                    blocks.append("<p>" + "<br>".join(lines) + "</p>")
+                    lines = []
+                items.append("<li>" + _inline(BULLET.sub("", raw)) + "</li>")
+            else:
+                if items:
+                    blocks.append("<ul>" + "".join(items) + "</ul>")
+                    items = []
+                lines.append(_inline(raw.strip()))
+        if lines:
+            blocks.append("<p>" + "<br>".join(lines) + "</p>")
+        if items:
+            blocks.append("<ul>" + "".join(items) + "</ul>")
+    # Every piece was escaped by urlize or format_html; only our own tags are added here.
+    return mark_safe("\n".join(blocks))  # noqa: S308
+
+
+def _inline(line: str) -> str:
+    """One escaped line with links; phone numbers are cut out first so urlize never sees them."""
+    parts: list[str] = []
+    position = 0
+    for match in PHONE.finditer(line):
+        parts.append(urlize(line[position : match.start()], autoescape=True))
+        digits = re.sub(r"[^\d+]", "", match.group())
+        if not digits.startswith("+"):
+            digits = "+48" + digits
+        parts.append(format_html('<a href="tel:{}">{}</a>', digits, match.group()))
+        position = match.end()
+    parts.append(urlize(line[position:], autoescape=True))
+    return "".join(parts)
 
 
 @register.filter

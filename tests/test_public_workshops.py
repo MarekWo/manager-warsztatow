@@ -77,3 +77,37 @@ def test_description_is_escaped_and_links_are_clickable(client):
     content = client.get(workshop.get_absolute_url()).content.decode()
     assert "<script>alert(1)</script>" not in content
     assert '<a href="https://example.com"' in content
+
+
+def test_rich_text_makes_lists_paragraphs_and_phone_links():
+    from workshop_manager.workshops.templatetags.workshop_tags import rich_text
+
+    html = rich_text(
+        "Uczestnicy będą mieli możliwość:\n- cięcia tesser,\n- <b>kompozycji</b>.\n\n"
+        "Pierwszy akapit\nz łamaniem.\n\n"
+        "Tel. 737 540 105 lub ikona@example.com; konto 12 3456 7890 1234 5678 9012 3456"
+    )
+    assert "<p>Uczestnicy będą mieli możliwość:</p>\n<ul><li>cięcia tesser,</li>" in html
+    assert "<li>&lt;b&gt;kompozycji&lt;/b&gt;.</li></ul>" in html
+    assert "<p>Pierwszy akapit<br>z łamaniem.</p>" in html
+    assert '<a href="tel:+48737540105">737 540 105</a>' in html
+    assert 'href="mailto:ikona@example.com"' in html
+    assert "tel:" not in html.split("konto")[1]  # an account number is not a phone
+
+
+@pytest.mark.django_db
+def test_photo_opens_full_size_next_to_the_description(client):
+    workshop = published(description="Opis", cover_image="workshops/ikona.jpg")
+    content = client.get(workshop.get_absolute_url()).content.decode()
+    assert '<div class="workshop-intro mb-4">' in content
+    assert 'class="workshop-photo-link"' in content
+
+
+@pytest.mark.django_db
+def test_preview_tells_staff_when_registration_will_run(client):
+    draft = WorkshopFactory()
+    SessionFactory(workshop=draft, date=date(2026, 12, 5), start_time=time(9), end_time=time(17))
+    client.force_login(AdminFactory())
+    content = client.get(draft.get_absolute_url()).content.decode()
+    assert "Zapisy ruszą\n" in content or "Zapisy ruszą" in content
+    assert "z chwilą publikacji i potrwają do 5 grudnia 2026, 09:00." in content
