@@ -7,6 +7,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-25
+
+Changes after setting up the first real workshop on PROD.
+
 ### Changed
 
 - The workshop page wraps the description around the photo instead of leaving an empty column
@@ -20,6 +24,11 @@ All notable changes to this project are documented here. The format follows
 
 - The registration box on the preview of an unpublished workshop was empty. It now says where the
   "Zapisz się" button will appear and when registration will run.
+
+### Upgrading
+
+- `scripts/update.sh 1.0.1` on the server; no migrations and no configuration changes since
+  1.0.0.
 
 ## [1.0.0] - 2026-11-18
 
